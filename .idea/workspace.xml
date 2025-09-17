@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d22a290a-0777-4222-a2c0-dc19b8ba9999" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/BackendSirhaRomanos20252Application.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/BackendSirhaRomanos20252ApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d90c8aee-efb7-4079-b0ac-db2638daf65d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,9 +24,9 @@
     </option>
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
+  "associatedIndex": 6
 }]]></component>
-  <component name="ProjectId" id="32pdLGGutgd1JtIn2x6sLsGPPoa" />
+  <component name="ProjectId" id="32q9WaDBzlgHqfTifJ9jSZA5NOv" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -49,17 +37,17 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/JUAN.ORTEGA-M/Downloads/Backend_Romanos_2025-2"
+    "last_opened_file_path": "C:/Users/juan.ortega-m/Downloads/Backend_SIRHA_Romanos_2025-2"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d22a290a-0777-4222-a2c0-dc19b8ba9999" name="Changes" comment="" />
-      <created>1758121394617</created>
+      <changelist id="d90c8aee-efb7-4079-b0ac-db2638daf65d" name="Changes" comment="" />
+      <created>1758137281619</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1758121394617</updated>
+      <updated>1758137281619</updated>
     </task>
     <servers />
   </component>
