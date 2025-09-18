@@ -17,15 +17,15 @@ public class ScheduleManager {
         return null;
     }
 
-    public ArrayList<Schedule> getSchedulesWithClass(Class class1) {
+    public ArrayList<Schedule> getSchedulesWithClass(ClassSession classSession1) {
         return schedules;
     }
 
-    public Boolean checkClassInSchedule(Class class1, Student student) {
+    public Boolean checkClassInSchedule(ClassSession classSession1, Student student) {
         return false;
     }
 
-    public Class getClassInSchedule(Student student) {
+    public ClassSession getClassInSchedule(Student student) {
         return null;
     }
 

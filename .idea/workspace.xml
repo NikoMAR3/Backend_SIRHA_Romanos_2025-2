@@ -5,18 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="957f45b4-5333-4f6c-8976-84b430562293" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Class.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Dean.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Petition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/PetitionManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Schedule.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ScheduleManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Subject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLight.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLightManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Dean.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Dean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Schedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Schedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ScheduleManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ScheduleManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Subject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Subject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +61,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/CRUDEstudiante-sirha-37&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/UNIVERSIDAD/DOSW/Proyecto SIRHA/Backend_SIRHA_Romanos_2025-2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -100,7 +96,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758160553553</updated>
-      <workItem from="1758160555730" duration="1403000" />
+      <workItem from="1758160555730" duration="7695000" />
     </task>
     <servers />
   </component>

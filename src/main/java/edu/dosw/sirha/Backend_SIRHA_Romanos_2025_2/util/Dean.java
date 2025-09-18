@@ -44,11 +44,11 @@ public class Dean {
 
     }
 
-    public void modifyQuota(Class class){
+    public void modifyQuota(ClassSession class){
 
     }
 
-    public Integer checkQuota(Class class){
+    public Integer checkQuota(ClassSession class){
 
     }
 
