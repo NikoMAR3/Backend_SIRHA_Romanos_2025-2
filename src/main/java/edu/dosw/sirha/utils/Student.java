@@ -18,35 +18,27 @@ public class Student {
 
     public String getName() {return name;}
     public void setName(String name) { this.name = name; }
-
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
     public List<String> getPrograms() { return programs; }
     public void addProgram(String program) { this.programs.add(program); }
-
     public Schedule getSchedule() { return schedule; }
-
-    public Petition createPetition(String type, String subjectCode, String observations) {
-        Petition p = new Petition(type, subjectCode, observations, this.id);
-        this.petitions.add(p);
-        return p;
-    }
-
     public List<Petition> getPetitions() {
         return petitions;
     }
 
-    public void addPetition(Petition petition){
+    public void addPetition(Petition petition) {
         if (petition != null) this.petitions.add(petition);
     }
 
     public void addToClass(ClassSession cls) {
         Objects.requireNonNull(cls);
         this.schedule.getClasses().add(cls);
+        cls.addStudent(this);
     }
 
     public void removeFromClass(ClassSession cls) {
         this.schedule.getClasses().remove(cls);
+        cls.delStudent(this.id);
     }
 }

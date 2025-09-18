@@ -13,6 +13,8 @@ public abstract class Petition {
     private LocalDateTime dateOfCreation = LocalDateTime.now();
     private String status = "PENDIENTE";
 
+    public Petition() {}
+
     public Petition(String type, String subjectCode, String observations, String studentId) {
         this.type = type;
         this.subjectCode = subjectCode;
@@ -52,11 +54,7 @@ public abstract class Petition {
         this.status = status;
     }
 
-    public void ifAcceptedProcedure(){
+    public abstract void ifAcceptedProcedure();
 
-    }
-
-    public Command toCommand(PetitionManager manager){
-        return null;
-    }
+    public abstract toCommand(PetitionManager manager);
 }

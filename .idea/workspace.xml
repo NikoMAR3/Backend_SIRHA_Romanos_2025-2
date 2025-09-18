@@ -5,20 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="957f45b4-5333-4f6c-8976-84b430562293" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetitionCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetitionCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetitionCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Command.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetitionCreator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Dean.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Dean.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Petition.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/PetitionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/PetitionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Schedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Schedule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ScheduleManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ScheduleManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Subject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Subject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLightManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLightManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +28,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -79,6 +79,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="edu.dosw.sirha" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="BackendSirhaRomanos20252Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="Backend_SIRHA_Romanos_2025-2" />
@@ -105,7 +110,7 @@
       <updated>1758160553553</updated>
       <workItem from="1758160555730" duration="8570000" />
       <workItem from="1758209843650" duration="1615000" />
-      <workItem from="1758211550624" duration="298000" />
+      <workItem from="1758211550624" duration="5443000" />
     </task>
     <servers />
   </component>
