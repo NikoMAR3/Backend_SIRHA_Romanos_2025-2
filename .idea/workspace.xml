@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="957f45b4-5333-4f6c-8976-84b430562293" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetitionCreator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetitionCreator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetitionCreator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Command.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetitionCreator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,8 +15,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -110,7 +98,7 @@
       <updated>1758160553553</updated>
       <workItem from="1758160555730" duration="8570000" />
       <workItem from="1758209843650" duration="1615000" />
-      <workItem from="1758211550624" duration="5443000" />
+      <workItem from="1758211550624" duration="5976000" />
     </task>
     <servers />
   </component>
