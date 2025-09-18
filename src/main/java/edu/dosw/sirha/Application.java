@@ -1,4 +1,4 @@
-package edu.dosw.sirha.Backend_SIRHA_Romanos_2025_2;
+package edu.dosw.sirha;
 
 public class Application {
     public static void main(String[] args) {

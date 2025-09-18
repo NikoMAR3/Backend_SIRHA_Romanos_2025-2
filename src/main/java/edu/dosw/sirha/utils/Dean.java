@@ -1,4 +1,4 @@
-package edu.dosw.sirha.Backend_SIRHA_Romanos_2025_2.util;
+package edu.dosw.sirha.utils;
 
 
 public class Dean {
