@@ -5,17 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="957f45b4-5333-4f6c-8976-84b430562293" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/Application.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/ApplicationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Class.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ClassManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Dean.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Petition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/PetitionManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Schedule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/ScheduleManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/Subject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLight.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/util/TrafficLightManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/BackendSirhaRomanos20252Application.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/edu/dosw/sirha/Backend_SIRHA_Romanos_2025_2/BackendSirhaRomanos20252ApplicationTests.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -46,23 +59,23 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/UNIVERSIDAD/DOSW/Proyecto SIRHA/Backend_SIRHA_Romanos_2025-2",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/UNIVERSIDAD/DOSW/Proyecto SIRHA/Backend_SIRHA_Romanos_2025-2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="BackendSirhaRomanos20252Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="Backend_SIRHA_Romanos_2025-2" />
@@ -87,7 +100,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758160553553</updated>
-      <workItem from="1758160555730" duration="778000" />
+      <workItem from="1758160555730" duration="1403000" />
     </task>
     <servers />
   </component>
