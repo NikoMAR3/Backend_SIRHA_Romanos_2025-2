@@ -6,6 +6,32 @@
   <component name="ChangeListManager">
     <list default="true" id="957f45b4-5333-4f6c-8976-84b430562293" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/core/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/services/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/AddPetition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetitionCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddPetitionCreator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/AddStudentCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/core/AddStudentCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangeGroupCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/core/ChangeGroupCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/ChangePetition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetitionCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ChangePetitionCreator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/services/ClassManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/ClassPetition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetitionCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassPetitionCreator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ClassSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/ClassSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/core/Command.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Dean.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/Dean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Petition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/Petition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/PetitionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/services/PetitionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/RemovePetition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetitionCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemovePetitionCreator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/RemoveStudentCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/core/RemoveStudentCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Schedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/Schedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/ScheduleManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/services/ScheduleManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/Subject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/Subject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/model/TrafficLight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/utils/TrafficLightManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/dosw/sirha/services/TrafficLightManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,25 +75,28 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/CRUDEstudiante-sirha-37",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/UNIVERSIDAD/DOSW/Proyecto SIRHA/Backend_SIRHA_Romanos_2025-2",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/CRUDEstudiante-sirha-37&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/UNIVERSIDAD/DOSW/Proyecto SIRHA/Backend_SIRHA_Romanos_2025-2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\UNIVERSIDAD\DOSW\Proyecto SIRHA\Backend_SIRHA_Romanos_2025-2\src\main\java\edu\dosw\sirha\model" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="edu.dosw.sirha" />
     </key>
@@ -99,6 +128,8 @@
       <workItem from="1758160555730" duration="8570000" />
       <workItem from="1758209843650" duration="1615000" />
       <workItem from="1758211550624" duration="5976000" />
+      <workItem from="1758224973308" duration="103000" />
+      <workItem from="1758225893572" duration="514000" />
     </task>
     <servers />
   </component>

@@ -1,5 +1,8 @@
 package edu.dosw.sirha.utils;
 
+import edu.dosw.sirha.model.ClassPetition;
+import edu.dosw.sirha.model.RemovePetition;
+
 public class RemovePetitionCreator extends ClassPetitionCreator {
 
     @Override

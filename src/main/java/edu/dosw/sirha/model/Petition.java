@@ -1,4 +1,6 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
+
+import edu.dosw.sirha.services.PetitionManager;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

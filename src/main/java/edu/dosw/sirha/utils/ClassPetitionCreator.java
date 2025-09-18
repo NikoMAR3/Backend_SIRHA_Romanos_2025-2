@@ -1,5 +1,7 @@
 package edu.dosw.sirha.utils;
 
+import edu.dosw.sirha.model.ClassPetition;
+
 public abstract class ClassPetitionCreator {
 
     public abstract ClassPetition createPetition(String subjectCode, String observations,

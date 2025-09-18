@@ -1,4 +1,7 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.services;
+
+import edu.dosw.sirha.model.Petition;
+import edu.dosw.sirha.model.Student;
 
 public class PetitionManager {
 

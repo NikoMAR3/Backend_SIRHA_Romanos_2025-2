@@ -1,4 +1,8 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
+
+import edu.dosw.sirha.core.ChangeGroupCommand;
+import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.services.PetitionManager;
 
 public class ChangePetition extends ClassPetition {
     private String currentGroupId;

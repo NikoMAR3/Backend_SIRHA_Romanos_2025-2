@@ -1,4 +1,8 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
+
+import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.core.RemoveStudentCommand;
 
 public class RemovePetition extends ClassPetition {
     private String currentGroupId;

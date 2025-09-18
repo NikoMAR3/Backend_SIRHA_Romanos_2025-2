@@ -1,11 +1,14 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.core;
 
-public class RemoveStudentCommand implements Command {
+import edu.dosw.sirha.model.ChangePetition;
+import edu.dosw.sirha.services.PetitionManager;
+
+public class ChangeGroupCommand implements Command {
     private PetitionManager manager;
-    private RemovePetition petition;
+    private ChangePetition petition;
     private boolean executed = false;
 
-    public RemoveStudentCommand(PetitionManager manager, RemovePetition petition) {
+    public ChangeGroupCommand(PetitionManager manager, ChangePetition petition) {
         this.manager = manager;
         this.petition = petition;
     }
@@ -14,6 +17,7 @@ public class RemoveStudentCommand implements Command {
     public void execute() {
         if (!executed) {
             manager.removeStudentFromGroup(petition.getStudentId(), petition.getCurrentGroupId());
+            manager.addStudentToGroup(petition.getStudentId(), petition.getTargetGroupId());
             executed = true;
         }
     }
@@ -21,6 +25,7 @@ public class RemoveStudentCommand implements Command {
     @Override
     public void undo() {
         if (executed) {
+            manager.removeStudentFromGroup(petition.getStudentId(), petition.getTargetGroupId());
             manager.addStudentToGroup(petition.getStudentId(), petition.getCurrentGroupId());
             executed = false;
         }

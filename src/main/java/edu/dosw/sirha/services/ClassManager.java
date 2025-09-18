@@ -1,4 +1,6 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.services;
+
+import edu.dosw.sirha.model.ClassSession;
 
 import java.util.ArrayList;
 

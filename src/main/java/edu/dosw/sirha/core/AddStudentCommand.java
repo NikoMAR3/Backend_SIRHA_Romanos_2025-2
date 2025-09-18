@@ -1,4 +1,7 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.core;
+
+import edu.dosw.sirha.model.AddPetition;
+import edu.dosw.sirha.services.PetitionManager;
 
 public class AddStudentCommand implements Command {
     private PetitionManager manager;

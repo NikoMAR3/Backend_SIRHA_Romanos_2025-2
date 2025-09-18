@@ -1,4 +1,4 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
 
 public abstract class ClassPetition extends Petition {
 

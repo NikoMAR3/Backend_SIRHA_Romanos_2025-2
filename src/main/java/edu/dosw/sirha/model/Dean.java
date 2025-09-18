@@ -1,5 +1,10 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
 
+
+import edu.dosw.sirha.services.ClassManager;
+import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.ScheduleManager;
+import edu.dosw.sirha.services.TrafficLightManager;
 
 public class Dean {
     private String dean_id;

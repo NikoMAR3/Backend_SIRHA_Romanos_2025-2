@@ -1,4 +1,8 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.model;
+
+import edu.dosw.sirha.core.AddStudentCommand;
+import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.services.PetitionManager;
 
 public class AddPetition extends ClassPetition {
     private String targetGroupId;

@@ -1,4 +1,8 @@
-package edu.dosw.sirha.utils;
+package edu.dosw.sirha.services;
+
+import edu.dosw.sirha.model.ClassSession;
+import edu.dosw.sirha.model.Schedule;
+import edu.dosw.sirha.model.Student;
 
 import java.util.ArrayList;
 
