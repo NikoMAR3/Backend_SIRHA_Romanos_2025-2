@@ -81,12 +81,15 @@
 			<scope>test</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
-
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -104,7 +107,6 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
