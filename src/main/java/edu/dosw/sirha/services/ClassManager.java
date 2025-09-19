@@ -2,21 +2,30 @@ package edu.dosw.sirha.services;
 
 import edu.dosw.sirha.model.ClassSession;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class ClassManager {
-    private ArrayList<ClassSession> classSessions = new ArrayList<ClassSession>();
+    private HashMap<String, ClassSession> classSessions;
 
-    public ClassManager() {}
+    public ClassManager() {
+        classSessions = new HashMap<>();
+    }
+
+    public HashMap<String, ClassSession> getClassSessions() {return classSessions;}
 
     public ClassSession getClass(String class1){
-        return null;
+        return classSessions.get(class1.toLowerCase());
     }
 
-    public void modifyClassQuota(ClassSession classSession1){
-
+    public void modifyMaxClassQuota(String classSession1, int newQuota){
+        classSessions.get(classSession1).setCurrentQuota(newQuota);
     }
-    public int checkClassQuota(ClassSession classSession1){
-        return 0;
+
+    public int checkMaxClassQuota(String classSession1){
+        return classSessions.get(classSession1).getCurrentQuota();
+    }
+
+    public int checkClassQuota(String classSession1){
+        return classSessions.get(classSession1.toLowerCase()).getCurrentQuota();
     }
 }
