@@ -86,10 +86,6 @@ public class ClassSession {
         }
     }
 
-    public List<Student> getStudents() {
-        return students;
-    }
-
     public boolean hasAvailableQuota() {
         return currentQuota < maxQuota;
     }
@@ -103,4 +99,7 @@ public class ClassSession {
     }
 
 
+    public void setCurrentQuota(int newQuota) {
+        this.currentQuota = newQuota;
+    }
 }

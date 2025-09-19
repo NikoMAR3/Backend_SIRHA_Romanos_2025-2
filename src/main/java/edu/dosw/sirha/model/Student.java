@@ -29,9 +29,11 @@ public class Student {
     public List<Petition> getPetitions() {
         return petitions;
     }
+    private List<PetitionObserver> petitionObserver = new ArrayList<>();
 
     public void addPetition(Petition petition) {
         if (petition != null) this.petitions.add(petition);
+        notifyPetitionObserver(petition);
     }
 
     public void addToClass(ClassSession cls) {
@@ -45,5 +47,11 @@ public class Student {
         cls.delStudent(this.id);
     }
 
-    //falta lo de notificar observers
+    public void addObserver(PetitionObserver loader) {
+        observers.add(loader);
+    }
+
+    public void notifyPetitionObserver(Petition petition){
+        observers.forEach(petitionObserver1 -> petitionObserver1.onNewPetition(petition));
+    }
 }

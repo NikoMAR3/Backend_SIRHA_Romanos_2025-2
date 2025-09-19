@@ -10,6 +10,10 @@ public class PetitionManager {
 
     private ClassManager classManager;
 
+    public void setClassManager(ClassManager classManager) {
+        this.classManager = classManager;
+    }
+
     public Boolean validateIfPossible(Petition petition) {
         switch (petition.getType()) {
             case "CHANGE":

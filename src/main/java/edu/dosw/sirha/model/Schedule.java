@@ -8,4 +8,8 @@ public class Schedule {
     public Schedule() {}
 
     public ArrayList<ClassSession> getClasses(){ return classes;}
+
+    public Boolean containsClass(String classSession1) {
+        return classes.stream().anyMatch(classSession -> classSession.getid().equals(classSession));
+    }
 }
