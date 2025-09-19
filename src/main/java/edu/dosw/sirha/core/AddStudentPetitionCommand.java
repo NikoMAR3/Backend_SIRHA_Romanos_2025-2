@@ -1,14 +1,15 @@
 package edu.dosw.sirha.core;
 
 import edu.dosw.sirha.model.AddPetition;
+import edu.dosw.sirha.model.Petition;
 import edu.dosw.sirha.services.PetitionManager;
 
-public class AddStudentCommand implements Command {
+public class AddStudentPetitionCommand implements PetitionCommand {
     private PetitionManager manager;
     private AddPetition petition;
     private boolean executed = false;
 
-    public AddStudentCommand(PetitionManager manager, AddPetition petition) {
+    public AddStudentPetitionCommand(PetitionManager manager, AddPetition petition) {
         this.manager = manager;
         this.petition = petition;
     }
@@ -27,5 +28,10 @@ public class AddStudentCommand implements Command {
             manager.removeStudentFromGroup(petition.getStudentId(), petition.getTargetGroupId());
             executed = false;
         }
+    }
+
+    @Override
+    public Petition getPetitionOfCommand() {
+        return petition;
     }
 }

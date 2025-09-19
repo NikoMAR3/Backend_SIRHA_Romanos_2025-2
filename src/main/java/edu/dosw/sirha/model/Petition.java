@@ -1,5 +1,6 @@
 package edu.dosw.sirha.model;
 
+import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
 
 import java.time.LocalDateTime;
@@ -58,5 +59,5 @@ public abstract class Petition {
 
     public abstract void ifAcceptedProcedure();
 
-    public abstract toCommand(PetitionManager manager);
+    public abstract PetitionCommand toCommand(PetitionManager manager);
 }

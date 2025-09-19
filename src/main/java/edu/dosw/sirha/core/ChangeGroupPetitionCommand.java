@@ -1,33 +1,32 @@
 package edu.dosw.sirha.core;
 
 import edu.dosw.sirha.model.ChangePetition;
+import edu.dosw.sirha.model.Petition;
 import edu.dosw.sirha.services.PetitionManager;
 
-public class ChangeGroupCommand implements Command {
+public class ChangeGroupPetitionCommand implements PetitionCommand {
     private PetitionManager manager;
     private ChangePetition petition;
-    private boolean executed = false;
 
-    public ChangeGroupCommand(PetitionManager manager, ChangePetition petition) {
+    public ChangeGroupPetitionCommand(PetitionManager manager, ChangePetition petition) {
         this.manager = manager;
         this.petition = petition;
     }
 
     @Override
     public void execute() {
-        if (!executed) {
-            manager.removeStudentFromGroup(petition.getStudentId(), petition.getCurrentGroupId());
-            manager.addStudentToGroup(petition.getStudentId(), petition.getTargetGroupId());
-            executed = true;
-        }
+        manager.removeStudentFromGroup(petition.getStudentId(), petition.getCurrentGroupId());
+        manager.addStudentToGroup(petition.getStudentId(), petition.getTargetGroupId());
     }
 
     @Override
     public void undo() {
-        if (executed) {
             manager.removeStudentFromGroup(petition.getStudentId(), petition.getTargetGroupId());
             manager.addStudentToGroup(petition.getStudentId(), petition.getCurrentGroupId());
-            executed = false;
-        }
+    }
+
+    @Override
+    public Petition getPetitionOfCommand() {
+        return petition;
     }
 }

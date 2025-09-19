@@ -1,10 +1,12 @@
 package edu.dosw.sirha.model;
 
 
-import edu.dosw.sirha.services.ClassManager;
-import edu.dosw.sirha.services.PetitionManager;
-import edu.dosw.sirha.services.ScheduleManager;
-import edu.dosw.sirha.services.TrafficLightManager;
+import edu.dosw.sirha.core.PetitionCommand;
+import edu.dosw.sirha.services.*;
+
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Dean {
     private String dean_id;
@@ -13,7 +15,7 @@ public class Dean {
     private PetitionManager petitionManager;
     private TrafficLightManager trafficLightManager;
     private ClassManager classManager;
-    private PetitionCommand petitionCommand;
+    private PetitionAssistant assistant;
 
 
     public Dean(String dean_id, String major) {
@@ -30,31 +32,45 @@ public class Dean {
     }
 
     public ArrayList<Petition> checkPetitions(Student student){
-
+        return assistant.getPetitions().values().stream()
+                .map(PetitionCommand::getPetitionOfCommand)
+                .filter(p -> p.getStudentId().equals(student.getId()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<Petition> checkPetitions(String type){
-
+        return assistant.getPetitions(type).values().stream()
+                .map(PetitionCommand::getPetitionOfCommand)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public void answerPetition(Petition petition){
+    public void answerPetition(Petition petition,Boolean approve){
+        PetitionCommand command = assistant.getCommandByPetition(petition);
+        if (command == null) {
+            throw new IllegalArgumentException("No existe un comando para esta petición");
+        }
 
+        if (approve) {
+            command.execute();     // aprueba → corre el flujo normal
+        } else {
+            command.undo();        // rechaza → deshace/descarta
+        }
     }
 
     public TrafficLight checkTrafficLight(){
-
+        return trafficLightManager.checkTrafficLight();
     }
 
     public TrafficLight checkTrafficLight(Student student){
-
+        return trafficLightManager.getTrafficLight(student);
     }
 
-    public void modifyQuota(ClassSession class){
-
+    public void modifyQuota(ClassSession classSession){
+        return classManager.modifyClassQuota();
     }
 
-    public Integer checkQuota(ClassSession class){
-
+    public Integer checkQuota(ClassSession classSessions){
+        return classManager.checkClassQuota();
     }
 
 

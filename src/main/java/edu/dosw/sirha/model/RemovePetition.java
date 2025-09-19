@@ -1,8 +1,8 @@
 package edu.dosw.sirha.model;
 
-import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
-import edu.dosw.sirha.core.RemoveStudentCommand;
+import edu.dosw.sirha.core.RemoveStudentPetitionCommand;
 
 public class RemovePetition extends ClassPetition {
     private String currentGroupId;
@@ -23,7 +23,7 @@ public class RemovePetition extends ClassPetition {
     }
 
     @Override
-    public Command toCommand(PetitionManager manager) {
-        return new RemoveStudentCommand(manager, this);
+    public PetitionCommand toCommand(PetitionManager manager) {
+        return new RemoveStudentPetitionCommand(manager, this);
     }
 }
