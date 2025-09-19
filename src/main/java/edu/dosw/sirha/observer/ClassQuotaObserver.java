@@ -35,7 +35,7 @@ public class ClassQuotaObserver implements ClassSessionObserver {
                 return AlertFactory.getFactory("general").createAlert(classSession, eventType, data);
             }
         } catch (Exception e) {
-            System.err.println("Error creating alert: " + e.getMessage());
+            System.err.println("Error al crear la alerta: " + e.getMessage());
             return null;
         }
     }
