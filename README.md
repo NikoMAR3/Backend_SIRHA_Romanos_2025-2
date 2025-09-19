@@ -5,7 +5,7 @@ En este repositorio se manejara todo el Backend del proyecto inicial "SIRHA" par
 ### 👤Integrantes:
 - Elizabeth Correa
 - Sebastian Ortega
-- Belen Quintero
+- Belén Quintero
 - Nikolas Martinez
 - Juan Pablo Contreras
 
