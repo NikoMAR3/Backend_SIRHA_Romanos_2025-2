@@ -28,4 +28,8 @@ public class ClassManager {
     public int checkClassQuota(String classSession1){
         return classSessions.get(classSession1.toLowerCase()).getCurrentQuota();
     }
+
+    public ClassSession getClassById(String classId) {
+        return classSessions.get(classId.toLowerCase());
+    }
 }

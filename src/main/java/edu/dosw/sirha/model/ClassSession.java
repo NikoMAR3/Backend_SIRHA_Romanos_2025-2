@@ -86,6 +86,10 @@ public class ClassSession {
         }
     }
 
+    public List<Student> getStudents() {
+        return students;
+    }
+
     public boolean hasAvailableQuota() {
         return currentQuota < maxQuota;
     }
@@ -97,4 +101,6 @@ public class ClassSession {
     public double getOccupancyPercentage() {
         return maxQuota > 0 ? (double) currentQuota / maxQuota * 100 : 0;
     }
+
+
 }
