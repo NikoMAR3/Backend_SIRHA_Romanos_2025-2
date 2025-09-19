@@ -21,16 +21,13 @@ public class DecanaturaObserver implements ClassSessionObserver {
     }
 
     private boolean shouldNotifyDecanatura(String eventType) {
-        return eventType.equals(ClassSession.EVENT_QUOTA_FULL) ||
-                eventType.equals(ClassSession.EVENT_QUOTA_WARNING);
+        return eventType.equals(ClassSession.EVENT_QUOTA_FULL) || eventType.equals(ClassSession.EVENT_QUOTA_WARNING);
     }
 
     private String createDecanaturaMessage(ClassSession classSession, String eventType, Object data) {
         return switch (eventType) {
-            case ClassSession.EVENT_QUOTA_FULL ->
-                    String.format("ALERTA: Grupo %s del profesor %s ha alcanzado cupo máximo (%d estudiantes)", classSession.getId(), classSession.getProfessor(), classSession.getMaxQuota());
-            case ClassSession.EVENT_QUOTA_WARNING ->
-                    String.format("ADVERTENCIA: Grupo %s está al %.0f%% de capacidad (%d/%d)", classSession.getId(), classSession.getOccupancyPercentage(), classSession.getCurrentQuota(), classSession.getMaxQuota());
+            case ClassSession.EVENT_QUOTA_FULL -> String.format("ALERTA: Grupo %s del profesor %s ha alcanzado cupo máximo (%d estudiantes)", classSession.getId(), classSession.getProfessor(), classSession.getMaxQuota());
+            case ClassSession.EVENT_QUOTA_WARNING -> String.format("ADVERTENCIA: Grupo %s está al %.0f%% de capacidad (%d/%d)", classSession.getId(), classSession.getOccupancyPercentage(), classSession.getCurrentQuota(), classSession.getMaxQuota());
             default -> "Notificación del grupo " + classSession.getId() + ": " + eventType;
         };
     }
