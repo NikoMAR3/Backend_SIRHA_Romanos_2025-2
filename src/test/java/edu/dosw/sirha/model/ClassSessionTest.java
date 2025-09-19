@@ -49,6 +49,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //Verifica que al agregar estudiantes el cupo se incremente
     void testAddStudent() {
         classSession.addStudent(student1);
         assertEquals(1, classSession.getCurrentQuota());
@@ -58,6 +59,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que se lance la excepción cuando se supere el limite
     void testAddStudentExceedsQuota() {
         classSession.addStudent(student1);
         classSession.addStudent(student2);
@@ -69,6 +71,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //Verifica que al eliminar un estudiante el cupo se disminuya
     void testDelStudent() {
         classSession.addStudent(student1);
         classSession.addStudent(student2);
@@ -82,6 +85,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que si se elimina un estudiante que no existe no se afecte el cupo
     void testDelNonExistentStudent() {
         classSession.addStudent(student1);
         classSession.delStudent("99999");
@@ -97,6 +101,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que al agregar un estudiante se le notifique al observer
     void shouldAddNormalStudent() {
         classSession.addStudent(mockStudent);
 
@@ -106,6 +111,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que si el cupo esta lleno se notifique al observer
     void shouldThrowsExceptionWhenQuotaFull() {
         for (int i = 0; i < 5; i++) {
             Student student = mock(Student.class);
@@ -123,6 +129,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que si se llega al 90% del cupo se notifique al observer
     void shouldThrow90PercentAlert() {
         for (int i = 0; i < 4; i++) {
             Student student = mock(Student.class);
@@ -146,6 +153,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que al eliminar un estudiante se le notifique al observer
     void shouldDeleteStudent() {
         classSession.addStudent(mockStudent);
         reset(mockObserver);
@@ -158,6 +166,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que cuando una clase llena libere un cupo se le notifique
     void shouldNotifyFreeQuota() {
         for (int i = 0; i < 5; i++) {
             Student student = mock(Student.class);
@@ -173,6 +182,7 @@ class ClassSessionTest {
     }
 
     @Test
+    //verifica que haya cupos disponibles, calcular cupos y el porcentaje que esta ocupado
     void testUtilityMethods() {
         assertTrue(classSession.hasAvailableQuota());
         assertEquals(5, classSession.getAvailableQuota());
@@ -184,7 +194,9 @@ class ClassSessionTest {
         assertEquals(20.0, classSession.getOccupancyPercentage());
     }
 
+    
     @Test
+    //verifica que despues de quitar el observer ya no reciba notificaciones
     void testObserverManagement() {
         classSession.removeObserver(mockObserver);
         classSession.addStudent(mockStudent);
