@@ -192,5 +192,4 @@ class ClassSessionTest {
         verifyNoInteractions(mockObserver);
     }
 }
-}
 
