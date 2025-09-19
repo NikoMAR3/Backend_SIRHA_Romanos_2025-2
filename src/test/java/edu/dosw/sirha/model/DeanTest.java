@@ -44,7 +44,6 @@ class DeanIntegrationTest {
                 "CS101-01", "CS101-02"
         );
 
-        // Student crea petición -> notifica al loader -> loader la pasa al assistant
         student.addPetition(petition);
 
         PetitionCommand command = assistant.getCommandByPetition(petition);
@@ -62,7 +61,6 @@ class DeanIntegrationTest {
         student.addPetition(petition);
 
         PetitionCommand command = spy(assistant.getCommandByPetition(petition));
-        // remplazamos el command real por un spy
 
         dean.answerPetition(assistant.getCommandByPetition(petition).getPetitionOfCommand(), true);
 
