@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model;
 
-import edu.dosw.sirha.core.ChangeGroupCommand;
-import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.core.ChangeGroupPetitionCommand;
+import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
 
 public class ChangePetition extends ClassPetition {
@@ -29,7 +29,7 @@ public class ChangePetition extends ClassPetition {
     }
 
     @Override
-    public Command toCommand(PetitionManager manager) {
-        return new ChangeGroupCommand(manager, this);
+    public PetitionCommand toCommand(PetitionManager manager) {
+        return new ChangeGroupPetitionCommand(manager, this);
     }
 }

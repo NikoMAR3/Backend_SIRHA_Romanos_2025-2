@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model;
 
-import edu.dosw.sirha.core.AddStudentCommand;
-import edu.dosw.sirha.core.Command;
+import edu.dosw.sirha.core.AddStudentPetitionCommand;
+import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
 
 public class AddPetition extends ClassPetition {
@@ -23,7 +23,7 @@ public class AddPetition extends ClassPetition {
     }
 
     @Override
-    public Command toCommand(PetitionManager manager) {
-        return new AddStudentCommand(manager, this);
+    public PetitionCommand toCommand(PetitionManager manager) {
+        return new AddStudentPetitionCommand(manager, this);
     }
 }

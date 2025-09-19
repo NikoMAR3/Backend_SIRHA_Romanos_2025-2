@@ -1,5 +1,7 @@
 package edu.dosw.sirha.model;
 
+import edu.dosw.sirha.services.PetitionObserver;
+
 import java.util.*;
 
 public class Student {
@@ -8,6 +10,7 @@ public class Student {
     private List<String> programs = new ArrayList<>();
     private Schedule schedule = new Schedule();
     private List<Petition> petitions = new ArrayList<>();
+    private ArrayList<PetitionObserver> observers = new ArrayList<>();
 
     public Student(String name, String id) {
         this.name = name;
@@ -41,4 +44,6 @@ public class Student {
         this.schedule.getClasses().remove(cls);
         cls.delStudent(this.id);
     }
+
+    //falta lo de notificar observers
 }
