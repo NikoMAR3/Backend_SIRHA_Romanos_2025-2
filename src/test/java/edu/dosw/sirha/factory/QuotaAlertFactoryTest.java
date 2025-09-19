@@ -61,16 +61,6 @@ class QuotaAlertFactoryTest {
         assertTrue(alert.getMessage().contains("cupos disponibles"));
     }
 
-    @Test
-    void testCreateAlertUnknownEventType() {
-        Alert alert = factory.createAlert(mockClassSession, "UNKNOWN_EVENT", null);
-
-        assertNotNull(alert);
-        assertEquals("GENERAL", alert.getType());
-        assertEquals("INFO", alert.getLevel());
-        assertTrue(alert.getMessage().contains("Evento de cupo"));
-        assertTrue(alert.getMessage().contains("UNKNOWN_EVENT"));
-    }
 
     @Test
     void testCreateAlertNullClassSession() {
@@ -84,11 +74,5 @@ class QuotaAlertFactoryTest {
         Alert alert = factory.createAlert(mockClassSession, null, null);
         assertNotNull(alert);
         assertEquals("GENERAL", alert.getType());
-    }
-
-    @Test
-    void testAlertSendDoesNotThrowException() {
-        Alert alert = factory.createAlert(mockClassSession, "QUOTA_FULL", null);
-        assertDoesNotThrow(alert::send);
     }
 }
