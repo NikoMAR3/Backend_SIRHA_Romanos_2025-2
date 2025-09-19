@@ -1,3 +1,4 @@
+
 package edu.dosw.sirha.model;
 
 import edu.dosw.sirha.services.PetitionManager;
@@ -60,3 +61,4 @@ public abstract class Petition {
 
     public abstract toCommand(PetitionManager manager);
 }
+
