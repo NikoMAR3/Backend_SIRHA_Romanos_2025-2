@@ -3,18 +3,20 @@ package edu.dosw.sirha.model;
 import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
 import edu.dosw.sirha.core.RemoveStudentPetitionCommand;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing a petition to remove a student from a class group.
  * Inherits from ClassPetition.
  */
+@Getter
+@Setter
+@NoArgsConstructor
 public class RemovePetition extends ClassPetition {
     private String currentGroupId;
 
-    /**
-     * Default constructor for serialization/deserialization purposes.
-     */
-    public RemovePetition() {}
 
     /**
      * Constructor to create a RemovePetition instance.
@@ -27,13 +29,6 @@ public class RemovePetition extends ClassPetition {
         super("REMOVE", subjectCode, observations, student);
         this.currentGroupId = currentGroupId;
     }
-
-    /**
-     * Getter and Setter for currentGroupId.
-     * @return the current group ID
-     */
-    public String getCurrentGroupId() { return currentGroupId; }
-    public void setCurrentGroupId(String currentGroupId) { this.currentGroupId = currentGroupId; }
 
     /**
      * Procedure to execute if the petition is accepted.

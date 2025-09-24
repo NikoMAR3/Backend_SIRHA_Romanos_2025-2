@@ -3,18 +3,20 @@ package edu.dosw.sirha.model;
 import edu.dosw.sirha.core.ChangeGroupPetitionCommand;
 import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class representing a petition to change a student's group in a subject.
  */
+@Getter
+@Setter
+@NoArgsConstructor
 public class ChangePetition extends ClassPetition {
     private String currentGroupId;
     private String targetGroupId;
 
-    /**
-     * Default constructor for serialization/deserialization purposes.
-     */
-    public ChangePetition() {}
 
     /**
      * Constructor to create a ChangePetition instance.
@@ -30,20 +32,6 @@ public class ChangePetition extends ClassPetition {
         this.currentGroupId = currentGroupId;
         this.targetGroupId = targetGroupId;
     }
-
-    /**
-     * Getter and Setter for currentGroupId and targetGroupId.
-     * @return the current group ID
-     */
-    public String getCurrentGroupId() { return currentGroupId; }
-    public void setCurrentGroupId(String currentGroupId) { this.currentGroupId = currentGroupId; }
-
-    /**
-     * Getter and Setter for targetGroupId.
-     * @return the target group ID
-     */
-    public String getTargetGroupId() { return targetGroupId; }
-    public void setTargetGroupId(String targetGroupId) { this.targetGroupId = targetGroupId; }
 
     /**
      * Procedure to execute if the petition is accepted.
