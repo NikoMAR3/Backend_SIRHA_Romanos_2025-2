@@ -2,10 +2,19 @@ package edu.dosw.sirha.model;
 
 import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Abstract Class representing a petition made by a student.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
 public abstract class Petition {
     private String id = UUID.randomUUID().toString();
     private String type;
@@ -16,8 +25,13 @@ public abstract class Petition {
     private String status = "PENDIENTE";
     private Student student;
 
-    public Petition() {}
-
+    /**
+     * Constructor to create a Petition instance.
+     * @param type the type of petition (e.g., "ADD", "CHANGE")
+     * @param subjectCode the code of the subject
+     * @param observations any observations related to the petition
+     * @param student the student making the petition
+     */
     public Petition(String type, String subjectCode, String observations, Student student) {
         this.type = type;
         this.subjectCode = subjectCode;
@@ -25,37 +39,12 @@ public abstract class Petition {
         this.student = student;
     }
 
-    public String getId() {
-        return id;
-    }
-    public String getType() {
-        return type;
-    }
-    public String getSubjectCode() {
-        return subjectCode;
-    }
-    public String getObservations() {
-        return observations;
-    }
-    public Student getStudent() {
-        return student;
-    }
-    public String getStudentId() { return student.getId(); }
-
-    public String getPriority() {
-        return priority;
-    }
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-    public LocalDateTime getDateOfCreation() {
-        return dateOfCreation;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public void setStatus(String status) {
-        this.status = status;
+    /**
+     * Gets the student ID from the associated student.
+     * @return the student ID
+     */
+    public String getStudentId() {
+        return student.getId();
     }
 
     public abstract void ifAcceptedProcedure();
