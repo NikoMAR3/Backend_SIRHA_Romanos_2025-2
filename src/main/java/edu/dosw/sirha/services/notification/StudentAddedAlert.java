@@ -1,4 +1,4 @@
-package edu.dosw.sirha.alerts;
+package edu.dosw.sirha.services.notification;
 
 import edu.dosw.sirha.model.ClassSession;
 import edu.dosw.sirha.model.Student;

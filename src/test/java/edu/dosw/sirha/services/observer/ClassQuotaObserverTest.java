@@ -1,7 +1,9 @@
-package edu.dosw.sirha.observer;
+package edu.dosw.sirha.services.observer;
 
 import edu.dosw.sirha.model.ClassSession;
 import edu.dosw.sirha.model.Student;
+import edu.dosw.sirha.services.observer.Alert;
+import edu.dosw.sirha.services.observer.ClassQuotaObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

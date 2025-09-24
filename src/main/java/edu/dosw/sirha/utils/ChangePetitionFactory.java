@@ -4,7 +4,7 @@ import edu.dosw.sirha.model.ChangePetition;
 import edu.dosw.sirha.model.ClassPetition;
 import edu.dosw.sirha.model.Student;
 
-public class ChangePetitionCreator extends ClassPetitionCreator {
+public class ChangePetitionFactory extends ClassPetitionFactory {
 
     @Override
     public ClassPetition createPetition(String subjectCode, String observations,

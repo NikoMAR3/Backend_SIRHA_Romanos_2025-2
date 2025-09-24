@@ -1,9 +1,12 @@
-package edu.dosw.sirha.factory;
+package edu.dosw.sirha.utils;
 
 import edu.dosw.sirha.model.Student;
-import edu.dosw.sirha.observer.Alert;
+import edu.dosw.sirha.services.notification.CapacityWarningAlert;
+import edu.dosw.sirha.services.notification.GeneralAlert;
+import edu.dosw.sirha.services.notification.StudentAddedAlert;
+import edu.dosw.sirha.services.notification.StudentRemovedAlert;
+import edu.dosw.sirha.services.observer.Alert;
 import edu.dosw.sirha.model.ClassSession;
-import edu.dosw.sirha.alerts.*;
 
 public class CapacityAlertFactory extends AlertFactory {
     @Override

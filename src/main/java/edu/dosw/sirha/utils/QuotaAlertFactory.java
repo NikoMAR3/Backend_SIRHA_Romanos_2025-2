@@ -1,8 +1,11 @@
-package edu.dosw.sirha.factory;
+package edu.dosw.sirha.utils;
 
-import edu.dosw.sirha.observer.Alert;
+import edu.dosw.sirha.services.notification.GeneralAlert;
+import edu.dosw.sirha.services.notification.QuotaAvailableAlert;
+import edu.dosw.sirha.services.notification.QuotaFullAlert;
+import edu.dosw.sirha.services.notification.QuotaWarningAlert;
+import edu.dosw.sirha.services.observer.Alert;
 import edu.dosw.sirha.model.ClassSession;
-import edu.dosw.sirha.alerts.*;
 
 public class QuotaAlertFactory extends AlertFactory {
     @Override

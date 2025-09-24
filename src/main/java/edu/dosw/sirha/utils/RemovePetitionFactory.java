@@ -4,7 +4,7 @@ import edu.dosw.sirha.model.ClassPetition;
 import edu.dosw.sirha.model.RemovePetition;
 import edu.dosw.sirha.model.Student;
 
-public class RemovePetitionCreator extends ClassPetitionCreator {
+public class RemovePetitionFactory extends ClassPetitionFactory {
 
     @Override
     public ClassPetition createPetition(String subjectCode, String observations,

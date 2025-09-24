@@ -1,7 +1,7 @@
-package edu.dosw.sirha.observer;
+package edu.dosw.sirha.services.observer;
 
 import edu.dosw.sirha.model.ClassSession;
-import edu.dosw.sirha.factory.AlertFactory;
+import edu.dosw.sirha.utils.AlertFactory;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package edu.dosw.sirha.factory;
+package edu.dosw.sirha.utils;
 
-import edu.dosw.sirha.observer.Alert;
+import edu.dosw.sirha.services.observer.Alert;
 import edu.dosw.sirha.model.ClassSession;
 
 public abstract class AlertFactory {

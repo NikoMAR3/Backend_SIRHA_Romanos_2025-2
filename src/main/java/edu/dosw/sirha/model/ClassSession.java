@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model;
 
 import lombok.Getter;
-import edu.dosw.sirha.observer.ClassSessionObserver;
+import edu.dosw.sirha.services.observer.ClassSessionObserver;
 
 import java.time.LocalDateTime;
 import java.util.*;

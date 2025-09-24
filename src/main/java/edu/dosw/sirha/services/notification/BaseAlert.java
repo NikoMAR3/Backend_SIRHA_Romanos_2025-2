@@ -1,6 +1,6 @@
-package edu.dosw.sirha.alerts;
+package edu.dosw.sirha.services.notification;
 
-import edu.dosw.sirha.observer.Alert;
+import edu.dosw.sirha.services.observer.Alert;
 
 public abstract class BaseAlert implements Alert {
     protected String message;

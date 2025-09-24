@@ -1,15 +1,15 @@
-package edu.dosw.sirha.observer;
+package edu.dosw.sirha.services.observer;
 
 import edu.dosw.sirha.model.ClassSession;
-import edu.dosw.sirha.services.DecanaturaNotificationService;
+import edu.dosw.sirha.services.DeanNotificationService;
 
 public class DecanaturaObserver implements ClassSessionObserver {
-    private DecanaturaNotificationService notificationService;
+    private DeanNotificationService notificationService;
     private String facultyCode;
 
     public DecanaturaObserver(String facultyCode) {
         this.facultyCode = facultyCode;
-        this.notificationService = new DecanaturaNotificationService();
+        this.notificationService = new DeanNotificationService();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package edu.dosw.sirha.observer;
+package edu.dosw.sirha.services.observer;
 
 public interface Alert {
     String getMessage();
