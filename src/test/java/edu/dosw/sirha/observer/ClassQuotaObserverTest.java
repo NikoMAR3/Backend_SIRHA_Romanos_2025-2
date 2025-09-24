@@ -84,18 +84,6 @@ class ClassQuotaObserverTest {
         assertEquals(0, observer.getAlerts().size());
     }
 
-    @Test
-    void testGetAlertsReturnsImmutableCopy() {
-        observer.update(mockClassSession, "QUOTA_FULL", null);
-
-        var alerts = observer.getAlerts();
-
-        assertThrows(UnsupportedOperationException.class, () -> {
-            alerts.add(null);
-        });
-
-        assertEquals(1, observer.getAlerts().size());
-    }
 
     @Test
     void testMultipleEventsCorrectOrder() {

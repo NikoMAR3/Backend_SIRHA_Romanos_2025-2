@@ -1,11 +1,12 @@
 package edu.dosw.sirha.utils;
 
 import edu.dosw.sirha.model.ClassPetition;
+import edu.dosw.sirha.model.Student;
 
 public abstract class ClassPetitionCreator {
 
     public abstract ClassPetition createPetition(String subjectCode, String observations,
-                                                 String studentId, String... groupIds);
+                                                 Student student, String... groupIds);
 
     public static ClassPetitionCreator getCreator(String type) {
         switch (type.toUpperCase()) {

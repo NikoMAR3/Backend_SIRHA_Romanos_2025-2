@@ -12,6 +12,8 @@ public class TrafficLight {
         this.major = major;
     }
 
+    public TrafficLight() { this.major = null;}
+
     public String getMajor() { return major; }
     public ArrayList<Subject> getSubjectsApproved() { return subjectsApproved; }
     public ArrayList<Subject> getSubjectsFailed() { return subjectsFailed; }
@@ -26,4 +28,10 @@ public class TrafficLight {
         if (progress >= 50) return "AZUL";
         return "ROJO";
     }
+
+    public static TrafficLight getDefaultTrafficLight() {
+        return new TrafficLight();
+    }
+
+
 }

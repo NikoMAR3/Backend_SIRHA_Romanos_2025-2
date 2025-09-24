@@ -11,18 +11,18 @@ public abstract class Petition {
     private String type;
     private String subjectCode;
     private String observations;
-    private String studentId;
     private String priority;
     private LocalDateTime dateOfCreation = LocalDateTime.now();
     private String status = "PENDIENTE";
+    private Student student;
 
     public Petition() {}
 
-    public Petition(String type, String subjectCode, String observations, String studentId) {
+    public Petition(String type, String subjectCode, String observations, Student student) {
         this.type = type;
         this.subjectCode = subjectCode;
         this.observations = observations;
-        this.studentId = studentId;
+        this.student = student;
     }
 
     public String getId() {
@@ -37,9 +37,10 @@ public abstract class Petition {
     public String getObservations() {
         return observations;
     }
-    public String getStudentId() {
-        return studentId;
+    public Student getStudent() {
+        return student;
     }
+    public String getStudentId() { return student.getId(); }
 
     public String getPriority() {
         return priority;

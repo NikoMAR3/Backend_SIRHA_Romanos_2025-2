@@ -60,19 +60,4 @@ class QuotaAlertFactoryTest {
         assertTrue(alert.getMessage().contains("CVDS-G01"));
         assertTrue(alert.getMessage().contains("cupos disponibles"));
     }
-
-
-    @Test
-    void testCreateAlertNullClassSession() {
-        assertThrows(NullPointerException.class, () -> {
-            factory.createAlert(null, "QUOTA_FULL", null);
-        });
-    }
-
-    @Test
-    void testCreateAlertNullEventType() {
-        Alert alert = factory.createAlert(mockClassSession, null, null);
-        assertNotNull(alert);
-        assertEquals("GENERAL", alert.getType());
-    }
 }

@@ -19,7 +19,7 @@ public class TrafficLightManager {
     }
 
     public TrafficLight checkTrafficLight(){
-        return TrafficLight.getDefaultTrafficLight();
+        return new TrafficLight();
     }
 
 }

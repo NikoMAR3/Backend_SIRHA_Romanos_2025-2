@@ -24,7 +24,7 @@ public class RemoveStudentPetitionCommand implements PetitionCommand {
     }
 
     @Override
-    public Petition getPetitionOfCommand() {
+    public Petition getPetition() {
         return petition;
     }
 }

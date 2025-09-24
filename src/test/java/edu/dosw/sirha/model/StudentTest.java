@@ -53,7 +53,7 @@ class StudentTest {
 
     @Test
     void testAddPetition() {
-        Petition petition = new AddPetition("MAT101", "Solicitud de retiro", "12345", "G001");
+        Petition petition = new AddPetition("MAT101", "Solicitud de retiro", student, "G001");
         student.addPetition(petition);
         assertTrue(student.getPetitions().contains(petition));
     }

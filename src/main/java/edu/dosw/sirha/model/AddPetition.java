@@ -9,8 +9,8 @@ public class AddPetition extends ClassPetition {
 
     public AddPetition() {}
 
-    public AddPetition(String subjectCode, String observations, String studentId, String targetGroupId) {
-        super("ADD", subjectCode, observations, studentId);
+    public AddPetition(String subjectCode, String observations, Student student, String targetGroupId) {
+        super("ADD", subjectCode, observations, student);
         this.targetGroupId = targetGroupId;
     }
 

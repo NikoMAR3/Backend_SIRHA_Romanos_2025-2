@@ -4,6 +4,7 @@ import edu.dosw.sirha.model.Student;
 import edu.dosw.sirha.model.TrafficLight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.HashMap;
 
@@ -24,19 +25,21 @@ class TrafficLightManagerTest {
 
     @Test
     void testGetTrafficLight() {
-        trafficLightManager.getTrafficLights().put(mockStudent, mockTrafficLight);
+        getTrafficLights().put(mockStudent, mockTrafficLight);
         TrafficLight result = trafficLightManager.getTrafficLight(mockStudent);
         assertEquals(mockTrafficLight, result);
     }
 
     @Test
     void testCheckTrafficLight() {
-        TrafficLight defaultTrafficLight = mock(TrafficLight.class);
-        when(TrafficLight.getDefaultTrafficLight()).thenReturn(defaultTrafficLight);
         TrafficLight result = trafficLightManager.checkTrafficLight();
-        assertEquals(defaultTrafficLight, result);
-    }
 
+        assertNotNull(result);
+        assertNull(result.getMajor());
+        assertTrue(result.getSubjectsApproved().isEmpty());
+        assertTrue(result.getSubjectsFailed().isEmpty());
+        assertTrue(result.getAllSubjects().isEmpty());
+    }
 
     private HashMap<Student, TrafficLight> getTrafficLights() {
         try {

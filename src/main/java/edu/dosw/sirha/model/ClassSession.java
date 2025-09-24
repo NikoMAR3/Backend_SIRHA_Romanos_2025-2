@@ -102,4 +102,27 @@ public class ClassSession {
     public void setCurrentQuota(int newQuota) {
         this.currentQuota = newQuota;
     }
+
+    public int getCurrentQuota() { return currentQuota; }
+
+    public int getMaxQuota(){ return maxQuota;}
+
+
+    public String getId() {
+        return id;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public ArrayList<Student> getStudents() {
+        return students;
+    }
 }
+
+

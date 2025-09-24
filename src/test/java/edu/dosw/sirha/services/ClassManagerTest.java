@@ -50,9 +50,12 @@ class ClassManagerTest {
     void testCheckClassQuota() {
         String className = "math";
         int quota = 20;
+        when(mockClassSession.getId()).thenReturn(className.toLowerCase());
         when(mockClassSession.getCurrentQuota()).thenReturn(quota);
+
         classManager.getClassSessions().put(className.toLowerCase(), mockClassSession);
-        int result = classManager.checkClassQuota(className);
+
+        int result = classManager.checkClassQuota(mockClassSession);
         assertEquals(quota, result);
     }
 

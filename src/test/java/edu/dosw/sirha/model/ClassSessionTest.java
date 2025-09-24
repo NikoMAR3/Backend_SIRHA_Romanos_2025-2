@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ClassSessionTest {
-    private ClassSession classSession;
     private Student student1;
     private Student student2;
     @Mock
@@ -20,13 +19,9 @@ class ClassSessionTest {
 
     @BeforeEach
     void setUp() {
-        classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 2);
+        MockitoAnnotations.openMocks(this);
         student1 = new Student("Juan", "12345");
         student2 = new Student("Maria", "67890");
-
-        MockitoAnnotations.openMocks(this);
-        classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
-        classSession.addObserver(mockObserver);
         when(mockStudent.getId()).thenReturn("202012345");
     }
 
@@ -49,8 +44,9 @@ class ClassSessionTest {
     }
 
     @Test
-    //Verifica que al agregar estudiantes el cupo se incremente
     void testAddStudent() {
+        ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
+
         classSession.addStudent(student1);
         assertEquals(1, classSession.getCurrentQuota());
 
@@ -59,20 +55,22 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que se lance la excepción cuando se supere el limite
     void testAddStudentExceedsQuota() {
+        ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 2);
+
         classSession.addStudent(student1);
         classSession.addStudent(student2);
 
         Student student3 = new Student("Carlos", "11111");
-        IllegalStateException exception = assertThrows(IllegalStateException.class, 
-            () -> classSession.addStudent(student3));
-        assertEquals("No hay cupos", exception.getMessage());
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> classSession.addStudent(student3));
+        assertEquals("No hay cupos disponibles", exception.getMessage());
     }
 
     @Test
-    //Verifica que al eliminar un estudiante el cupo se disminuya
     void testDelStudent() {
+        ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
+
         classSession.addStudent(student1);
         classSession.addStudent(student2);
         assertEquals(2, classSession.getCurrentQuota());
@@ -85,8 +83,9 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que si se elimina un estudiante que no existe no se afecte el cupo
     void testDelNonExistentStudent() {
+        ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
+
         classSession.addStudent(student1);
         classSession.delStudent("99999");
         assertEquals(1, classSession.getCurrentQuota());
@@ -94,6 +93,8 @@ class ClassSessionTest {
 
     @Test
     void testGettersWithConstructor() {
+        ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 2);
+
         assertNotNull(classSession.getId());
         assertNotNull(classSession.getProfessor());
         assertNotNull(classSession.getDate());
@@ -101,8 +102,10 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que al agregar un estudiante se le notifique al observer
     void shouldAddNormalStudent() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         classSession.addStudent(mockStudent);
 
         assertEquals(1, classSession.getCurrentQuota());
@@ -111,8 +114,10 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que si el cupo esta lleno se notifique al observer
     void shouldThrowsExceptionWhenQuotaFull() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         for (int i = 0; i < 5; i++) {
             Student student = mock(Student.class);
             when(student.getId()).thenReturn("20201234" + i);
@@ -129,8 +134,10 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que si se llega al 90% del cupo se notifique al observer
     void shouldThrow90PercentAlert() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         for (int i = 0; i < 4; i++) {
             Student student = mock(Student.class);
             when(student.getId()).thenReturn("20201234" + i);
@@ -153,8 +160,10 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que al eliminar un estudiante se le notifique al observer
     void shouldDeleteStudent() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         classSession.addStudent(mockStudent);
         reset(mockObserver);
 
@@ -166,8 +175,10 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que cuando una clase llena libere un cupo se le notifique
     void shouldNotifyFreeQuota() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         for (int i = 0; i < 5; i++) {
             Student student = mock(Student.class);
             when(student.getId()).thenReturn("20201234" + i);
@@ -182,8 +193,9 @@ class ClassSessionTest {
     }
 
     @Test
-    //verifica que haya cupos disponibles, calcular cupos y el porcentaje que esta ocupado
     void testUtilityMethods() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+
         assertTrue(classSession.hasAvailableQuota());
         assertEquals(5, classSession.getAvailableQuota());
         assertEquals(0.0, classSession.getOccupancyPercentage());
@@ -194,14 +206,14 @@ class ClassSessionTest {
         assertEquals(20.0, classSession.getOccupancyPercentage());
     }
 
-    
     @Test
-    //verifica que despues de quitar el observer ya no reciba notificaciones
     void testObserverManagement() {
+        ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
+        classSession.addObserver(mockObserver);
+
         classSession.removeObserver(mockObserver);
         classSession.addStudent(mockStudent);
 
         verifyNoInteractions(mockObserver);
     }
 }
-

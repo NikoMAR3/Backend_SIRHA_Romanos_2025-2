@@ -10,9 +10,9 @@ public class ChangePetition extends ClassPetition {
 
     public ChangePetition() {}
 
-    public ChangePetition(String subjectCode, String observations, String studentId,
+    public ChangePetition(String subjectCode, String observations, Student student,
                           String currentGroupId, String targetGroupId) {
-        super("CHANGE", subjectCode, observations, studentId);
+        super("CHANGE", subjectCode, observations, student);
         this.currentGroupId = currentGroupId;
         this.targetGroupId = targetGroupId;
     }

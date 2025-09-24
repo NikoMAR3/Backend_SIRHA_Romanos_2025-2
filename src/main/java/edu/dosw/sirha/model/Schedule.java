@@ -10,6 +10,6 @@ public class Schedule {
     public ArrayList<ClassSession> getClasses(){ return classes;}
 
     public Boolean containsClass(String classSession1) {
-        return classes.stream().anyMatch(classSession -> classSession.getid().equals(classSession));
+        return classes.stream().anyMatch(classSession -> classSession.getId().equals(classSession1));
     }
 }

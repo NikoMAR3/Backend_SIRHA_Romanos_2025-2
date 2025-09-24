@@ -1,6 +1,6 @@
 package edu.dosw.sirha.services;
 
-import edu.dosw.sirha.model.ClassSession;
+import edu.dosw.sirha.model.*;
 
 import java.util.*;
 
@@ -25,11 +25,25 @@ public class ClassManager {
         return classSessions.get(classSession1).getCurrentQuota();
     }
 
-    public int checkClassQuota(String classSession1){
-        return classSessions.get(classSession1.toLowerCase()).getCurrentQuota();
+    public int checkClassQuota(ClassSession classSession1){
+        return classSessions.get(classSession1.getId()).getCurrentQuota();
+    }
+
+
+    public void modifyClassQuota(ClassSession classSession, int newQuota){
+        classSessions.get(classSession.getId()).setCurrentQuota(newQuota);
     }
 
     public ClassSession getClassById(String classId) {
         return classSessions.get(classId.toLowerCase());
+    }
+
+
+    public void addStudentToGroup(Student student, String groupId){
+        classSessions.get(groupId).addStudent(student);
+    }
+
+    public void removeStudentFromGroup(Student student, String targetGroupId) {
+        classSessions.get(targetGroupId).getStudents().remove(student);
     }
 }

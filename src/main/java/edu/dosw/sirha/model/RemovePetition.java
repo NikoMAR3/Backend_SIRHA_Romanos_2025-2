@@ -9,8 +9,8 @@ public class RemovePetition extends ClassPetition {
 
     public RemovePetition() {}
 
-    public RemovePetition(String subjectCode, String observations, String studentId, String currentGroupId) {
-        super("REMOVE", subjectCode, observations, studentId);
+    public RemovePetition(String subjectCode, String observations, Student student, String currentGroupId) {
+        super("REMOVE", subjectCode, observations, student);
         this.currentGroupId = currentGroupId;
     }
 

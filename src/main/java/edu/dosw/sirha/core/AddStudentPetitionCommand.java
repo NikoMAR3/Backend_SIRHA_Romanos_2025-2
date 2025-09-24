@@ -17,7 +17,7 @@ public class AddStudentPetitionCommand implements PetitionCommand {
     @Override
     public void execute() {
         if (!executed) {
-            manager.addStudentToGroup(petition.getStudentId(), petition.getTargetGroupId());
+            manager.addStudentToGroup(petition.getStudent(), petition.getTargetGroupId());
             executed = true;
         }
     }
@@ -25,13 +25,13 @@ public class AddStudentPetitionCommand implements PetitionCommand {
     @Override
     public void undo() {
         if (executed) {
-            manager.removeStudentFromGroup(petition.getStudentId(), petition.getTargetGroupId());
+            manager.removeStudentFromGroup(petition.getStudent(), petition.getTargetGroupId());
             executed = false;
         }
     }
 
     @Override
-    public Petition getPetitionOfCommand() {
+    public Petition getPetition() {
         return petition;
     }
 }

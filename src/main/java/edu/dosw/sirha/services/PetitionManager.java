@@ -55,4 +55,12 @@ public class PetitionManager {
             student.addToClass(targetGroup);
         }
     }
+
+    public void addStudentToGroup(Student student, String groupId){
+        classManager.addStudentToGroup(student, groupId);
+    }
+
+    public void removeStudentFromGroup(Student student, String targetGroupId) {
+        classManager.removeStudentFromGroup(student, targetGroupId);
+    }
 }

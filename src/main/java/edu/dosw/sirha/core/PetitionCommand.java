@@ -5,5 +5,5 @@ import edu.dosw.sirha.model.Petition;
 public interface PetitionCommand {
     void execute();
     void undo();
-    Petition getPetitionOfCommand();
+    Petition getPetition();
 }
