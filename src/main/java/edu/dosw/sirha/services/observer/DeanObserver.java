@@ -3,11 +3,11 @@ package edu.dosw.sirha.services.observer;
 import edu.dosw.sirha.model.ClassSession;
 import edu.dosw.sirha.services.DeanNotificationService;
 
-public class DecanaturaObserver implements ClassSessionObserver {
+public class DeanObserver implements ClassSessionObserver {
     private DeanNotificationService notificationService;
     private String facultyCode;
 
-    public DecanaturaObserver(String facultyCode) {
+    public DeanObserver(String facultyCode) {
         this.facultyCode = facultyCode;
         this.notificationService = new DeanNotificationService();
     }
