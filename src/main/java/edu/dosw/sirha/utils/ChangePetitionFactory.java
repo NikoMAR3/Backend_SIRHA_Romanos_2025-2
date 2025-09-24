@@ -4,8 +4,19 @@ import edu.dosw.sirha.model.ChangePetition;
 import edu.dosw.sirha.model.ClassPetition;
 import edu.dosw.sirha.model.Student;
 
+/**
+ * Factory class for creating ChangePetition instances.
+ */
 public class ChangePetitionFactory extends ClassPetitionFactory {
 
+    /**
+     * Creates a ChangePetition instance.
+     * @param subjectCode
+     * @param observations
+     * @param student
+     * @param groupIds
+     * @return a new ChangePetition instance
+     */
     @Override
     public ClassPetition createPetition(String subjectCode, String observations,
                                         Student student, String... groupIds) {

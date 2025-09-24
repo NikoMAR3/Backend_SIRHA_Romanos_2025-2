@@ -3,17 +3,18 @@ package edu.dosw.sirha.model;
 import edu.dosw.sirha.core.AddStudentPetitionCommand;
 import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.PetitionManager;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class representing a petition to add a student to a specific group.
  */
+@Getter
+@Setter
+@NoArgsConstructor
 public class AddPetition extends ClassPetition {
     private String targetGroupId;
-
-    /**
-     *  Default constructor for serialization/deserialization purposes.
-     */
-    public AddPetition() {}
 
     /**
      * Constructor to create an AddPetition instance.
@@ -26,13 +27,6 @@ public class AddPetition extends ClassPetition {
         super("ADD", subjectCode, observations, student);
         this.targetGroupId = targetGroupId;
     }
-
-    /**
-     * Getter and Setter for targetGroupId.
-     * @return the target group ID
-     */
-    public String getTargetGroupId() { return targetGroupId; }
-    public void setTargetGroupId(String targetGroupId) { this.targetGroupId = targetGroupId; }
 
     /**
      * Procedure to execute if the petition is accepted.
