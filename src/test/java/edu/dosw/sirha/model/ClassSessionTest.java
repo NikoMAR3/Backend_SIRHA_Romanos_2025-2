@@ -9,6 +9,12 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit test class for testing the functionality of the ClassSession class.
+ * This test class verifies proper initialization, student management,
+ * quota control, observer pattern implementation, and various utility methods
+ * of ClassSession instances using JUnit 5 and Mockito framework.
+ */
 class ClassSessionTest {
     private Student student1;
     private Student student2;
@@ -17,6 +23,11 @@ class ClassSessionTest {
     @Mock
     private Student mockStudent;
 
+    /**
+     * Sets up the test environment before each test method execution.
+     * Initializes mock objects and creates test Student instances
+     * for use across multiple test methods.
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -25,6 +36,11 @@ class ClassSessionTest {
         when(mockStudent.getId()).thenReturn("202012345");
     }
 
+    /**
+     * Tests the default constructor of ClassSession.
+     * Verifies that the instance is properly created and
+     * the current quota is initialized to zero.
+     */
     @Test
     void testDefaultConstructor() {
         ClassSession cs = new ClassSession();
@@ -32,6 +48,11 @@ class ClassSessionTest {
         assertEquals(0, cs.getCurrentQuota());
     }
 
+    /**
+     * Tests the parameterized constructor of ClassSession.
+     * Verifies that all parameters are properly assigned and
+     * the current quota starts at zero while max quota is set correctly.
+     */
     @Test
     void testParameterizedConstructor() {
         LocalDateTime date = LocalDateTime.now();
@@ -43,6 +64,11 @@ class ClassSessionTest {
         assertEquals(0, cs.getCurrentQuota());
     }
 
+    /**
+     * Tests the addStudent functionality.
+     * Verifies that students can be added to the class session
+     * and the current quota is updated accordingly.
+     */
     @Test
     void testAddStudent() {
         ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
@@ -54,6 +80,11 @@ class ClassSessionTest {
         assertEquals(2, classSession.getCurrentQuota());
     }
 
+    /**
+     * Tests the quota limit enforcement when adding students.
+     * Verifies that an IllegalStateException is thrown when
+     * attempting to add a student beyond the maximum quota.
+     */
     @Test
     void testAddStudentExceedsQuota() {
         ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 2);
@@ -67,6 +98,11 @@ class ClassSessionTest {
         assertEquals("No hay cupos disponibles", exception.getMessage());
     }
 
+    /**
+     * Tests the delStudent functionality.
+     * Verifies that students can be removed from the class session
+     * and the current quota is decremented properly.
+     */
     @Test
     void testDelStudent() {
         ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
@@ -82,6 +118,11 @@ class ClassSessionTest {
         assertEquals(0, classSession.getCurrentQuota());
     }
 
+    /**
+     * Tests the behavior when attempting to delete a non-existent student.
+     * Verifies that the quota remains unchanged when trying to remove
+     * a student that is not enrolled in the class session.
+     */
     @Test
     void testDelNonExistentStudent() {
         ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 5);
@@ -91,6 +132,11 @@ class ClassSessionTest {
         assertEquals(1, classSession.getCurrentQuota());
     }
 
+    /**
+     * Tests all getter methods with constructor initialization.
+     * Verifies that all properties are properly accessible
+     * through their respective getter methods.
+     */
     @Test
     void testGettersWithConstructor() {
         ClassSession classSession = new ClassSession("CS101", "Dr. Smith", LocalDateTime.now(), 2);
@@ -101,6 +147,11 @@ class ClassSessionTest {
         assertEquals(2, classSession.getMaxQuota());
     }
 
+    /**
+     * Tests adding a normal student with observer notification.
+     * Verifies that when a student is added, the observer is notified
+     * with the appropriate event and the student is properly enrolled.
+     */
     @Test
     void shouldAddNormalStudent() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -113,6 +164,11 @@ class ClassSessionTest {
         verify(mockObserver).update(classSession, ClassSession.EVENT_STUDENT_ADDED, mockStudent);
     }
 
+    /**
+     * Tests exception handling when quota is full.
+     * Verifies that an IllegalStateException is thrown and
+     * the observer is notified when attempting to exceed the quota limit.
+     */
     @Test
     void shouldThrowsExceptionWhenQuotaFull() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -133,6 +189,11 @@ class ClassSessionTest {
         verify(mockObserver).update(classSession, ClassSession.EVENT_QUOTA_FULL, extraStudent);
     }
 
+    /**
+     * Tests the 90% quota warning notification system.
+     * Verifies that observers are notified when the class session
+     * reaches 90% of its maximum capacity.
+     */
     @Test
     void shouldThrow90PercentAlert() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -159,6 +220,11 @@ class ClassSessionTest {
         verify(observer).update(eq(session10), eq(ClassSession.EVENT_QUOTA_WARNING), any());
     }
 
+    /**
+     * Tests student deletion with observer notification.
+     * Verifies that when a student is removed, the observer is notified
+     * and the student is no longer in the enrolled students list.
+     */
     @Test
     void shouldDeleteStudent() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -174,6 +240,11 @@ class ClassSessionTest {
         verify(mockObserver).update(classSession, ClassSession.EVENT_STUDENT_REMOVED, "202012345");
     }
 
+    /**
+     * Tests quota availability notification after student removal.
+     * Verifies that when a student is removed from a full class,
+     * observers are notified about both the removal and quota availability.
+     */
     @Test
     void shouldNotifyFreeQuota() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -192,6 +263,11 @@ class ClassSessionTest {
         verify(mockObserver).update(classSession, ClassSession.EVENT_QUOTA_AVAILABLE, null);
     }
 
+    /**
+     * Tests utility methods for quota management.
+     * Verifies the correct behavior of hasAvailableQuota(), getAvailableQuota(),
+     * and getOccupancyPercentage() methods under different scenarios.
+     */
     @Test
     void testUtilityMethods() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
@@ -206,6 +282,11 @@ class ClassSessionTest {
         assertEquals(20.0, classSession.getOccupancyPercentage());
     }
 
+    /**
+     * Tests observer management functionality.
+     * Verifies that observers can be added and removed properly,
+     * and that removed observers no longer receive notifications.
+     */
     @Test
     void testObserverManagement() {
         ClassSession classSession = new ClassSession("CVDS-G01", "Prof. García", LocalDateTime.now(), 5);
