@@ -2,6 +2,54 @@
 
 En este repositorio se manejara todo el Backend del proyecto inicial "SIRHA" para la materia DOSW.
 
+---
+
+## 🎯 Objetivo del Proyecto
+El proyecto **SIRHA (Sistema de Reasignación de Horarios Académicos)** tiene como objetivo gestionar y optimizar las solicitudes de cambio de materia y grupo dentro de la Escuela Colombiana de Ingeniería, ofreciendo trazabilidad, priorización automática y control de capacidad.  
+Busca brindar a estudiantes, profesores y decanaturas una herramienta digital para realizar, evaluar y aprobar solicitudes académicas de forma organizada y eficiente, aplicando buenas prácticas de ingeniería de software y metodologías ágiles.
+
+---
+
+## ⚡ Funcionalidades principales
+
+### 🔹 Gestión de Estudiantes
+- Registro y autenticación con credenciales institucionales.  
+- Consulta de horario actual y semestres anteriores.  
+- Visualización del **semáforo académico** (verde = normal, azul = en progreso, rojo = perdida).  
+- Creación de solicitudes de cambio de materia/grupo.  
+- Consulta del estado de solicitudes (pendiente, en revisión, aprobada, rechazada).  
+- Historial de solicitudes realizadas.  
+
+### 🔹 Gestión de Decanatura
+- Acceso restringido por facultad.  
+- Bandeja de solicitudes recibidas en su área.  
+- Visualización del horario del estudiante solicitante.  
+- Consulta de semáforo académico del estudiante.  
+- Ver disponibilidad de grupos alternos (capacidad, cupo máximo, lista de espera).  
+- Responder solicitudes (aprobar, rechazar, pedir información adicional).  
+- Configuración de periodos habilitados para cambios.  
+- Monitoreo de cargas de grupos (alerta al 90% de capacidad).  
+
+### 🔹 Gestión de Materias y Grupos
+- Registro de materias, grupos y cupos.  
+- Consulta de capacidad de cada grupo (inscritos vs cupo máximo).  
+- Registro de profesores asignados.  
+- Administración de horarios disponibles.  
+
+### 🔹 Gestión de Solicitudes
+- Recepción y ruteo automático de solicitudes según facultad.  
+- Asignación de prioridad automática (orden de llegada).  
+- Registro de todas las decisiones (trazabilidad).  
+- Reportes de solicitudes pendientes, aprobadas y rechazadas.  
+
+### 🔹 Reportes y Estadísticas
+- Historial de cambios por estudiante.  
+- Estadísticas de grupos más solicitados.  
+- Tasa de aprobación vs rechazo.  
+- Indicadores globales de avance en los planes de estudio (semaforización).  
+
+---
+
 ### 👤Integrantes:
 - Elizabeth Correa
 - Sebastian Ortega
