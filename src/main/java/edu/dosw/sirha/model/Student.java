@@ -22,7 +22,7 @@ public class Student {
     private String email;
     private String career;
     private int currentSemester;
-    private TrafficLight trafficLight = new TrafficLight();;
+    private TrafficLight trafficLight = new TrafficLight();
     private List<String> programs = new ArrayList<>();
     private Schedule schedule = new Schedule();
     private ArrayList<Petition> petitions = new ArrayList<>();
