@@ -15,11 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StudentResponseDTO {
 
-    @Schema(description = "ID único del estudiante", example = "1")
-    private Long id;
-
-    @Schema(description = "Código estudiantil", example = "1000098136")
-    private String studentCode;
+    @Schema(description = "Id estudiantil", example = "1000098136")
+    private String studentId;
 
     @Schema(description = "Nombre completo", example = "Juan Pérez")
     private String fullName;
@@ -33,10 +30,6 @@ public class StudentResponseDTO {
     @Schema(description = "Semestre actual", example = "8")
     private Integer currentSemester;
 
-    @Schema(description = "Estado del semáforo académico", example = "VERDE")
-    private String trafficLightStatus;
-
     @Schema(description = "Fecha de creación")
     private LocalDateTime createdAt;
-
 }

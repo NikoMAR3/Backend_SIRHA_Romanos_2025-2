@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StudentRequestDTO {
 
-    @Schema(description = "Código estudiantil", example = "1000098136")
-    @NotBlank(message = "El código estudiantil es obligatorio")
-    @Size(min = 10, max = 10, message = "El código debe tener 10 caracteres")
-    private String studentCode;
+    @Schema(description = "Id estudiantil", example = "1000098136")
+    @NotBlank(message = "El id estudiantil es obligatorio")
+    @Size(min = 10, max = 10, message = "El id debe tener 10 caracteres")
+    private String studentId;
 
     @Schema(description = "Nombre completo", example = "Juan Pérez")
     @NotBlank(message = "El nombre es obligatorio")
