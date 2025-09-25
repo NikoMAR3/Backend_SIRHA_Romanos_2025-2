@@ -2,24 +2,24 @@ package edu.dosw.sirha.core;
 
 import edu.dosw.sirha.model.Petition;
 import edu.dosw.sirha.model.RemovePetition;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 
 /**
  * Command to remove a student petition.
  * Implements the PetitionCommand interface.
  */
 public class RemoveStudentPetitionCommand implements PetitionCommand {
-    private PetitionManager manager;
+    private PetitionService manager;
     private RemovePetition petition;
     private boolean executed = false;
 
     /**
      * Constructs a RemoveStudentPetitionCommand.
      *
-     * @param manager  the PetitionManager to handle the petition
+     * @param manager  the PetitionService to handle the petition
      * @param petition the RemovePetition containing student and target group information
      */
-    public RemoveStudentPetitionCommand(PetitionManager manager, RemovePetition petition) {
+    public RemoveStudentPetitionCommand(PetitionService manager, RemovePetition petition) {
         this.manager = manager;
         this.petition = petition;
     }

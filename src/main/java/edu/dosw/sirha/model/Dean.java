@@ -1,6 +1,5 @@
 package edu.dosw.sirha.model;
 
-import edu.dosw.sirha.core.PetitionCommand;
 import edu.dosw.sirha.services.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Represents a Dean in the academic system.
@@ -21,30 +19,30 @@ public class Dean {
     private String dean_id;
     private String major;
 
-    private final ScheduleManager scheduleManager;
-    private final PetitionManager petitionManager;
-    private final TrafficLightManager trafficLightManager;
-    private final ClassManager classManager;
+    private final ScheduleService scheduleService;
+    private final PetitionService petitionService;
+    private final TrafficLightService trafficLightService;
+    private final ClassService classService;
     private final PetitionAssistant assistant;
 
     /**
      * Constructor for the Dean class.
-     * @param scheduleManager
-     * @param petitionManager
-     * @param trafficLightManager
-     * @param classManager
+     * @param scheduleService
+     * @param petitionService
+     * @param trafficLightService
+     * @param classService
      * @param assistant
      */
     @Autowired
-    public Dean(ScheduleManager scheduleManager,
-                PetitionManager petitionManager,
-                TrafficLightManager trafficLightManager,
-                ClassManager classManager,
+    public Dean(ScheduleService scheduleService,
+                PetitionService petitionService,
+                TrafficLightService trafficLightService,
+                ClassService classService,
                 PetitionAssistant assistant) {
-        this.scheduleManager = scheduleManager;
-        this.petitionManager = petitionManager;
-        this.trafficLightManager = trafficLightManager;
-        this.classManager = classManager;
+        this.scheduleService = scheduleService;
+        this.petitionService = petitionService;
+        this.trafficLightService = trafficLightService;
+        this.classService = classService;
         this.assistant = assistant;
     }
 
@@ -64,7 +62,7 @@ public class Dean {
      * @return The schedule of the student.
      */
     public Schedule checkSchedule(Student student){
-        return scheduleManager.checkSchedule(student);
+        return scheduleService.checkSchedule(student);
     }
 
     /**
@@ -99,7 +97,7 @@ public class Dean {
      * @return The current traffic light status.
      */
     public TrafficLight checkTrafficLight(){
-        return trafficLightManager.checkTrafficLight();
+        return trafficLightService.checkTrafficLight();
     }
 
     /**
@@ -108,7 +106,7 @@ public class Dean {
      * @return The traffic light status of the student.
      */
     public TrafficLight checkTrafficLight(Student student){
-        return trafficLightManager.getTrafficLight(student);
+        return trafficLightService.getTrafficLight(student);
     }
 
     /**
@@ -117,7 +115,7 @@ public class Dean {
      * @param newQuota
      */
     public void modifyQuota(ClassSession classSession, int newQuota){
-        classManager.modifyClassQuota(classSession, newQuota);
+        classService.modifyClassQuota(classSession, newQuota);
     }
 
     /**
@@ -126,6 +124,6 @@ public class Dean {
      * @return The current quota of the class session.
      */
     public Integer checkQuota(ClassSession classSessions){
-        return classManager.checkClassQuota(classSessions);
+        return classService.checkClassQuota(classSessions);
     }
 }

@@ -19,10 +19,10 @@ import static org.mockito.Mockito.*;
 class DeanTest {
 
     private PetitionAssistant assistant;
-    private PetitionManager petitionManager;
-    private ScheduleManager scheduleManager;
-    private TrafficLightManager trafficLightManager;
-    private ClassManager classManager;
+    private PetitionService petitionService;
+    private ScheduleService scheduleService;
+    private TrafficLightService trafficLightService;
+    private ClassService classService;
     private PetitionsLoader loader;
     private Dean dean;
     private Student student;
@@ -37,19 +37,19 @@ class DeanTest {
      */
     @BeforeEach
     void setUp() throws Exception {
-        scheduleManager = mock(ScheduleManager.class);
-        petitionManager = mock(PetitionManager.class);
-        trafficLightManager = mock(TrafficLightManager.class);
-        classManager = mock(ClassManager.class);
+        scheduleService = mock(ScheduleService.class);
+        petitionService = mock(PetitionService.class);
+        trafficLightService = mock(TrafficLightService.class);
+        classService = mock(ClassService.class);
 
         assistant = new PetitionAssistant();
 
         loader = new PetitionsLoader();
         loader.setAssistant(assistant);
-        loader.setPetitionManager(petitionManager);
+        loader.setPetitionManager(petitionService);
 
-        dean = new Dean(scheduleManager, petitionManager, trafficLightManager,
-                classManager, assistant);
+        dean = new Dean(scheduleService, petitionService, trafficLightService,
+                classService, assistant);
 
         dean.configure("DEAN001", "Computer Science");
 

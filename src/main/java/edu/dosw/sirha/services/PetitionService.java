@@ -7,18 +7,18 @@ import edu.dosw.sirha.model.Petition;
 import edu.dosw.sirha.model.Student;
 
 /**
- * PetitionManager is responsible for handling petitions related to class sessions.
+ * PetitionService is responsible for handling petitions related to class sessions.
  * It validates and processes petitions such as changing, adding, or removing students from classes.
  */
-public class PetitionManager {
-    private ClassManager classManager;
+public class PetitionService {
+    private ClassService classService;
 
     /**
-     * Sets the ClassManager instance to be used by this PetitionManager.
-     * @param classManager the ClassManager instance
+     * Sets the ClassService instance to be used by this PetitionService.
+     * @param classService the ClassService instance
      */
-    public void setClassManager(ClassManager classManager) {
-        this.classManager = classManager;
+    public void setClassManager(ClassService classService) {
+        this.classService = classService;
     }
 
     /**
@@ -47,8 +47,8 @@ public class PetitionManager {
      * @return true if the change can be processed, false otherwise
      */
     public boolean validateChange(ChangePetition petition) {
-        ClassSession currentGroup = classManager.getClassById(petition.getCurrentGroupId());
-        ClassSession targetGroup = classManager.getClassById(petition.getTargetGroupId());
+        ClassSession currentGroup = classService.getClassById(petition.getCurrentGroupId());
+        ClassSession targetGroup = classService.getClassById(petition.getTargetGroupId());
 
         boolean isEnrolled = currentGroup.getStudents().stream()
                 .anyMatch(s -> s.getId().equals(petition.getStudentId()));
@@ -64,8 +64,8 @@ public class PetitionManager {
      */
     public void makeChange(ChangePetition petition) {
         if(validateChange(petition)) {
-            ClassSession currentGroup = classManager.getClassById(petition.getCurrentGroupId());
-            ClassSession targetGroup = classManager.getClassById(petition.getTargetGroupId());
+            ClassSession currentGroup = classService.getClassById(petition.getCurrentGroupId());
+            ClassSession targetGroup = classService.getClassById(petition.getTargetGroupId());
             Student student = currentGroup.getStudents().stream()
                     .filter(s -> s.getId().equals(petition.getStudentId())) // filtra
                     .findFirst()
@@ -82,7 +82,7 @@ public class PetitionManager {
      * @param groupId the ID of the group to which the student will be added
      */
     public void addStudentToGroup(Student student, String groupId){
-        classManager.addStudentToGroup(student, groupId);
+        classService.addStudentToGroup(student, groupId);
     }
 
     /**
@@ -91,6 +91,6 @@ public class PetitionManager {
      * @param targetGroupId the ID of the group from which the student will be removed
      */
     public void removeStudentFromGroup(Student student, String targetGroupId) {
-        classManager.removeStudentFromGroup(student, targetGroupId);
+        classService.removeStudentFromGroup(student, targetGroupId);
     }
 }

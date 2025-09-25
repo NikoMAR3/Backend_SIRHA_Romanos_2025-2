@@ -2,7 +2,7 @@ package edu.dosw.sirha.core;
 
 import edu.dosw.sirha.model.ChangePetition;
 import edu.dosw.sirha.model.Petition;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 
 
 /**
@@ -10,16 +10,16 @@ import edu.dosw.sirha.services.PetitionManager;
  */
 public class ChangeGroupPetitionCommand implements  PetitionCommand{
 
-    private PetitionManager manager;
+    private PetitionService manager;
     private ChangePetition petition;
 
     /**
      * Constructs a ChangeGroupPetitionCommand.
      *
-     * @param manager  the PetitionManager to handle the petition
+     * @param manager  the PetitionService to handle the petition
      * @param petition the ChangePetition containing change details
      */
-    public ChangeGroupPetitionCommand(PetitionManager manager, ChangePetition petition){
+    public ChangeGroupPetitionCommand(PetitionService manager, ChangePetition petition){
         this.manager = manager;
         this.petition = petition;
     }

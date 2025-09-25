@@ -3,20 +3,18 @@ package edu.dosw.sirha.services;
 import edu.dosw.sirha.model.Student;
 import edu.dosw.sirha.model.TrafficLight;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Manages traffic lights for students.
  */
-public class TrafficLightManager {
+public class TrafficLightService {
     private HashMap<Student, TrafficLight> trafficLights;
 
     /**
-     * Initializes the TrafficLightManager with an empty traffic light map.
+     * Initializes the TrafficLightService with an empty traffic light map.
      */
-    public TrafficLightManager() {
+    public TrafficLightService() {
         trafficLights = new HashMap<>();
     }
 

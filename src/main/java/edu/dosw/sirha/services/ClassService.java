@@ -7,18 +7,18 @@ import java.util.*;
 /**
  * Manages class sessions, including adding/removing students and modifying quotas.
  */
-public class ClassManager {
+public class ClassService {
     private HashMap<String, ClassSession> classSessions;
 
     /**
-     * Initializes the ClassManager with an empty set of class sessions.
+     * Initializes the ClassService with an empty set of class sessions.
      */
-    public ClassManager() {
+    public ClassService() {
         classSessions = new HashMap<>();
     }
 
     /**
-     * Retrieves all class sessions managed by this ClassManager.
+     * Retrieves all class sessions managed by this ClassService.
      * @return HashMap containing all class sessions with their IDs as keys
      */
     public HashMap<String, ClassSession> getClassSessions() {return classSessions;}

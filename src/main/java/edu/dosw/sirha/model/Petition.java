@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model;
 
 import edu.dosw.sirha.core.PetitionCommand;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -49,5 +49,5 @@ public abstract class Petition {
 
     public abstract void ifAcceptedProcedure();
 
-    public abstract PetitionCommand toCommand(PetitionManager manager);
+    public abstract PetitionCommand toCommand(PetitionService manager);
 }
