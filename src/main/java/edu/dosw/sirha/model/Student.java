@@ -5,29 +5,40 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-import java.util.*;
+import java.util.*;import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 /**
  * Represents a student with personal details, enrolled programs, schedule, and petitions.
  * Implements the observer pattern to notify observers about new petitions.
+ * MongoDB Entity for student collection.
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "students")
 public class Student {
-    private String fullName;
+    @Id
     private String id;
-    private String email;
-    private String career;
-    private int currentSemester;
-    private TrafficLight trafficLight = new TrafficLight();
+    @Field("name")
+    private String fullName;
+    @Field("programs")
     private List<String> programs = new ArrayList<>();
+    @DBRef
+    @Field("scheduleId")
     private Schedule schedule = new Schedule();
-    private ArrayList<Petition> petitions = new ArrayList<>();
-    private ArrayList<PetitionObserver> observers = new ArrayList<>();
+    @Field("petitionsIDS")
+    private List<String> petitionIds = new ArrayList<>();
 
+    private transient String email;
+    private transient String career;
+    private transient int currentSemester;
+    private transient TrafficLight trafficLight = new TrafficLight();
+    private transient ArrayList<Petition> petitions = new ArrayList<>();
+    private transient ArrayList<PetitionObserver> observers = new ArrayList<>();
     /**
      * Constructor to initialize a student with name and ID.
      * @param fullName
