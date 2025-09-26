@@ -10,24 +10,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit test class for testing the functionality of the ClassManager class.
+ * Unit test class for testing the functionality of the ClassService class.
  * This test class verifies proper class session retrieval, quota management,
  * and class session operations using reflection for accessing private fields.
  * Tests include class lookup, quota modification, quota checking, and internal
  * data structure manipulation using JUnit 5 and Mockito framework.
  */
-class ClassManagerTest {
-    private ClassManager classManager;
+class ClassServiceTest {
+    private ClassService classService;
     private ClassSession mockClassSession;
 
     /**
      * Sets up the test environment before each test method execution.
-     * Initializes a ClassManager instance and creates a mock ClassSession
+     * Initializes a ClassService instance and creates a mock ClassSession
      * for use across multiple test methods, ensuring isolated test execution.
      */
     @BeforeEach
     void setUp() {
-        classManager = new ClassManager();
+        classService = new ClassService();
         mockClassSession = mock(ClassSession.class);
     }
 
@@ -40,8 +40,8 @@ class ClassManagerTest {
     @Test
     void testGetClass() {
         String className = "math";
-        classManager.getClassSessions().put(className.toLowerCase(), mockClassSession);
-        ClassSession result = classManager.getClass(className);
+        classService.getClassSessions().put(className.toLowerCase(), mockClassSession);
+        ClassSession result = classService.getClass(className);
         assertEquals(mockClassSession, result);
     }
 
@@ -55,8 +55,8 @@ class ClassManagerTest {
     void testModifyMaxClassQuota() {
         String className = "math";
         int newQuota = 30;
-        classManager.getClassSessions().put(className, mockClassSession);
-        classManager.modifyMaxClassQuota(className, newQuota);
+        classService.getClassSessions().put(className, mockClassSession);
+        classService.modifyMaxClassQuota(className, newQuota);
         verify(mockClassSession).setCurrentQuota(newQuota);
     }
 
@@ -71,8 +71,8 @@ class ClassManagerTest {
         String className = "math";
         int quota = 25;
         when(mockClassSession.getCurrentQuota()).thenReturn(quota);
-        classManager.getClassSessions().put(className, mockClassSession);
-        int result = classManager.checkMaxClassQuota(className);
+        classService.getClassSessions().put(className, mockClassSession);
+        int result = classService.checkMaxClassQuota(className);
         assertEquals(quota, result);
     }
 
@@ -89,26 +89,26 @@ class ClassManagerTest {
         when(mockClassSession.getId()).thenReturn(className.toLowerCase());
         when(mockClassSession.getCurrentQuota()).thenReturn(quota);
 
-        classManager.getClassSessions().put(className.toLowerCase(), mockClassSession);
+        classService.getClassSessions().put(className.toLowerCase(), mockClassSession);
 
-        int result = classManager.checkClassQuota(mockClassSession);
+        int result = classService.checkClassQuota(mockClassSession);
         assertEquals(quota, result);
     }
 
     /**
      * Utility method for accessing the private classSessions field using reflection.
-     * This method provides access to the internal HashMap storage of ClassManager
+     * This method provides access to the internal HashMap storage of ClassService
      * for testing purposes, allowing direct manipulation and verification of
      * the internal state without relying solely on public interface methods.
      *
-     * @return HashMap containing the class sessions managed by the ClassManager
+     * @return HashMap containing the class sessions managed by the ClassService
      * @throws RuntimeException if reflection access fails or field is not found
      */
     private HashMap<String, ClassSession> getClassSessions() {
         try {
-            java.lang.reflect.Field field = ClassManager.class.getDeclaredField("classSessions");
+            java.lang.reflect.Field field = ClassService.class.getDeclaredField("classSessions");
             field.setAccessible(true);
-            return (HashMap<String, ClassSession>) field.get(classManager);
+            return (HashMap<String, ClassSession>) field.get(classService);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -13,27 +13,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit test class for testing the functionality of the ScheduleManager class.
+ * Unit test class for testing the functionality of the ScheduleService class.
  * This test class verifies proper schedule management operations including
  * schedule addition, retrieval, class checking, and class session access.
  * Tests utilize reflection for accessing private fields and Mockito framework
  * for mock object creation and behavior verification using JUnit 5 framework.
  */
-class ScheduleManagerTest {
-    private ScheduleManager scheduleManager;
+class ScheduleServiceTest {
+    private ScheduleService scheduleService;
     private Student mockStudent;
     private Schedule mockSchedule;
     private ClassSession mockClassSession;
 
     /**
      * Sets up the test environment before each test method execution.
-     * Initializes a ScheduleManager instance and creates mock objects for
+     * Initializes a ScheduleService instance and creates mock objects for
      * Student, Schedule, and ClassSession for use across multiple test methods,
      * ensuring isolated test execution and consistent mock behavior.
      */
     @BeforeEach
     void setUp() {
-        scheduleManager = new ScheduleManager();
+        scheduleService = new ScheduleService();
         mockStudent = mock(Student.class);
         mockSchedule = mock(Schedule.class);
         mockClassSession = mock(ClassSession.class);
@@ -47,8 +47,8 @@ class ScheduleManagerTest {
      */
     @Test
     void testAddSchedule() {
-        scheduleManager.addSchedule(mockStudent, mockSchedule);
-        assertEquals(mockSchedule, scheduleManager.getSchedules().get(mockStudent));
+        scheduleService.addSchedule(mockStudent, mockSchedule);
+        assertEquals(mockSchedule, scheduleService.getSchedules().get(mockStudent));
     }
 
     /**
@@ -59,8 +59,8 @@ class ScheduleManagerTest {
      */
     @Test
     void testCheckSchedule() {
-        scheduleManager.getSchedules().put(mockStudent, mockSchedule);
-        Schedule result = scheduleManager.checkSchedule(mockStudent);
+        scheduleService.getSchedules().put(mockStudent, mockSchedule);
+        Schedule result = scheduleService.checkSchedule(mockStudent);
         assertEquals(mockSchedule, result);
     }
 
@@ -74,8 +74,8 @@ class ScheduleManagerTest {
     void testCheckClassInSchedule() {
         String className = "math";
         when(mockSchedule.containsClass(className)).thenReturn(true);
-        scheduleManager.getSchedules().put(mockStudent, mockSchedule);
-        Boolean result = scheduleManager.checkClassInSchedule(className, mockStudent);
+        scheduleService.getSchedules().put(mockStudent, mockSchedule);
+        Boolean result = scheduleService.checkClassInSchedule(className, mockStudent);
         assertTrue(result);
     }
 
@@ -90,25 +90,25 @@ class ScheduleManagerTest {
         ArrayList<ClassSession> classes = new ArrayList<>();
         classes.add(mockClassSession);
         when(mockSchedule.getClasses()).thenReturn(classes);
-        scheduleManager.getSchedules().put(mockStudent, mockSchedule);
-        ArrayList<ClassSession> result = scheduleManager.getClassInSchedule(mockStudent);
+        scheduleService.getSchedules().put(mockStudent, mockSchedule);
+        ArrayList<ClassSession> result = scheduleService.getClassInSchedule(mockStudent);
         assertEquals(classes, result);
     }
 
     /**
      * Utility method for accessing the private schedules field using reflection.
-     * This method provides access to the internal HashMap storage of ScheduleManager
+     * This method provides access to the internal HashMap storage of ScheduleService
      * for testing purposes, allowing direct manipulation and verification of
      * the internal state without relying solely on public interface methods.
      *
-     * @return HashMap containing the student-schedule mappings managed by the ScheduleManager
+     * @return HashMap containing the student-schedule mappings managed by the ScheduleService
      * @throws RuntimeException if reflection access fails or field is not found
      */
     private HashMap<Student, Schedule> getSchedules() {
         try {
-            java.lang.reflect.Field field = ScheduleManager.class.getDeclaredField("schedules");
+            java.lang.reflect.Field field = ScheduleService.class.getDeclaredField("schedules");
             field.setAccessible(true);
-            return (HashMap<Student, Schedule>) field.get(scheduleManager);
+            return (HashMap<Student, Schedule>) field.get(scheduleService);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

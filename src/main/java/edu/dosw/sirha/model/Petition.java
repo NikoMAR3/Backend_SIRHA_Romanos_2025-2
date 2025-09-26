@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model;
 
 import edu.dosw.sirha.core.PetitionCommand;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -17,12 +17,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public abstract class Petition {
     private String id = UUID.randomUUID().toString();
-    private String type;
+    private PetitionType type;
     private String subjectCode;
     private String observations;
     private String priority;
     private LocalDateTime dateOfCreation = LocalDateTime.now();
-    private String status = "PENDIENTE";
+    private PetitionStatus status = PetitionStatus.PENDIENTE;
     private Student student;
 
     /**
@@ -32,7 +32,7 @@ public abstract class Petition {
      * @param observations any observations related to the petition
      * @param student the student making the petition
      */
-    public Petition(String type, String subjectCode, String observations, Student student) {
+    public Petition(PetitionType type, String subjectCode, String observations, Student student) {
         this.type = type;
         this.subjectCode = subjectCode;
         this.observations = observations;
@@ -49,5 +49,5 @@ public abstract class Petition {
 
     public abstract void ifAcceptedProcedure();
 
-    public abstract PetitionCommand toCommand(PetitionManager manager);
+    public abstract PetitionCommand toCommand(PetitionService manager);
 }
