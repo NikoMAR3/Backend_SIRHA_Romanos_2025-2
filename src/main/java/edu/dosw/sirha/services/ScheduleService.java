@@ -6,18 +6,17 @@ import edu.dosw.sirha.model.Student;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Manages student schedules.
  */
-public class ScheduleManager {
+public class ScheduleService {
     private HashMap<Student, Schedule> schedules;
 
     /**
-     * Initializes the ScheduleManager with an empty schedule map.
+     * Initializes the ScheduleService with an empty schedule map.
      */
-    public ScheduleManager() {
+    public ScheduleService() {
         schedules = new HashMap<>();
     }
 

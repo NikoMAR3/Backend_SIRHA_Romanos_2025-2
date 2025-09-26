@@ -1,14 +1,13 @@
 package edu.dosw.sirha.services;
 
 import edu.dosw.sirha.model.Petition;
-import edu.dosw.sirha.core.PetitionCommand;
 
 /**
  * PetitionsLoader is responsible for loading petitions into the PetitionAssistant.
  * It implements the PetitionObserver interface to react to new petitions.
  */
 public class PetitionsLoader implements PetitionObserver {
-    private PetitionManager petitionManager;
+    private PetitionService petitionService;
     private PetitionAssistant assistant;
 
     /**
@@ -20,11 +19,11 @@ public class PetitionsLoader implements PetitionObserver {
     }
 
     /**
-     * Sets the PetitionManager instance to be used by this PetitionsLoader.
-     * @param petitionManager the PetitionManager instance
+     * Sets the PetitionService instance to be used by this PetitionsLoader.
+     * @param petitionService the PetitionService instance
      */
-    public void setPetitionManager(PetitionManager petitionManager) {
-        this.petitionManager = petitionManager;
+    public void setPetitionManager(PetitionService petitionService) {
+        this.petitionService = petitionService;
     }
 
     /**
@@ -33,7 +32,7 @@ public class PetitionsLoader implements PetitionObserver {
      * @param petition the petition to be loaded
      */
     public void loadCommandPetition(PetitionAssistant petitionAssistant, Petition petition){
-        petitionAssistant.addCommand(petition.getType() , petition.toCommand(petitionManager));
+        petitionAssistant.addCommand(petition.getType() , petition.toCommand(petitionService));
     }
 
     /**
@@ -41,7 +40,7 @@ public class PetitionsLoader implements PetitionObserver {
      * @param petition the petition to be loaded
      */
     public void loadCommandPetition(Petition petition){
-        assistant.addCommand(petition.getType() , petition.toCommand(petitionManager));
+        assistant.addCommand(petition.getType() , petition.toCommand(petitionService));
     }
 
     /**

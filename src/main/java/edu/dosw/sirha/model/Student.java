@@ -17,20 +17,24 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student {
-    private String name;
+    private String fullName;
     private String id;
+    private String email;
+    private String career;
+    private int currentSemester;
+    private TrafficLight trafficLight = new TrafficLight();
     private List<String> programs = new ArrayList<>();
     private Schedule schedule = new Schedule();
-    private List<Petition> petitions = new ArrayList<>();
+    private ArrayList<Petition> petitions = new ArrayList<>();
     private ArrayList<PetitionObserver> observers = new ArrayList<>();
 
     /**
      * Constructor to initialize a student with name and ID.
-     * @param name
+     * @param fullName
      * @param id
      */
-    public Student(String name, String id) {
-        this.name = name;
+    public Student(String fullName, String id) {
+        this.fullName = fullName;
         this.id = id;
     }
 

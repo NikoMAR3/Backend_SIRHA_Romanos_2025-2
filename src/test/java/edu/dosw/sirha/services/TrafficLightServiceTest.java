@@ -4,7 +4,6 @@ import edu.dosw.sirha.model.Student;
 import edu.dosw.sirha.model.TrafficLight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import java.util.HashMap;
 
@@ -12,26 +11,26 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit test class for testing the functionality of the TrafficLightManager class.
+ * Unit test class for testing the functionality of the TrafficLightService class.
  * This test class verifies proper traffic light management operations including
  * traffic light retrieval, creation, and storage. Tests utilize reflection for
  * accessing private fields and Mockito framework for mock object creation
  * using JUnit 5 framework.
  */
-class TrafficLightManagerTest {
-    private TrafficLightManager trafficLightManager;
+class TrafficLightServiceTest {
+    private TrafficLightService trafficLightService;
     private Student mockStudent;
     private TrafficLight mockTrafficLight;
 
     /**
      * Sets up the test environment before each test method execution.
-     * Initializes a TrafficLightManager instance and creates mock objects for
+     * Initializes a TrafficLightService instance and creates mock objects for
      * Student and TrafficLight for use across multiple test methods,
      * ensuring isolated test execution and consistent mock behavior.
      */
     @BeforeEach
     void setUp() {
-        trafficLightManager = new TrafficLightManager();
+        trafficLightService = new TrafficLightService();
         mockStudent = mock(Student.class);
         mockTrafficLight = mock(TrafficLight.class);
     }
@@ -45,7 +44,7 @@ class TrafficLightManagerTest {
     @Test
     void testGetTrafficLight() {
         getTrafficLights().put(mockStudent, mockTrafficLight);
-        TrafficLight result = trafficLightManager.getTrafficLight(mockStudent);
+        TrafficLight result = trafficLightService.getTrafficLight(mockStudent);
         assertEquals(mockTrafficLight, result);
     }
 
@@ -57,7 +56,7 @@ class TrafficLightManagerTest {
      */
     @Test
     void testCheckTrafficLight() {
-        TrafficLight result = trafficLightManager.checkTrafficLight();
+        TrafficLight result = trafficLightService.checkTrafficLight();
 
         assertNotNull(result);
         assertNull(result.getMajor());
@@ -68,18 +67,18 @@ class TrafficLightManagerTest {
 
     /**
      * Utility method for accessing the private trafficLights field using reflection.
-     * This method provides access to the internal HashMap storage of TrafficLightManager
+     * This method provides access to the internal HashMap storage of TrafficLightService
      * for testing purposes, allowing direct manipulation and verification of
      * the internal state without relying solely on public interface methods.
      *
-     * @return HashMap containing the student-traffic light mappings managed by the TrafficLightManager
+     * @return HashMap containing the student-traffic light mappings managed by the TrafficLightService
      * @throws RuntimeException if reflection access fails or field is not found
      */
     private HashMap<Student, TrafficLight> getTrafficLights() {
         try {
-            java.lang.reflect.Field field = TrafficLightManager.class.getDeclaredField("trafficLights");
+            java.lang.reflect.Field field = TrafficLightService.class.getDeclaredField("trafficLights");
             field.setAccessible(true);
-            return (HashMap<Student, TrafficLight>) field.get(trafficLightManager);
+            return (HashMap<Student, TrafficLight>) field.get(trafficLightService);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

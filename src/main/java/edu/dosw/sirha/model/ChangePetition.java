@@ -2,7 +2,7 @@ package edu.dosw.sirha.model;
 
 import edu.dosw.sirha.core.ChangeGroupPetitionCommand;
 import edu.dosw.sirha.core.PetitionCommand;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,12 +43,12 @@ public class ChangePetition extends ClassPetition {
     }
 
     /**
-     * Converts the petition into a command that can be executed by the PetitionManager.
-     * @param manager the PetitionManager handling the command
+     * Converts the petition into a command that can be executed by the PetitionService.
+     * @param manager the PetitionService handling the command
      * @return the corresponding PetitionCommand
      */
     @Override
-    public PetitionCommand toCommand(PetitionManager manager) {
+    public PetitionCommand toCommand(PetitionService manager) {
         return new ChangeGroupPetitionCommand(manager, this);
     }
 }

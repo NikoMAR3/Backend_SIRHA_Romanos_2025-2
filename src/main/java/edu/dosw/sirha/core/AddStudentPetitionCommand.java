@@ -2,24 +2,24 @@ package edu.dosw.sirha.core;
 
 import edu.dosw.sirha.model.AddPetition;
 import edu.dosw.sirha.model.Petition;
-import edu.dosw.sirha.services.PetitionManager;
+import edu.dosw.sirha.services.PetitionService;
 
 /**
  * Command to add a student to a group based on a petition.
  */
 
 public class AddStudentPetitionCommand implements PetitionCommand {
-    private PetitionManager manager;
+    private PetitionService manager;
     private AddPetition petition;
     private boolean executed = false;
 
     /**
      * Constructs an AddStudentPetitionCommand.
      *
-     * @param manager  the PetitionManager to handle the petition
+     * @param manager  the PetitionService to handle the petition
      * @param petition the AddPetition containing student and target group information
      */
-    public AddStudentPetitionCommand(PetitionManager manager, AddPetition petition) {
+    public AddStudentPetitionCommand(PetitionService manager, AddPetition petition) {
         this.manager = manager;
         this.petition = petition;
     }
