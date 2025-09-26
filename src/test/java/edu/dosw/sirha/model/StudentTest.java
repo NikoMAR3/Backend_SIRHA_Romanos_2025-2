@@ -47,7 +47,7 @@ class StudentTest {
      */
     @Test
     void testParameterizedConstructor() {
-        assertEquals("Juan Perez", student.getName());
+        assertEquals("Juan Perez", student.getFullName());
         assertEquals("12345", student.getId());
         assertNotNull(student.getPrograms());
         assertNotNull(student.getSchedule());
@@ -60,8 +60,8 @@ class StudentTest {
      */
     @Test
     void testSettersAndGetters() {
-        student.setName("Maria Lopez");
-        assertEquals("Maria Lopez", student.getName());
+        student.setFullName("Maria Lopez");
+        assertEquals("Maria Lopez", student.getFullName());
 
         student.setId("67890");
         assertEquals("67890", student.getId());

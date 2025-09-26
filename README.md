@@ -260,9 +260,13 @@ Para la documentación y análisis del proyecto se generaron los siguientes diag
 ## ✅ Evidencias de calidad
 
 ### Cobertura de código – JaCoCo
-Reporte de cobertura alcanzado en las pruebas unitarias del backend:  
+Reporte inicial de cobertura alcanzado en las pruebas unitarias del backend:  
 
 ![jacoco.jpg](docs/imagenes/jacoco.jpg)
+
+Actualización de la cobertura alcanzada:
+
+![jacoco1.jpg](docs/imagenes/jacoco1.png)
 
 ### Análisis estático – SonarQube
 Resultados del análisis de calidad de código con SonarQube:  

@@ -19,7 +19,8 @@ public abstract class ClassPetition extends Petition {
      * @param observations Additional observations regarding the petition.
      * @param student     The student associated with the petition.
      */
-    //public ClassPetition(String type, String subjectCode, String observations, Student student) {
-        //super(type, subjectCode, observations, student);
+    public ClassPetition(String type, String subjectCode, String observations, Student student) {
+        super(type, subjectCode, observations, student);
     }
+}
 
