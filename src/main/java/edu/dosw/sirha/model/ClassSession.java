@@ -7,6 +7,9 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import edu.dosw.sirha.services.observer.ClassSessionObserver;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,14 +21,38 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "class_sessions")
 public class ClassSession {
+    @Id
     private String id;
+    @Field("subjectId")
+    private String subjectId;
+    @Field("classNum")
+    private String classNum;
+    @Field("professor")
     private String professor;
-    private LocalDateTime date;
+    @Field("schedule")
+    private String schedule;
+    @Field("day")
+    private String day;
+    @Field("startTime")
+    private String startTime;
+    @Field("finishTime")
+    private String finishTime;
+    @Field("classroom")
+    private String classroom;
+    @Field("state")
+    private String state;
+    @Field("maxQuota")
     private int maxQuota;
+    @Field("currentQuota")
     private int currentQuota = 0;
-    private ArrayList<Student> students = new ArrayList<>();
-    private List<ClassSessionObserver> observers = new ArrayList<>();
+    @Field("studentsId")
+    private List<String> studentsId = new ArrayList<>();
+
+    private transient LocalDateTime date;
+    private transient ArrayList<Student> students = new ArrayList<>();
+    private transient List<ClassSessionObserver> observers = new ArrayList<>();
 
     public static final String EVENT_STUDENT_ADDED = "STUDENT_ADDED";
     public static final String EVENT_STUDENT_REMOVED = "STUDENT_REMOVED";

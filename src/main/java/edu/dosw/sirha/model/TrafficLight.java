@@ -3,8 +3,12 @@ package edu.dosw.sirha.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing a traffic light system for academic progress.
@@ -12,11 +16,21 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @NoArgsConstructor
+@Document(collection = "traffic_lights")
 public class TrafficLight {
-    private String major;
-    private ArrayList<Subject> subjectsApproved = new ArrayList<>();
-    private ArrayList<Subject> subjectsFailed = new ArrayList<>();
-    private ArrayList<Subject> allSubjects = new ArrayList<>();
+    @Id
+    private String id;
+    @Field("studentId")
+    private String studentId;
+    //@Field("subjects")
+    //private List<SubjectGrade> subjects = new ArrayList<>();
+    @Field("state")
+    private String state;
+
+    private transient String major;
+    private transient ArrayList<Subject> subjectsApproved = new ArrayList<>();
+    private transient ArrayList<Subject> subjectsFailed = new ArrayList<>();
+    private transient ArrayList<Subject> allSubjects = new ArrayList<>();
 
     /**
      * Parameterized constructor to initialize a traffic light with a major.

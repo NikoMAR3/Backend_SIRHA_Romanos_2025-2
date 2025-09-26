@@ -1,17 +1,28 @@
 package edu.dosw.sirha.model;
 
+import lombok.Getter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.*;
 
 /**
  * Schedule class representing a collection of class sessions.
  */
+@Document(collection = "schedules")
 public class Schedule {
-    private ArrayList<ClassSession> classes = new ArrayList<>();
+    @Id
+    private String id;
+    @Field("academicPeriodId")
+    private String academicPeriodId;
+    @Field("classesIds")
+    private List<String> classesIds = new ArrayList<>();
 
+    @Getter
+    private transient ArrayList<ClassSession> classes = new ArrayList<>();
 
     public Schedule() {}
-
-    public ArrayList<ClassSession> getClasses(){ return classes;}
 
     /**
      * verifies if the schedule contains a class session with the given ID.
