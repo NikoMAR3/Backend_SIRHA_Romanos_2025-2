@@ -271,7 +271,7 @@ Actualización de la cobertura alcanzada:
 ### Análisis estático – SonarQube
 Resultados del análisis de calidad de código con SonarQube:  
 
-<!--![Evidencia SonarQube](docs/evidencias/sonarqube.png)-->
+![sonarqube.jpg](docs/imagenes/sonarqube.png)
 
 ---
 
