@@ -4,6 +4,13 @@ En este repositorio se manejara todo el Backend del proyecto inicial "SIRHA" par
 
 ---
 
+### 👤Integrantes:
+- Elizabeth Correa
+- Sebastian Ortega
+- Belén Quintero
+- Nikolas Martinez
+- Juan Pablo Contreras
+
 ## 🎯 Objetivo del Proyecto
 El proyecto **SIRHA (Sistema de Reasignación de Horarios Académicos)** tiene como objetivo gestionar y optimizar las solicitudes de cambio de materia y grupo dentro de la Escuela Colombiana de Ingeniería, ofreciendo trazabilidad, priorización automática y control de capacidad.  
 Busca brindar a estudiantes, profesores y decanaturas una herramienta digital para realizar, evaluar y aprobar solicitudes académicas de forma organizada y eficiente, aplicando buenas prácticas de ingeniería de software y metodologías ágiles.
@@ -49,13 +56,6 @@ Busca brindar a estudiantes, profesores y decanaturas una herramienta digital pa
 - Indicadores globales de avance en los planes de estudio (semaforización).  
 
 ---
-
-### 👤Integrantes:
-- Elizabeth Correa
-- Sebastian Ortega
-- Belén Quintero
-- Nikolas Martinez
-- Juan Pablo Contreras
 
 ## ⚙️ Tecnologías a utilizar
 - Java JDK Runtime Environment: 17.x.x
@@ -190,6 +190,86 @@ git commit -m "24-fix: arreglar bug"
 - 🔍 **Debugging eficiente**: Identificar rápidamente cuándo se introdujo un bug
 - 📖 **Historial legible**: Entender la evolución del código
 - 🤝 **Colaboración mejorada**: Reviews más fáciles y claras
+
+
+---
+
+
+## 🏗️ Arquitectura Backend (MVC)
+
+El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estructura de carpetas se organizó para mantener separación de responsabilidades y buenas prácticas de ingeniería:
+
+
+```
+📁 src/main/java/edu/dosw/sirha/
+│
+├── 📁 configs/          # ⚙️ Configuraciones globales (Swagger, seguridad, etc.)
+├── 📁 controller/       # 🌐 Controladores REST (exposición de endpoints)
+├── 📁 core/            # 🎯 Lógica central de la aplicación
+├── 📁 model/           # 📊 Entidades y modelos de datos
+├── 📁 persistence/     # 🗄️ Repositorios (interfaces con la BD MongoDB)
+├── 📁 services/        # 🔧 Servicios con la lógica de negocio
+├── 📁 utils/           # 🛠️ Utilidades comunes
+└── 📄 Application.java  # 🚀 Clase principal Spring Boot
+```
+
+### 📋 Descripción de capas:
+
+| **Capa** | **Responsabilidad** | **Tecnologías** |
+|----------|-------------------|-----------------|
+| **Controller** | Manejo de peticiones HTTP y respuestas REST | Spring MVC, @RestController |
+| **Services** | Lógica de negocio y reglas del dominio | @Service, validaciones |
+| **Persistence** | Acceso a datos y operaciones CRUD | MongoDB, Spring Data |
+| **Model** | Definición de entidades y DTOs | @Document, @Entity |
+| **Core** | Funcionalidades transversales | Excepciones, validadores |
+| **Utils** | Herramientas reutilizables | Constantes, helpers |
+| **Configs** | Configuración de la aplicación | Swagger, Security, CORS |
+
+---
+
+
+## 📊 Diagramas del sistema
+
+Para la documentación y análisis del proyecto se generaron los siguientes diagramas UML:
+
+- **Diagrama de Contexto**  
+  ![DiagramaContexto.png](docs/imagenes/DiagramaContexto.png)
+
+- **Diagrama de Casos de Uso**  
+  ![DiagramaCasosDeUso.png](docs/imagenes/DiagramaCasosDeUso.png)
+
+- **Diagrama de Clases**  
+  https://lucid.app/lucidchart/85abc96b-6dc9-425f-99f8-2e3076d53ab4/edit?viewport_loc=-5114%2C-3188%2C9738%2C4070%2CnWZN8rpCuUsd&invitationId=inv_50cbed5a-0579-4f02-905c-2f4d0018f68d
+
+
+- **Diagrama de Componentes (General)**  
+  ![DiagramaComponentesGeneral.png](docs/imagenes/DiagramaComponentesGeneral.png)
+
+- **Diagrama de Componentes (Específico)**  
+  ![DiagramaComponentesEspecifico](docs/imagenes/DiagramaComponentesEspecifico.png)
+
+- **Diagramas de Secuencia**  
+  ![DiagramaSecuencia](docs/imagenes/)
+
+- **Diagrama de Base de Datos (MongoDB)**  
+  ![DiagramaBD.png](docs/imagenes/DiagramaBD.png)
+
+
+---
+
+## ✅ Evidencias de calidad
+
+### Cobertura de código – JaCoCo
+Reporte de cobertura alcanzado en las pruebas unitarias del backend:  
+
+![jacoco.jpg](docs/imagenes/jacoco.jpg)
+
+### Análisis estático – SonarQube
+Resultados del análisis de calidad de código con SonarQube:  
+
+<!--![Evidencia SonarQube](docs/evidencias/sonarqube.png)-->
+
+---
 
 
 
