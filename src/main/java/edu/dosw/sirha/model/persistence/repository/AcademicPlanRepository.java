@@ -31,7 +31,7 @@ public interface AcademicPlanRepository extends MongoRepository<AcademicPlan, St
      * @param id the unique identifier of the academic plan
      * @return an Optional containing the found AcademicPlan, or empty if not found
      */
-    Optional<AcademicPlan> searchPlanById(String id);
+    Optional<AcademicPlan> findPlanById(String id);
 
     /**
      * Finds academic plans associated with a specific academic program.
