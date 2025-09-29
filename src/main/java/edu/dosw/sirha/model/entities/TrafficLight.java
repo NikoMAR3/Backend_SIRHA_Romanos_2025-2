@@ -11,6 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a traffic light inside the SIRHA system.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

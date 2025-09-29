@@ -9,7 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-
+/**
+ * Represents a subject inside the SIRHA system.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
