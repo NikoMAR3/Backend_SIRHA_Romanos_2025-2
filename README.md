@@ -201,29 +201,34 @@ El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estr
 
 
 ```
-📁 src/main/java/edu/dosw/sirha/
+📁 src/main/java/edu/dosw/taller/
 │
-├── 📁 configs/          # ⚙️ Configuraciones globales (Swagger, seguridad, etc.)
-├── 📁 controller/       # 🌐 Controladores REST (exposición de endpoints)
-├── 📁 core/            # 🎯 Lógica central de la aplicación
-├── 📁 model/           # 📊 Entidades y modelos de datos
-├── 📁 persistence/     # 🗄️ Repositorios (interfaces con la BD MongoDB)
-├── 📁 services/        # 🔧 Servicios con la lógica de negocio
-├── 📁 utils/           # 🛠️ Utilidades comunes
-└── 📄 Application.java  # 🚀 Clase principal Spring Boot
+├── 📁 configs/               # ⚙️ Configuraciones globales (Swagger, seguridad, etc.)
+├── 📁 controller/            # 🌐 Controladores REST (exposición de endpoints)
+├── 📁 model/                 # 📊 Módulo de modelos y lógica base
+│   ├── 📁 components/        # 🧩 Componentes adicionales (clases auxiliares)
+│   ├── 📁 entities/          # 📝 Entidades de dominio
+│   ├── 📁 persistence/       # 🗄️ Persistencia y acceso a datos
+│   │   └── 📁 repository/    # 🔗 Interfaces con la BD (MongoDB Repositories)
+│   └── 📁 services/          # 🔧 Servicios dentro de la capa de modelo
+├── 📁 util/                  # 🛠️ Utilidades comunes
+└── 📄 Application.java       # 🚀 Clase principal Spring Boot
+
+
 ```
 
 ### 📋 Descripción de capas:
 
-| **Capa** | **Responsabilidad** | **Tecnologías** |
-|----------|-------------------|-----------------|
-| **Controller** | Manejo de peticiones HTTP y respuestas REST | Spring MVC, @RestController |
-| **Services** | Lógica de negocio y reglas del dominio | @Service, validaciones |
-| **Persistence** | Acceso a datos y operaciones CRUD | MongoDB, Spring Data |
-| **Model** | Definición de entidades y DTOs | @Document, @Entity |
-| **Core** | Funcionalidades transversales | Excepciones, validadores |
-| **Utils** | Herramientas reutilizables | Constantes, helpers |
-| **Configs** | Configuración de la aplicación | Swagger, Security, CORS |
+| **Capa**         | **Responsabilidad**                                        | **Tecnologías / Anotaciones** |
+|------------------|------------------------------------------------------------|--------------------------------|
+| **Controller**   | Manejo de peticiones HTTP y exposición de endpoints REST.  | Spring MVC, `@RestController` |
+| **Model**        | Contiene el modelo de dominio y submódulos relacionados.   | Java classes, Lombok, DTOs |
+| ├─ **Entities**  | Definición de entidades principales (Task, User, etc.).    | `@Document`, `@Entity` |
+| ├─ **Components**| Clases auxiliares/componentes dentro del dominio.          | Beans, helpers de dominio |
+| ├─ **Persistence/Repository** | Interfaces de acceso a datos y consultas CRUD. | MongoDB, Spring Data |
+| └─ **Services**  | Servicios asociados al modelo (lógica de negocio puntual). | `@Service` |
+| **Configs**      | Configuración global de la aplicación.                     | Swagger, Security, CORS |
+| **Util**         | Clases de utilidad y helpers reutilizables.                | Constantes, validadores |
 
 ---
 
