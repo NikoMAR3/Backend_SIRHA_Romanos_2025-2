@@ -16,6 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "classSessions")
+
+/*
+ * Entity representing a class session with subject information, professor assignment, and enrollment details.
+ */
 public class ClassSession {
     @Id
     private String id;
