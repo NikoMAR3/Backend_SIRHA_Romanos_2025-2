@@ -1,13 +1,14 @@
-package edu.dosw.sirha.model;
+package edu.dosw.sirha.model.entities;
 
-public enum PetitionType {
-    ADD("Agregar materia"),
-    REMOVE("Retirar materia"),
-    CHANGE("Cambio de grupo");
+public enum PetitionState {
+    PENDING("Pendiente"),
+    IN_PROCESS("En revisión"),
+    APPROVED("Aprobada"),
+    REPROVED("Rechazada");
 
     private final String description;
 
-    PetitionType(String description) {
+    PetitionState(String description) {
         this.description = description;
     }
 

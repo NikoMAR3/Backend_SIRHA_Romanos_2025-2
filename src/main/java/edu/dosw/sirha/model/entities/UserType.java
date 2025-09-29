@@ -1,14 +1,14 @@
-package edu.dosw.sirha.model;
+package edu.dosw.sirha.model.entities;
 
-public enum PetitionStatus {
-    PENDIENTE("Pendiente"),
-    EN_REVISION("En revisión"),
-    APROBADA("Aprobada"),
-    RECHAZADA("Rechazada");
+public enum UserType {
+    STUDENT("Estudiante"),
+    DEAN("Decano"),
+    PROFESSOR("Profesor"),
+    ACADEMIC_VICEPRESIDENT("Vicepresidente Académico");
 
     private final String description;
 
-    PetitionStatus(String description) {
+    UserType(String description) {
         this.description = description;
     }
 

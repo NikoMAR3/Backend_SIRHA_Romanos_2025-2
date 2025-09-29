@@ -1,7 +1,7 @@
 package edu.dosw.sirha.controller.dto;
 
-import edu.dosw.sirha.model.PetitionStatus;
-import edu.dosw.sirha.model.PetitionType;
+import edu.dosw.sirha.model.entities.PetitionState;
+import edu.dosw.sirha.model.entities.PetitionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ public class PetitionResponseDTO {
     private PetitionType petitionType;
 
     @Schema(description = "Estado de la solicitud", example = "PENDIENTE")
-    private PetitionStatus status;
+    private PetitionState status;
 
     @Schema(description = "ID del estudiante que hizo la solicitud", example = "1000098136")
     private String studentId;

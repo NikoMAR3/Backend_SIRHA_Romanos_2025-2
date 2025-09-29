@@ -1,6 +1,6 @@
 package edu.dosw.sirha.controller.dto;
 
-import edu.dosw.sirha.model.PetitionType;
+import edu.dosw.sirha.model.entities.PetitionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
