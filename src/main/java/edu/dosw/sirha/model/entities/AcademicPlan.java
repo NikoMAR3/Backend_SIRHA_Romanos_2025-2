@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "academicPlans")
+@Document(collection = "academic_plans")
 public class AcademicPlan {
     @Id
     private String id;
@@ -34,4 +34,5 @@ public class AcademicPlan {
 
     @DBRef
     private List<Subject> subjects;
+
 }

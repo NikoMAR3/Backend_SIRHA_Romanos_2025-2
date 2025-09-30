@@ -43,19 +43,6 @@ public interface AcademicVicePresidentRepository extends MongoRepository<Academi
      */
     Optional<AcademicVicePresident> findByDocument(String document);
 
-    /**
-     * Checks if an academic vice president exists by their document number.
-     * @param document the document number to check
-     * @return true if an academic vice president with the given document exists, false otherwise
-     */
-    boolean existsByDocument(String document);
-
-    /**
-     * Checks if an academic vice president exists by their email address.
-     * @param mail the email address to check
-     * @return true if an academic vice president with the given email exists, false otherwise
-     */
-    boolean existsByMail(String mail);
 
     /**
      * Finds academic vice presidents by their petition IDs.
@@ -73,15 +60,4 @@ public interface AcademicVicePresidentRepository extends MongoRepository<Academi
     @Override
     List<AcademicVicePresident> findAll();
 
-    /**
-     * Deletes an academic vice president by their unique identifier.
-     * @param id the unique identifier of the academic vice president to delete
-     */
-    void deleteById(String id);
-
-    /**
-     * Counts the total number of academic vice presidents in the system
-     * @return the total count of academic vice presidents
-     */
-    long count();
 }
