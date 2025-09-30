@@ -41,4 +41,7 @@ public class ClassSession {
 
     @DBRef
     private Professor professor;
+
+    @DBRef
+    private List<ClassSchedule> schedules;
 }
