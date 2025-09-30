@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 @Document(collection = "professors")
 public class Professor extends User{
+
     public Professor(String id, String name, String mail, String document) {
         super(id, name, mail, document, UserType.PROFESSOR);
     }

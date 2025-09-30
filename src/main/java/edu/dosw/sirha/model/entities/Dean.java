@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "deans")
 public class Dean extends User {
@@ -26,10 +27,16 @@ public class Dean extends User {
     @DBRef
     private Deanery deanery;
 
-    public Dean() {
-        super.userType =UserType.DEAN; // siempre DEAN al crear
+    /**
+     * Constructor for the Dean class.
+     * @param id
+     * @param name
+     * @param mail
+     * @param document
+     */
+    public Dean(String id, String name, String mail, String document) {
+        super(id, name, mail, document, UserType.DEAN);
     }
-
 }
 
 
