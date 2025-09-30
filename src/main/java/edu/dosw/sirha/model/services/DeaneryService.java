@@ -17,27 +17,27 @@ public class DeaneryService {
     }
 
     /**
-     * Crea una nueva decanatura en la base de datos.
-     * @param deanery la entidad Deanery a crear
-     * @return la entidad Deanery guardada
+     * Creates a new deanery in the database.
+     * @param deanery the Deanery entity to create
+     * @return the saved Deanery entity
      */
     public Deanery createDeanery(Deanery deanery) {
         return deaneryRepository.save(deanery);
     }
 
     /**
-     * Modifica una decanatura existente.
-     * @param deanery la entidad Deanery con los datos actualizados
-     * @return la entidad Deanery modificada
+     * Modifies an existing deanery.
+     * @param deanery the Deanery entity with updated data
+     * @return the modified Deanery entity
      */
     public Deanery modifyDeanery(Deanery deanery) {
         return deaneryRepository.save(deanery);
     }
 
     /**
-     * Elimina una decanatura por su ID.
-     * @param id el ID de la decanatura a eliminar
-     * @return true si se eliminó correctamente, false en caso contrario
+     * Deletes a deanery by its ID.
+     * @param id the ID of the deanery to delete
+     * @return true if deleted successfully, false otherwise
      */
     public boolean deleteDeanery(String id) {
         if (deaneryRepository.existsById(id)) {
@@ -48,9 +48,9 @@ public class DeaneryService {
     }
 
     /**
-     * Busca una decanatura por su ID.
-     * @param id el ID de la decanatura
-     * @return la entidad Deanery encontrada, o null si no existe
+     * Searches for a deanery by its ID.
+     * @param id the ID of the deanery
+     * @return the found Deanery entity, or null if it doesn't exist
      */
     public Deanery searchDeaneryById(String id) {
         Optional<Deanery> deanery = deaneryRepository.findDeaneryById(id);
@@ -58,8 +58,8 @@ public class DeaneryService {
     }
 
     /**
-     * Obtiene todas las decanaturas.
-     * @return lista de todas las decanaturas
+     * Gets all deaneries.
+     * @return list of all deaneries
      */
     public List<Deanery> searchAllDeaneries() {
         return deaneryRepository.findAll();
