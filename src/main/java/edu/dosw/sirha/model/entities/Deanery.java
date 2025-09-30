@@ -14,16 +14,11 @@ import java.util.List;
 /**
  * Represents a deanery (faculty) in the institution.
  *
- * Stored in the "deanery" collection in MongoDB.
- *
  * Relations:
  * - One Dean responsible for the deanery.
  * - A list of Professors belonging to the deanery.
  * - A list of AcademicPrograms managed by the deanery.
  */
-
-
-
 @Getter
 @Setter
 @NoArgsConstructor

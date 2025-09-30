@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.*;
 
+/**
+ * Abstract entity that represents a user in the system.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,6 +30,15 @@ public abstract class User {
 
     private List<String> petitionIds;
 
+    /**
+     * Constructor for creating a new User with the specified attributes.
+     *
+     * @param id       the unique identifier of the user
+     * @param name     the name of the user
+     * @param mail     the email address of the user
+     * @param document the document identifier of the user
+     * @param type     the type of user (e.g., STUDENT, DEAN)
+     */
     protected User(String id, String name, String mail, String document, UserType type) {
         this.id = id;
         this.name = name;

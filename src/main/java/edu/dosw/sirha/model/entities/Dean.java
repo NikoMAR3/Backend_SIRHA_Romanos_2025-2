@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /**
  * Represents a deanery (faculty) in the institution.
  *
- * Stored in the "deanery" collection in MongoDB.
- *
  * Relations:
  * - One Dean (the head of the deanery).
  * - Many Professors belonging to the deanery.

@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-
+/**
+ * Entity that epresents an academic subject.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,8 +24,13 @@ public class Subject {
 
     private String shortName;
     private String name;
+
+    @DBRef
     private List<Subject> prerequisites;
+
     private int credits;
     private int level;
+
+    @DBRef
     private ClassSession classSession;
 }

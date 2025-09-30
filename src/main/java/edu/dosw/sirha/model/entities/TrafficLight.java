@@ -11,6 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entity that represents a traffic light status for a student in a specific program and subject.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +27,7 @@ public class TrafficLight {
     private String programId;
     private String subjectShortName;
     private String subjectName;
+
     private List<Subject> failedSubjects = new ArrayList<>();
     private List<Subject> approvedSubjects = new ArrayList<>();
     private List<Subject> onGoingSubjects = new ArrayList<>();

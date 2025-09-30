@@ -14,15 +14,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
+/**
+ * Entity that represents a generated petition
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "petitions")
-
-/**
- * Represents a generated petition
- */
 public class Petition {
 
     @Id

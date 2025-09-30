@@ -11,15 +11,15 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
+
+/**
+ * Entity representing a class session.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "classSessions")
-
-/*
- * Entity representing a class session with subject information, professor assignment, and enrollment details.
- */
 public class ClassSession {
     @Id
     private String id;
