@@ -207,11 +207,11 @@ El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estr
 ├── 📁 controller/            # 🌐 Controladores REST (exposición de endpoints)
 ├── 📁 model/                 # 📊 Módulo de modelos y lógica base
 │   ├── 📁 components/        # 🧩 Componentes adicionales (clases auxiliares)
+│   │   └── 📁 util/          # 🛠️ Utilidades comunes
 │   ├── 📁 entities/          # 📝 Entidades de dominio
 │   ├── 📁 persistence/       # 🗄️ Persistencia y acceso a datos
 │   │   └── 📁 repository/    # 🔗 Interfaces con la BD (MongoDB Repositories)
 │   └── 📁 services/          # 🔧 Servicios dentro de la capa de modelo
-├── 📁 util/                  # 🛠️ Utilidades comunes
 └── 📄 Application.java       # 🚀 Clase principal Spring Boot
 
 
@@ -219,17 +219,15 @@ El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estr
 
 ### 📋 Descripción de capas:
 
-| **Capa**         | **Responsabilidad**                                        | **Tecnologías / Anotaciones** |
-|------------------|------------------------------------------------------------|--------------------------------|
-| **Controller**   | Manejo de peticiones HTTP y exposición de endpoints REST.  | Spring MVC, `@RestController` |
-| **Model**        | Contiene el modelo de dominio y submódulos relacionados.   | Java classes, Lombok, DTOs |
-| ├─ **Entities**  | Definición de entidades principales (Task, User, etc.).    | `@Document`, `@Entity` |
-| ├─ **Components**| Clases auxiliares/componentes dentro del dominio.          | Beans, helpers de dominio |
+| **Capa**                      | **Responsabilidad**                                        | **Tecnologías / Anotaciones** |
+|-------------------------------|------------------------------------------------------------|--------------------------------|
+| **Controller**                | Manejo de peticiones HTTP y exposición de endpoints REST.  | Spring MVC, `@RestController` |
+| **Model**                     | Contiene el modelo de dominio y submódulos relacionados.   | Java classes, Lombok, DTOs |
+| ├─ **Entities**               | Definición de entidades principales (Task, User, etc.).    | `@Document`, `@Entity` |
+| ├─ **Components/Utils**       | Clases auxiliares/componentes dentro del dominio.          | Beans, helpers de dominio |
 | ├─ **Persistence/Repository** | Interfaces de acceso a datos y consultas CRUD. | MongoDB, Spring Data |
-| └─ **Services**  | Servicios asociados al modelo (lógica de negocio puntual). | `@Service` |
-| **Configs**      | Configuración global de la aplicación.                     | Swagger, Security, CORS |
-| **Util**         | Clases de utilidad y helpers reutilizables.                | Constantes, validadores |
-
+| └─ **Services**               | Servicios asociados al modelo (lógica de negocio puntual). | `@Service` |
+| **Configs**                   | Configuración global de la aplicación.                     | Swagger, Security, CORS |
 ---
 
 
@@ -241,9 +239,10 @@ Para la documentación y análisis del proyecto se generaron los siguientes diag
   ![DiagramaContexto.png](docs/imagenes/DiagramaContexto.png)
 
 - **Diagrama de Casos de Uso**  
-  ![DiagramaCasosDeUso.png](docs/imagenes/DiagramaCasosDeUso.png)
+  ![DiagramaDeCasosDeUso.png](docs/imagenes/DiagramaDeCasosDeUso.png)
 
-- **Diagrama de Clases**  
+- **Diagrama de Clases** 
+    ![DiagramaDeClases.png](docs/imagenes/DiagramaDeClases.png)
   https://lucid.app/lucidchart/85abc96b-6dc9-425f-99f8-2e3076d53ab4/edit?viewport_loc=-5114%2C-3188%2C9738%2C4070%2CnWZN8rpCuUsd&invitationId=inv_50cbed5a-0579-4f02-905c-2f4d0018f68d
 
 
@@ -251,7 +250,7 @@ Para la documentación y análisis del proyecto se generaron los siguientes diag
   ![DiagramaComponentesGeneral.png](docs/imagenes/DiagramaComponentesGeneral.png)
 
 - **Diagrama de Componentes (Específico)**  
-  ![DiagramaComponentesEspecifico](docs/imagenes/DiagramaComponentesEspecifico.png)
+  ![DiagramaDeComponentesEspecifico](docs/imagenes/DiagramaDeComponentesEspecifico.png)
 
 - **Diagramas de Secuencia**  
   ![DiagramaSecuencia](docs/imagenes/)
