@@ -1,11 +1,13 @@
 package edu.dosw.sirha.model.persistence.repository;
 
 import edu.dosw.sirha.model.entities.Dean;
+import edu.dosw.sirha.model.entities.Deanery;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for managing Dean entities.
@@ -27,14 +29,6 @@ public interface DeanRepository extends MongoRepository<Dean, String> {
     Dean searchDeanById(String id);
 
     /**
-     * Returns all deans.
-     *
-     * @return list of all deans
-     */
-    @Query("{}")
-    List<Dean> searchAllDeans();
-
-    /**
      * Finds deans by deanery id reference.
      *
      * @param deaneryId the deanery id
@@ -43,4 +37,19 @@ public interface DeanRepository extends MongoRepository<Dean, String> {
     @Query("{ 'deanery.$id': ?0 }")
     List<Dean> findByDeaneryId(String deaneryId);
 
+
+    /**
+     * Finds a dean by deanery entity reference.
+     *
+     * @param deanery the deanery entity
+     * @return an Optional containing the dean of the deanery, or empty if not found
+     */
+    Optional<Dean> findByDeanery(Deanery deanery);
+
+    /**
+     * Retrieves all deans from the database.
+     * @return a list of all deans
+     */
+    @Override
+    List<Dean> findAll();
 }
