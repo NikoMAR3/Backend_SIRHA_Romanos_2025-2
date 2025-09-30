@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model.components.util;
 
 import edu.dosw.sirha.model.entities.Petition;
-import edu.dosw.sirha.model.entities.PetitionType;
+import edu.dosw.sirha.model.entities.PetitionPriority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +17,6 @@ public class DeanHandler extends PetitionHandler {
     }
 
     private boolean canAnswer(Petition petition) {
-        return petition.getType() == PetitionType.REMOVE_SUBJECT; // ESTO TOCA VERLO BIEN
+        return petition.getPriority() == PetitionPriority.URGENT; // ESTO TOCA VERLO BIEN
     }
 }

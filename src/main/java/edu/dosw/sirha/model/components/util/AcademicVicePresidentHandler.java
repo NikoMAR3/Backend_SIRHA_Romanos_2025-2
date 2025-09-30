@@ -1,7 +1,7 @@
 package edu.dosw.sirha.model.components.util;
 
 import edu.dosw.sirha.model.entities.Petition;
-import edu.dosw.sirha.model.entities.PetitionType;
+import edu.dosw.sirha.model.entities.PetitionPriority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +17,6 @@ public class AcademicVicePresidentHandler extends PetitionHandler {
     }
 
     private boolean canAnswer(Petition petition) {
-        return petition.getType() == PetitionType.ADD_SUBJECT; // ESTO TOCA VERLO BIEN
+        return petition.getPriority() == PetitionPriority.HIGH || petition.getPriority() == PetitionPriority.MEDIUM;
     }
 }
