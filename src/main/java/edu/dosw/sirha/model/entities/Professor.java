@@ -10,14 +10,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
+/**
+ * Entity that represents a professor of the institution
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @Document(collection = "professors")
-
-/**
- * Represents a professor of the institution
- */
 public class Professor extends User{
     public Professor(String id, String name, String mail, String document) {
         super(id, name, mail, document, UserType.PROFESSOR);

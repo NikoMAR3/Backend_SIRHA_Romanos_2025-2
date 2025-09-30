@@ -21,7 +21,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "classSchedules")
-
 public class ClassSchedule {
 
     @Id

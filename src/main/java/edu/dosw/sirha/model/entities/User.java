@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.*;
 
 /**
- * Abstract base class representing a user in the SIRHA system.
+ * Abstract entity that represents a user in the system.
  */
 @Getter
 @Setter
@@ -31,13 +31,13 @@ public abstract class User {
     private List<String> petitionIds;
 
     /**
-     * Protected constructor to initialize a user with the given parameters.
+     * Constructor for creating a new User with the specified attributes.
      *
-     * @param id        Unique identifier of the user.
-     * @param name      Full name of the user.
-     * @param mail      Institutional email of the user.
-     * @param document  Identity document of the user.
-     * @param type      User type (e.g., STUDENT, ADMIN, DEAN).
+     * @param id       the unique identifier of the user
+     * @param name     the name of the user
+     * @param mail     the email address of the user
+     * @param document the document identifier of the user
+     * @param type     the type of user (e.g., STUDENT, DEAN)
      */
     protected User(String id, String name, String mail, String document, UserType type) {
         this.id = id;

@@ -3,7 +3,7 @@ package edu.dosw.sirha.model.entities;
 import lombok.Getter;
 
 /**
- * Enumeration representing the academic traffic light status of a student.
+ * Enum that represents the status of a traffic light.
  */
 @Getter
 public enum TrafficLightStatus {
@@ -14,17 +14,16 @@ public enum TrafficLightStatus {
 
     private final String description;
 
-    /**
-     * Basic constructor for the class
+    /** Constructor for TrafficLightStatus enum.
+     * @param description The description of the traffic light status.
      */
     TrafficLightStatus(String description) {
         this.description = description;
     }
 
     /**
-     * Returns the textual description of the status.
-     *
-     * @return the description associated with this status.
+     * Returns the description of the traffic light status.
+     * @return The description of the traffic light status.
      */
     @Override
     public String toString() {

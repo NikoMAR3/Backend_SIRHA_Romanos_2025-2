@@ -12,15 +12,14 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 
 
+/**
+ * Entity that represents the schedule of a student
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "schedules")
-
-/**
- * Represents the schedule of a student
- */
 public class Schedule {
 
     @Id
