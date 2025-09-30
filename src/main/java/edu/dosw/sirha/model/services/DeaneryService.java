@@ -33,7 +33,6 @@ public class DeaneryService {
             throw new IllegalArgumentException("Deanery name cannot be null or empty");
         }
 
-        // Check if deanery with same name already exists
         Optional<Deanery> existingDeanery = deaneryRepository.findByDeaneryName(deanery.getDeaneryName());
         if (existingDeanery.isPresent()) {
             throw new IllegalArgumentException("Deanery with name '" + deanery.getDeaneryName() + "' already exists");
@@ -64,7 +63,6 @@ public class DeaneryService {
             throw new IllegalArgumentException("Deanery name cannot be null or empty");
         }
 
-        // Verify deanery exists
         if (!deaneryRepository.existsById(deanery.getId())) {
             throw new IllegalArgumentException("Deanery with ID '" + deanery.getId() + "' does not exist");
         }
