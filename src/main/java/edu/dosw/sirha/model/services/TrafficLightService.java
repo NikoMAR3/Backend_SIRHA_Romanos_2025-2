@@ -101,12 +101,10 @@ public class TrafficLightService {
 
         if (failedCount > 0 || grade < 3.0) {
             return TrafficLightStatus.RED;
-        } else if (onGoingCount > 0) {
-            return TrafficLightStatus.BLUE;
         } else if (approvedCount > 0 && grade >= 3.0) {
             return TrafficLightStatus.GREEN;
         } else {
-            return TrafficLightStatus.WHITE;
+            return TrafficLightStatus.BLUE;
         }
     }
 

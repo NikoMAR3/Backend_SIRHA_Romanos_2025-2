@@ -1,11 +1,13 @@
 package edu.dosw.sirha.model.services;
 
+import edu.dosw.sirha.model.entities.ClassSession;
 import edu.dosw.sirha.model.entities.Schedule;
 import edu.dosw.sirha.model.persistence.repository.ScheduleRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -318,9 +320,9 @@ public class ScheduleService {
                 return false;
             }
 
-            return existingSchedule.get().getSubjects().stream()
-                    .anyMatch(existingSubject -> newSchedule.getSubjects().stream()
-                            .anyMatch(newSubject -> hasTimeConflict(existingSubject, newSubject)));
+            return existingSchedule.get().getClassSessions().stream()
+                    .anyMatch(class1 -> newSchedule.getClassSessions().stream()
+                            .anyMatch(class2 -> hasTimeConflict(class1, class2)));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to check schedule conflicts", e);
@@ -330,19 +332,19 @@ public class ScheduleService {
     /**
      * Validates if a class session has available capacity.
      *
-     * @param classSessionId the unique identifier of the class session
+     * @param classSession the unique identifier of the class session
      * @return true if capacity is available, false otherwise
      * @throws IllegalArgumentException if class session ID is invalid
      * @throws RuntimeException if validation fails
      */
-    public boolean validateScheduleCapacity(int classSessionId) {
-        if (classSessionId <= 0) {
-            throw new IllegalArgumentException("Class session ID must be greater than zero");
+    public boolean validateScheduleCapacity(ClassSession classSession) {
+        if (classSession == null) {
+            throw new IllegalArgumentException("Class session cannot be null");
         }
 
         try {
-            long enrollmentCount = scheduleRepository.countBySubjectId(classSessionId);
-            int maxCapacity = getClassSessionMaxCapacity(classSessionId);
+            long enrollmentCount = scheduleRepository.countBySubjectId(Integer.parseInt(classSession.getId()));
+            int maxCapacity = getClassSessionMaxCapacity(classSession);
 
             return enrollmentCount < maxCapacity;
 
@@ -401,17 +403,26 @@ public class ScheduleService {
      * @param subject2 the second subject
      * @return true if there is a time conflict, false otherwise
      */
-    private boolean hasTimeConflict(Object subject1, Object subject2) {
-        return false;
+    private boolean hasTimeConflict(ClassSession subject1, ClassSession subject2) {
+        LocalDateTime start1 = subject1.getStartDate();
+        LocalDateTime end1 = subject1.getEndDate();
+        LocalDateTime start2 = subject2.getStartDate();
+        LocalDateTime end2 = subject2.getEndDate();
+
+        if (start1 == null || end1 == null || start2 == null || end2 == null) {
+            return false;
+        }
+
+        return start1.isBefore(end2) && start2.isBefore(end1);
     }
 
     /**
      * Helper method to get the maximum capacity of a class session.
      *
-     * @param classSessionId the class session identifier
+     * @param classSession the class session identifier
      * @return the maximum capacity
      */
-    private int getClassSessionMaxCapacity(int classSessionId) {
-        return 30;
+    private int getClassSessionMaxCapacity(ClassSession classSession) {
+        return classSession.getCapacity();
     }
 }

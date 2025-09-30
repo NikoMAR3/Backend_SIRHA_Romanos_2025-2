@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -38,6 +40,10 @@ public class ClassSession {
     
     @Field
     private int enrolledStudents;
+
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     @DBRef
     private Professor professor;
