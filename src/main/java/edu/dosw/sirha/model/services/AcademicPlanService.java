@@ -130,6 +130,22 @@ public class AcademicPlanService {
     }
 
     /**
+     * Searches for academic plans by their associated academic program ID.
+     * Useful for finding all study plans (e.g., Plan 14, Plan 15) for a specific program.
+     * 
+     * @param programId the ID of the AcademicProgram to search plans for
+     * @return a list of AcademicPlans associated with the program
+     * @throws IllegalArgumentException if programId is null
+     */
+    public List<AcademicPlan> searchPlanByProgramId(String programId) {
+        if (programId == null || programId.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del programa académico no puede ser nulo o vacío");
+        }
+        
+        return academicPlanRepository.findByProgramId(programId);
+    }
+
+    /**
      * Retrieves all academic plans from the database.
      * Useful for administrative purposes and generating comprehensive reports.
      * 

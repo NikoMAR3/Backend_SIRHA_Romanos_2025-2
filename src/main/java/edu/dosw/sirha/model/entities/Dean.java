@@ -27,7 +27,7 @@ public class Dean extends User {
     private Deanery deanery;
 
     public Dean() {
-        //super.userType =UserType.DEAN; // siempre DEAN al crear
+        super.userType =UserType.DEAN; // siempre DEAN al crear
     }
 
 }
