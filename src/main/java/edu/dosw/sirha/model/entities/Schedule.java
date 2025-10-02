@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -53,9 +54,11 @@ public class Schedule {
     private int credits;
 
     @DBRef
-    private ClassSession classSession;
+    private List<ClassSession> classSessions;
+
+    @DBRef
+    private List<Subject> subjects;
 
     @DBRef
     private Professor professor;
-
 }

@@ -54,4 +54,6 @@ public interface AcademicProgramRepository extends MongoRepository<AcademicProgr
      */
     @Override
     List<AcademicProgram> findAll();
+
+    
 }
