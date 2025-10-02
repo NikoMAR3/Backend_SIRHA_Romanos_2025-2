@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for setting up the chain of responsibility used to process petitions.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class PetitionHandlerConfig {
@@ -12,7 +15,11 @@ public class PetitionHandlerConfig {
     private final AcademicVicePresidentHandler viceHandler;
     private final DeanHandler deanHandler;
 
-    @Bean
+/**
+ * Creates and configures the petition handler chain
+ * @return the configured chain.
+ */
+ @Bean
     public PetitionHandler petitionHandlerChain() {
         professorHandler.setNextHandler(viceHandler);
         viceHandler.setNextHandler(deanHandler);
