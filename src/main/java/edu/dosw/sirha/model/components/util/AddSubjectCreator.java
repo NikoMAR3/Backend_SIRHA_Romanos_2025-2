@@ -20,7 +20,7 @@ import java.util.UUID;
 
 
 @Component
-public class AddSubjectCreator implements PetitionCreator {
+public class AddSubjectCreator extends PetitionCreator {
 
     /**
      * Creates a new ADD_SUBJECT petition based on the provided DTO.

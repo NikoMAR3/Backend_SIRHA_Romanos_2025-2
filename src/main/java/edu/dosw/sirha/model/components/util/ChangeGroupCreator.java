@@ -21,7 +21,7 @@ import java.util.UUID;
 
 
 @Component
-public class ChangeGroupCreator implements PetitionCreator {
+public class ChangeGroupCreator extends PetitionCreator {
 
     /**
      * Creates a new CHANGE_GROUP petition based on the provided DTO.
