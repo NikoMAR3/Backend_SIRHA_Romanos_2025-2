@@ -58,71 +58,26 @@ public class ObserverService {
      * Iterates through all sessions and checks their capacity status.
      */
     public void monitorAllClassSessions() {
-        try {
-            List<ClassSession> allSessions = classSessionRepository.findAll();
+        List<ClassSession> allSessions = classSessionRepository.findAll();
 
-            if (allSessions.isEmpty()) {
-                logger.info("No class sessions found to monitor");
-                return;
-            }
+        if (allSessions.isEmpty()) {
+            logger.info("No class sessions found to monitor");
+            return;
+        }
 
-            for (ClassSession session : allSessions) {
-                if (session.getCapacity() > 0) {
-                    double loadPercentage = (double) session.getEnrolledStudents() / session.getCapacity();
+        for (ClassSession session : allSessions) {
+            if (session.getCapacity() > 0) {
+                double loadPercentage = (double) session.getEnrolledStudents() / session.getCapacity();
 
-                    if (loadPercentage >= 1.0) {
-                        generateFullCapacityAlert(session);
-                    } else if (loadPercentage >= WARNING_THRESHOLD) {
-                        generateHighCapacityWarning(session, loadPercentage);
-                    }
+                if (loadPercentage >= 1.0) {
+                    generateFullCapacityAlert(session);
+                } else if (loadPercentage >= WARNING_THRESHOLD) {
+                    generateHighCapacityWarning(session, loadPercentage);
                 }
             }
-
-            logger.info("Monitoring completed for {} class sessions", allSessions.size());
-
-        } catch (Exception e) {
-            logger.error("Error occurred while monitoring all class sessions: {}", e.getMessage(), e);
         }
-    }
 
-    /**
-     * Generates a warning alert when a class session reaches 90% capacity.
-     *
-     * @param session the ClassSession that reached the warning threshold
-     * @param loadPercentage the current load percentage of the session
-     */
-    private void generateHighCapacityWarning(ClassSession session, double loadPercentage) {
-        String message = String.format(
-                "WARNING: Class session '%s' (%s) is at %.1f%% capacity (%d/%d students). " +
-                        "Consider monitoring enrollment closely.",
-                session.getSubjectShortName(),
-                session.getSubjectName(),
-                loadPercentage * 100,
-                session.getEnrolledStudents(),
-                session.getCapacity()
-        );
-
-        logger.warn("CAPACITY WARNING - Session ID: {} - {}", session.getId(), message);
-
-    }
-
-    /**
-     * Generates a critical alert when a class session reaches full capacity.
-     *
-     * @param session the ClassSession that is completely full
-     */
-    private void generateFullCapacityAlert(ClassSession session) {
-        String message = String.format(
-                "CRITICAL: Class session '%s' (%s) is FULL (%d/%d students). " +
-                        "No more enrollments can be accepted.",
-                session.getSubjectShortName(),
-                session.getSubjectName(),
-                session.getEnrolledStudents(),
-                session.getCapacity()
-        );
-
-        logger.error("FULL CAPACITY ALERT - Session ID: {} - {}", session.getId(), message);
-
+        logger.info("Monitoring completed for {} class sessions", allSessions.size());
     }
 
     /**
@@ -164,5 +119,43 @@ public class ObserverService {
                 .orElseThrow(() -> new IllegalArgumentException("Class session with ID '" + sessionId + "' not found"));
 
         return session.getEnrolledStudents() >= session.getCapacity();
+    }
+
+    /**
+     * Generates a warning alert when a class session reaches 90% capacity.
+     *
+     * @param session the ClassSession that reached the warning threshold
+     * @param loadPercentage the current load percentage of the session
+     */
+    private void generateHighCapacityWarning(ClassSession session, double loadPercentage) {
+        String message = String.format(
+                "WARNING: Class session '%s' (%s) is at %.1f%% capacity (%d/%d students). " +
+                        "Consider monitoring enrollment closely.",
+                session.getSubjectShortName(),
+                session.getSubjectName(),
+                loadPercentage * 100,
+                session.getEnrolledStudents(),
+                session.getCapacity()
+        );
+
+        logger.warn("CAPACITY WARNING - Session ID: {} - {}", session.getId(), message);
+    }
+
+    /**
+     * Generates a critical alert when a class session reaches full capacity.
+     *
+     * @param session the ClassSession that is completely full
+     */
+    private void generateFullCapacityAlert(ClassSession session) {
+        String message = String.format(
+                "CRITICAL: Class session '%s' (%s) is FULL (%d/%d students). " +
+                        "No more enrollments can be accepted.",
+                session.getSubjectShortName(),
+                session.getSubjectName(),
+                session.getEnrolledStudents(),
+                session.getCapacity()
+        );
+
+        logger.error("FULL CAPACITY ALERT - Session ID: {} - {}", session.getId(), message);
     }
 }
