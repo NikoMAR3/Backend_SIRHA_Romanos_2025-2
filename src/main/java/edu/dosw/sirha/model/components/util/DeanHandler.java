@@ -17,6 +17,6 @@ public class DeanHandler extends PetitionHandler {
     }
 
     private boolean canAnswer(Petition petition) {
-        return petition.getPriority() == PetitionPriority.URGENT; // ESTO TOCA VERLO BIEN
+        return petition.getPriority() == PetitionPriority.URGENT;
     }
 }

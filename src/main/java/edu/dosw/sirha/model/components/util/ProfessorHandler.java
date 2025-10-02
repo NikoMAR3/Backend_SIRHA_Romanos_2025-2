@@ -17,7 +17,7 @@ public class ProfessorHandler extends PetitionHandler {
     }
 
     private boolean canAnswer(Petition petition) {
-        return petition.getPriority() == PetitionPriority.LOW; // ESTO TOCA VERLO BIEN
+        return petition.getPriority() == PetitionPriority.LOW;
     }
 
 }
