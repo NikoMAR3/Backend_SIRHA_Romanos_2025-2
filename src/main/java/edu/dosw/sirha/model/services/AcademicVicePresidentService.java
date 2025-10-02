@@ -27,8 +27,7 @@ public class AcademicVicePresidentService {
         }
     }
 
-    public AcademicVicePresident searchAcademicVicePresident(String avpId){
+    public AcademicVicePresident searchAcademicVicePresidentById(String avpId){
         return academicVicePresidentRepository.findById(avpId).orElse(null);
-        //deberia ser or else throw exception
     }
 }
