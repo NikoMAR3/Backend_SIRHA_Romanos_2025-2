@@ -66,4 +66,38 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
      */
     @Override
     List<ClassSession> findAll();
+
+    /**
+     * Finds all class sessions where a specific student is enrolled.
+     * @param studentId the ID of the student
+     * @return a list of ClassSessions where the student is enrolled
+     */
+    @Query("{ 'enrolledStudentIds': ?0 }")
+    List<ClassSession> findByEnrolledStudentId(String studentId);
+
+    /**
+     * Finds all class sessions where a specific student is on the waiting list.
+     * @param studentId the ID of the student
+     * @return a list of ClassSessions where the student is on waiting list
+     */
+    @Query("{ 'waitingListStudentIds': ?0 }")
+    List<ClassSession> findByWaitingListStudentId(String studentId);
+
+    /**
+     * Checks if a student is already enrolled in a specific session.
+     * @param sessionId the session ID
+     * @param studentId the student ID
+     * @return true if student is enrolled, false otherwise
+     */
+    @Query("{ '_id': ?0, 'enrolledStudentIds': ?1 }")
+    boolean existsByIdAndEnrolledStudentId(String sessionId, String studentId);
+
+    /**
+     * Finds sessions by subject short name and available capacity.
+     * @param subjectShortName the short name of the subject
+     * @return list of sessions with available spots
+     */
+    @Query("{ 'subjectShortName': ?0, 'enrolledStudents': { $lt: '$capacity' } }")
+    List<ClassSession> findBySubjectShortNameWithAvailableCapacity(String subjectShortName);
+
 }

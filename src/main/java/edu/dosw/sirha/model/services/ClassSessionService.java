@@ -359,4 +359,267 @@ public class ClassSessionService {
             return true;
         }
     }
+
+    
+
+    /**/
+
+    /**
+     * Enrolls a student in a class session.
+     * Validates capacity and prevents duplicate enrollments.
+     *
+     * @param sessionId the ID of the session
+     * @param studentId the ID of the student to enroll
+     * @return the updated ClassSession
+     * @throws IllegalArgumentException if validation fails
+     */
+    public ClassSession enrollStudent(String sessionId, String studentId) {
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Session ID cannot be null or empty");
+        }
+        
+        if (studentId == null || studentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be null or empty");
+        }
+
+        ClassSession session = classSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Class session with ID '" + sessionId + "' not found"));
+
+
+        validateEnrollmentEligibility(session, studentId);
+
+
+        if (session.getEnrolledStudentIds() == null) {
+            session.setEnrolledStudentIds(new ArrayList<>());
+        }
+        if (session.getWaitingListStudentIds() == null) {
+            session.setWaitingListStudentIds(new ArrayList<>());
+        }
+
+        if (session.getEnrolledStudentIds().contains(studentId)) {
+            throw new IllegalArgumentException("Student '" + studentId + "' is already enrolled in this session");
+        }
+
+        if (session.getEnrolledStudents() >= session.getCapacity()) {
+            if (!session.getWaitingListStudentIds().contains(studentId)) {
+                session.getWaitingListStudentIds().add(studentId);
+                return classSessionRepository.save(session);
+            } else {
+                throw new IllegalArgumentException("Student '" + studentId + "' is already on the waiting list");
+            }
+        }
+
+        session.getEnrolledStudentIds().add(studentId);
+        session.setEnrolledStudents(session.getEnrolledStudents() + 1);
+
+        session.getWaitingListStudentIds().remove(studentId);
+
+        return classSessionRepository.save(session);
+    }
+
+    /**
+     * Withdraws a student from a class session.
+     * Automatically enrolls next student from waiting list if available.
+     *
+     * @param sessionId the ID of the session
+     * @param studentId the ID of the student to withdraw
+     * @return the updated ClassSession
+     * @throws IllegalArgumentException if validation fails
+     */
+    public ClassSession withdrawStudent(String sessionId, String studentId) {
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Session ID cannot be null or empty");
+        }
+        
+        if (studentId == null || studentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be null or empty");
+        }
+
+        ClassSession session = classSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Class session with ID '" + sessionId + "' not found"));
+
+        if (session.getEnrolledStudentIds() == null || !session.getEnrolledStudentIds().contains(studentId)) {
+            throw new IllegalArgumentException("Student '" + studentId + "' is not enrolled in this session");
+        }
+
+        session.getEnrolledStudentIds().remove(studentId);
+        session.setEnrolledStudents(session.getEnrolledStudents() - 1);
+
+        if (session.getWaitingListStudentIds() != null && !session.getWaitingListStudentIds().isEmpty()) {
+            String nextStudentId = session.getWaitingListStudentIds().remove(0);
+            session.getEnrolledStudentIds().add(nextStudentId);
+            session.setEnrolledStudents(session.getEnrolledStudents() + 1);
+        }
+
+        return classSessionRepository.save(session);
+    }
+
+    /**
+     * Gets all sessions where a student is enrolled.
+     *
+     * @param studentId the ID of the student
+     * @return list of ClassSessions where student is enrolled
+     */
+    public List<ClassSession> getStudentEnrollments(String studentId) {
+        if (studentId == null || studentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be null or empty");
+        }
+
+        return classSessionRepository.findByEnrolledStudentId(studentId);
+    }
+
+    /**
+     * Gets all sessions where a student is on the waiting list.
+     *
+     * @param studentId the ID of the student
+     * @return list of ClassSessions where student is on waiting list
+     */
+    public List<ClassSession> getStudentWaitingList(String studentId) {
+        if (studentId == null || studentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be null or empty");
+        }
+
+        return classSessionRepository.findByWaitingListStudentId(studentId);
+    }
+
+    /**
+     * Checks if a student can enroll in a session.
+     *
+     * @param sessionId the ID of the session
+     * @param studentId the ID of the student
+     * @return true if student can enroll, false otherwise
+     */
+    public boolean canStudentEnroll(String sessionId, String studentId) {
+        try {
+            ClassSession session = classSessionRepository.findById(sessionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+            
+            validateEnrollmentEligibility(session, studentId);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Gets enrollment statistics for a session.
+     *
+     * @param sessionId the ID of the session
+     * @return enrollment statistics
+     */
+    public EnrollmentStats getEnrollmentStats(String sessionId) {
+        ClassSession session = classSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+
+        int enrolled = session.getEnrolledStudents();
+        int capacity = session.getCapacity();
+        int waiting = session.getWaitingListStudentIds() != null ? session.getWaitingListStudentIds().size() : 0;
+        int available = Math.max(0, capacity - enrolled);
+
+        return new EnrollmentStats(enrolled, capacity, waiting, available);
+    }
+
+    /**
+     * Transfers a student from waiting list to enrolled (if capacity allows).
+     *
+     * @param sessionId the ID of the session
+     * @param studentId the ID of the student
+     * @return the updated ClassSession
+     */
+    public ClassSession promoteFromWaitingList(String sessionId, String studentId) {
+        ClassSession session = classSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+
+        if (session.getWaitingListStudentIds() == null || !session.getWaitingListStudentIds().contains(studentId)) {
+            throw new IllegalArgumentException("Student is not on waiting list");
+        }
+
+        if (session.getEnrolledStudents() >= session.getCapacity()) {
+            throw new IllegalArgumentException("Session is at full capacity");
+        }
+
+        session.getWaitingListStudentIds().remove(studentId);
+        if (session.getEnrolledStudentIds() == null) {
+            session.setEnrolledStudentIds(new ArrayList<>());
+        }
+        session.getEnrolledStudentIds().add(studentId);
+        session.setEnrolledStudents(session.getEnrolledStudents() + 1);
+
+        return classSessionRepository.save(session);
+    }
+
+
+    /**
+     * Validates if a student is eligible to enroll in a session.
+     */
+    private void validateEnrollmentEligibility(ClassSession session, String studentId) {
+        // Verificar que no esté ya inscrito
+        if (session.getEnrolledStudentIds() != null && session.getEnrolledStudentIds().contains(studentId)) {
+            throw new IllegalArgumentException("Student is already enrolled");
+        }
+
+        // Verificar conflictos de horario con otras materias del estudiante
+        List<ClassSession> studentSessions = classSessionRepository.findByEnrolledStudentId(studentId);
+        for (ClassSession enrolledSession : studentSessions) {
+            if (hasScheduleConflictBetweenSessions(session, enrolledSession)) {
+                throw new IllegalArgumentException(
+                    String.format("Schedule conflict: Student has overlapping class times between '%s' and '%s'",
+                        session.getSubjectShortName(), enrolledSession.getSubjectShortName())
+                );
+            }
+        }
+    }
+
+    /**
+     * Checks if two sessions have schedule conflicts.
+     */
+    private boolean hasScheduleConflictBetweenSessions(ClassSession session1, ClassSession session2) {
+        if (session1.getSchedules() == null || session2.getSchedules() == null) {
+            return false;
+        }
+
+        for (ClassSchedule schedule1 : session1.getSchedules()) {
+            for (ClassSchedule schedule2 : session2.getSchedules()) {
+                if (hasTimeConflict(schedule1, schedule2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static class EnrollmentStats {
+        private final int enrolled;
+        private final int capacity;
+        private final int waitingList;
+        private final int available;
+
+        public EnrollmentStats(int enrolled, int capacity, int waitingList, int available) {
+            this.enrolled = enrolled;
+            this.capacity = capacity;
+            this.waitingList = waitingList;
+            this.available = available;
+        }
+
+
+        public int getEnrolled() { return enrolled; }
+        public int getCapacity() { return capacity; }
+        public int getWaitingList() { return waitingList; }
+        public int getAvailable() { return available; }
+        public double getOccupancyPercentage() { 
+            return capacity > 0 ? (double) enrolled / capacity * 100 : 0; 
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

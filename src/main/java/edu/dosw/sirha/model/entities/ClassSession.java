@@ -44,4 +44,12 @@ public class ClassSession {
 
     @DBRef
     private List<ClassSchedule> schedules;
+
+    @Field
+    private List<String> enrolledStudentIds;
+    
+    @Field
+    private List<String> waitingListStudentIds;
+    
+
 }
