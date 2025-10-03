@@ -1,11 +1,13 @@
 package edu.dosw.sirha.model.services;
 
+import edu.dosw.sirha.model.entities.Subject;
 import edu.dosw.sirha.model.entities.TrafficLight;
 import edu.dosw.sirha.model.entities.TrafficLightStatus;
 import edu.dosw.sirha.model.persistence.repository.TrafficLightRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -193,4 +195,14 @@ public class TrafficLightService {
     public List<TrafficLight> getStudentsAtRisk() {
         return trafficLightRepository.findByStatus(TrafficLightStatus.RED);
     }
+
+    public double calculateGPA(String studentId){
+        HashMap<Subject, Double> grades = trafficLightRepository.getSubjectsWithGrades(studentId);
+        double finalGPA = 0.0;
+        for (Map.Entry<Subject, Double> entry : grades.entrySet()) {
+            finalGPA += entry.getKey().getCredits() * entry.getValue();
+        }
+        return finalGPA;
+    }
+
 }
