@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 
 @Component
-public class RemoveSubjectCreator implements PetitionCreator {
+public class RemoveSubjectCreator extends PetitionCreator {
 
     /**
      * Creates a new REMOVE_SUBJECT petition based on the provided DTO.
