@@ -16,10 +16,18 @@ import java.util.UUID;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final ClassSessionService classSessionService;
+    private final TrafficLightService trafficLightService;
+    private final ScheduleService scheduleService;
+
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, ClassSessionService classSessionService, TrafficLightService trafficLightService,
+                          ScheduleService scheduleService) {
         this.studentRepository = studentRepository;
+        this.classSessionService = classSessionService;
+        this.trafficLightService = trafficLightService;
+        this.scheduleService = scheduleService;
     }
 
     public Student createStudent(UserDTO dto) {
@@ -82,17 +90,18 @@ public class StudentService {
     }
 
     public void enrollInCourse(String studentId, String courseId) {
+        classSessionService.enrollStudent(studentId,courseId);
     }
 
     public void withdrawFromCourse(String studentId, String courseId) {
-
+        classSessionService.unrollStudent(studentId,courseId);
     }
 
     public double calculateGPA(String studentId) {
-        return 0.0;
+        return trafficLightService.calculateGPA(studentId);
     }
 
     public Schedule getStudentSchedule(String studentId) {
-        return new Schedule();
+        return scheduleService.searchScheduleByStudentId(studentId);
     }
 }
