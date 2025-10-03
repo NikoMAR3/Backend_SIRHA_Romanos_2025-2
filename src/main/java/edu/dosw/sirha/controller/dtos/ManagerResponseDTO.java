@@ -1,4 +1,249 @@
 package edu.dosw.sirha.controller.dtos;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+/**
+ * Data Transfer Object for manager response operations.
+ * Contains information returned for deanery management operations.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Data transfer object for manager responses in deanery management")
 public class ManagerResponseDTO {
+
+    /**
+     * List of petitions in the manager's deanery
+     */
+    @Schema(description = "List of petitions assigned to the deanery")
+    private List<PetitionSummary> petitions;
+
+    /**
+     * Student's current schedule information
+     */
+    @Schema(description = "Current schedule of the requesting student")
+    private StudentSchedule studentSchedule;
+
+    /**
+     * Academic traffic light status of the student
+     */
+    @Schema(description = "Academic status indicator of the student")
+    private AcademicStatus academicStatus;
+
+    /**
+     * Alternative groups availability information
+     */
+    @Schema(description = "Available alternative groups for subject change")
+    private List<GroupAvailability> alternativeGroups;
+
+    /**
+     * Current change period configuration
+     */
+    @Schema(description = "Active change periods configuration")
+    private List<ChangePeriod> changePeriods;
+
+    /**
+     * Group capacity monitoring alerts
+     */
+    @Schema(description = "Capacity monitoring alerts for groups")
+    private List<CapacityAlert> capacityAlerts;
+
+    /**
+     * Operation result message
+     */
+    @Schema(description = "Result message of the operation", example = "Petition processed successfully")
+    private String message;
+
+    /**
+     * Success status of the operation
+     */
+    @Schema(description = "Indicates if the operation was successful", example = "true")
+    private Boolean success;
+
+    // Inner classes for structured data
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PetitionSummary {
+        @Schema(description = "Petition unique identifier", example = "petition-123")
+        private String petitionId;
+
+        @Schema(description = "Student name who made the petition", example = "Juan Pérez")
+        private String studentName;
+
+        @Schema(description = "Subject involved in the petition", example = "CALC1 - Cálculo I")
+        private String subject;
+
+        @Schema(description = "Type of petition", example = "GROUP_CHANGE")
+        private String petitionType;
+
+        @Schema(description = "Current state of the petition", example = "PENDING")
+        private String state;
+
+        @Schema(description = "Priority level", example = "MEDIUM")
+        private String priority;
+
+        @Schema(description = "Date when petition was created")
+        private LocalDateTime creationDate;
+
+        @Schema(description = "Justification provided by student")
+        private String justification;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StudentSchedule {
+        @Schema(description = "Student identifier", example = "student-456")
+        private String studentId;
+
+        @Schema(description = "Student full name", example = "Juan Carlos Pérez")
+        private String studentName;
+
+        @Schema(description = "Current semester", example = "2024-1")
+        private String semester;
+
+        @Schema(description = "List of enrolled sessions")
+        private List<ScheduleEntry> sessions;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ScheduleEntry {
+        @Schema(description = "Subject short name", example = "CALC1")
+        private String subjectShortName;
+
+        @Schema(description = "Subject full name", example = "Cálculo I")
+        private String subjectName;
+
+        @Schema(description = "Professor name", example = "Dr. María González")
+        private String professorName;
+
+        @Schema(description = "Day of the week", example = "MONDAY")
+        private String dayOfWeek;
+
+        @Schema(description = "Start time of the class")
+        private LocalTime startTime;
+
+        @Schema(description = "End time of the class")
+        private LocalTime endTime;
+
+        @Schema(description = "Classroom location", example = "A-201")
+        private String classroom;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AcademicStatus {
+        @Schema(description = "Traffic light color", allowableValues = {"GREEN", "BLUE", "RED"}, example = "GREEN")
+        private String status;
+
+        @Schema(description = "Status description", example = "Normal academic progress")
+        private String description;
+
+        @Schema(description = "Current GPA", example = "4.2")
+        private Double gpa;
+
+        @Schema(description = "Number of failed subjects", example = "0")
+        private Integer failedSubjects;
+
+        @Schema(description = "Credit percentage completed", example = "75.5")
+        private Double creditPercentage;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GroupAvailability {
+        @Schema(description = "Session identifier", example = "session-789")
+        private String sessionId;
+
+        @Schema(description = "Subject short name", example = "CALC1")
+        private String subjectShortName;
+
+        @Schema(description = "Group identifier", example = "Group 02")
+        private String groupId;
+
+        @Schema(description = "Professor name", example = "Dr. Carlos Ruiz")
+        private String professorName;
+
+        @Schema(description = "Available capacity", example = "5")
+        private Integer availableSpots;
+
+        @Schema(description = "Total capacity", example = "30")
+        private Integer totalCapacity;
+
+        @Schema(description = "Current enrollment", example = "25")
+        private Integer currentEnrollment;
+
+        @Schema(description = "Waiting list size", example = "3")
+        private Integer waitingListSize;
+
+        @Schema(description = "Schedule information")
+        private List<ScheduleEntry> schedule;
+
+        @Schema(description = "Indicates if group is available for enrollment", example = "true")
+        private Boolean available;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChangePeriod {
+        @Schema(description = "Period identifier", example = "period-2024-1")
+        private String periodId;
+
+        @Schema(description = "Period name", example = "Change Period January 2024")
+        private String periodName;
+
+        @Schema(description = "Start date of the change period")
+        private LocalDateTime startDate;
+
+        @Schema(description = "End date of the change period")
+        private LocalDateTime endDate;
+
+        @Schema(description = "Indicates if period is currently active", example = "true")
+        private Boolean active;
+
+        @Schema(description = "Description of the period", example = "Regular change period for spring semester")
+        private String description;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CapacityAlert {
+        @Schema(description = "Session identifier", example = "session-789")
+        private String sessionId;
+
+        @Schema(description = "Subject information", example = "CALC1 - Cálculo I")
+        private String subject;
+
+        @Schema(description = "Current enrollment", example = "27")
+        private Integer currentEnrollment;
+
+        @Schema(description = "Total capacity", example = "30")
+        private Integer totalCapacity;
+
+        @Schema(description = "Occupancy percentage", example = "90.0")
+        private Double occupancyPercentage;
+
+        @Schema(description = "Alert level", allowableValues = {"WARNING", "CRITICAL"}, example = "WARNING")
+        private String alertLevel;
+
+        @Schema(description = "Alert message", example = "Group is at 90% capacity")
+        private String alertMessage;
+
+        @Schema(description = "Date when alert was generated")
+        private LocalDateTime alertDate;
+    }
 }
