@@ -46,5 +46,4 @@ public class ChangeGroupCreator extends PetitionCreator {
         return petition;
     }
 
-    //deberia hacerce excepciones
 }

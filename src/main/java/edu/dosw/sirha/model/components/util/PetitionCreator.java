@@ -12,12 +12,12 @@ import edu.dosw.sirha.model.services.StudentService;
  * Interface for creating petitions of different types.
  * Each implementing class is responsible for creating a specific type of petition.
  */
-public interface PetitionCreator {
+public abstract class PetitionCreator {
 
-    StudentService studentService = new StudentService();
-    DeanService deanService = new DeanService();
-    ProfessorService professorService = new ProfessorService();
-    AcademicVicePresidentService academicvicepresidentService = new AcademicVicePresidentService();
+    StudentService studentService;
+    DeanService deanService;
+    ProfessorService professorService;
+    AcademicVicePresidentService academicvicepresidentService;
 
     /**
      * Creates a petition entity based on the provided data transfer object.
@@ -25,7 +25,7 @@ public interface PetitionCreator {
      * @param dto the data transfer object containing the petition information
      * @return the created petition entity
      */
-    Petition createPetition(PetitionRequestDTO dto);
+    public abstract Petition createPetition(PetitionRequestDTO dto);
 
     /**
      * Calculates the priority level for the petition based on user-specific criteria.
@@ -33,7 +33,7 @@ public interface PetitionCreator {
      * @param dto the data transfer object containing petition details
      * @return the calculated priority level as an Enumeration
      */
-    default PetitionPriority calculatePriorityByUser(PetitionRequestDTO dto){
+    public PetitionPriority calculatePriorityByUser(PetitionRequestDTO dto){
         if (studentService.searchStudentById(dto.getUserID()) != null) {
             return PetitionPriority.LOW;
         } else if (deanService.searchDeanById(dto.getUserID()) != null) {
