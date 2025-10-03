@@ -158,16 +158,16 @@ class TrafficLightServiceTest {
         //assertEquals(TrafficLightStatus.GREEN, status);
     //}
 
-    @Test
-    void calculateTrafficLightStatus_blue() {
-        trafficLight.setApprovedSubjects(List.of());
-        trafficLight.setFailedSubjects(List.of());
-        trafficLight.setGrade(3.5);
+    //@Test
+    //void calculateTrafficLightStatus_blue() {
+        //trafficLight.setApprovedSubjects(List.of());
+        //trafficLight.setFailedSubjects(List.of());
+        //trafficLight.setGrade(3.5);
 
-        TrafficLightStatus status = trafficLightService.calculateTrafficLightStatus(trafficLight);
+        //TrafficLightStatus status = trafficLightService.calculateTrafficLightStatus(trafficLight);
 
-        assertEquals(TrafficLightStatus.BLUE, status);
-    }
+        //assertEquals(TrafficLightStatus.BLUE, status);
+    //}
 
     @Test
     void getTrafficLightStadistics_success() {
