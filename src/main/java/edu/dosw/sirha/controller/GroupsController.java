@@ -1,4 +1,4 @@
 package edu.dosw.sirha.controller;
 
-public class PeriodController {
+public class GroupsController {
 }

@@ -1,8 +1,7 @@
 package edu.dosw.sirha.model.components.util;
 
-import edu.dosw.sirha.controller.dtos.PetitionCreateDTO;
+import edu.dosw.sirha.controller.dtos.PetitionRequestDTO;
 import edu.dosw.sirha.model.entities.Petition;
-import edu.dosw.sirha.model.entities.PetitionPriority;
 import edu.dosw.sirha.model.entities.PetitionState;
 import edu.dosw.sirha.model.entities.PetitionType;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,7 @@ public class AddSubjectCreator extends PetitionCreator {
      */
 
     @Override
-    public Petition createPetition(PetitionCreateDTO dto) {
+    public Petition createPetition(PetitionRequestDTO dto) {
         Petition petition = new Petition();
         petition.setPetitionId(UUID.randomUUID().toString());
         petition.setStudentId(dto.getUserID());
