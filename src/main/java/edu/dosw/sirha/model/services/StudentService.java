@@ -94,7 +94,7 @@ public class StudentService {
     }
 
     public void withdrawFromCourse(String studentId, String courseId) {
-        classSessionService.unrollStudent(studentId,courseId);
+        classSessionService.withdrawStudent(studentId,courseId);
     }
 
     public double calculateGPA(String studentId) {
