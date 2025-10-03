@@ -18,10 +18,10 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
 
     /**
      * Finds a class session by its unique identifier.
-     * @param sessionId the unique identifier of the class session
+     * @param id the unique identifier of the class session
      * @return an Optional containing the found ClassSession, or empty if not found
      */
-    Optional<ClassSession> findBySessionId(String sessionId);
+    Optional<ClassSession> findById(String id);
 
     /**
      * Finds class sessions by professor ID.
@@ -40,11 +40,11 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
     /**
      * Checks if there are scheduling conflicts for a given session ID.
      * This method would typically check for time/classroom conflicts.
-     * @param sessionId the ID of the session to check for conflicts
+     * @param id the ID of the session to check for conflicts
      * @return true if there are conflicts, false otherwise
      */
     @Query("{ $and: [ { '_id': { $ne: ?0 } }, { $or: [ { 'dayOfWeek': ?1, 'startTime': { $lt: ?3 }, 'endTime': { $gt: ?2 }, 'classroom': ?4 }, { 'professorId': ?5, 'dayOfWeek': ?1, 'startTime': { $lt: ?3 }, 'endTime': { $gt: ?2 } } ] } ] }")
-    boolean existsScheduleConflicts(String sessionId, String dayOfWeek, String startTime, String endTime, String classroom, String professorId);
+    boolean existsScheduleConflicts(String id, String dayOfWeek, String startTime, String endTime, String classroom, String professorId);
 
     /**
      * Finds all class sessions with available capacity (enrolled < capacity).
@@ -85,12 +85,12 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
 
     /**
      * Checks if a student is already enrolled in a specific session.
-     * @param sessionId the session ID
+     * @param id the session ID
      * @param studentId the student ID
      * @return true if student is enrolled, false otherwise
      */
     @Query("{ '_id': ?0, 'enrolledStudentIds': ?1 }")
-    boolean existsByIdAndEnrolledStudentId(String sessionId, String studentId);
+    boolean existsByIdAndEnrolledStudentId(String id, String studentId);
 
     /**
      * Finds sessions by subject short name and available capacity.
