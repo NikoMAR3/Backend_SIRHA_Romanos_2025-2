@@ -1,8 +1,12 @@
 package edu.dosw.sirha.controller.dtos;
 
 import edu.dosw.sirha.model.entities.User;
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
 
 /**
  * Class that groups all DTOs related to authentication.
@@ -12,275 +16,170 @@ public class AuthDto {
     /**
      * DTO representing a request for user login.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Request DTO for user authentication")
     public static class LoginRequest {
+        
+        @NotBlank(message = "Credential is required")
+        @Schema(
+            description = "User credential (document number or institutional email)",
+            example = "12345678",
+            requiredMode = Schema.RequiredMode.REQUIRED
+        )
         private String credential;
+        
+        @NotBlank(message = "Password is required")
+        @Schema(
+            description = "User password",
+            example = "mySecurePassword123",
+            requiredMode = Schema.RequiredMode.REQUIRED
+        )
         private String password;
-        
-        /**
-         * Default constructor.
-         */
-        public LoginRequest() {}
-        
-        /**
-         * Constructor with all parameters.
-         * 
-         * @param credential the username, email, or document used to authenticate
-         * @param password the user's password
-         */
-        public LoginRequest(String credential, String password) {
-            this.credential = credential;
-            this.password = password;
-        }
-        
-        /**
-         * @return the credential provided by the user
-         */
-        public String getCredential() { return credential; }
-        
-        /**
-         * @param credential sets the user credential
-         */
-        public void setCredential(String credential) { this.credential = credential; }
-        
-        /**
-         * @return the user's password
-         */
-        public String getPassword() { return password; }
-        
-        /**
-         * @param password sets the user's password
-         */
-        public void setPassword(String password) { this.password = password; }
     }
     
     /**
      * DTO representing the response of a login request.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Response DTO for login authentication")
     public static class LoginResponse {
+        
+        @Schema(
+            description = "Indicates if the login was successful",
+            example = "true"
+        )
         private boolean success;
+        
+        @Schema(
+            description = "Response message with details",
+            example = "Login successful"
+        )
         private String message;
+        
+        @Schema(
+            description = "Authenticated user information",
+            implementation = User.class
+        )
         private User user;
-        
-        /**
-         * Default constructor.
-         */
-        public LoginResponse() {}
-        
-        /**
-         * Constructor with all parameters.
-         * 
-         * @param success indicates if the login was successful
-         * @param message response message with details
-         * @param user the authenticated user entity
-         */
-        public LoginResponse(boolean success, String message, User user) {
-            this.success = success;
-            this.message = message;
-            this.user = user;
-        }
-        
-        /**
-         * @return true if the login was successful, false otherwise
-         */
-        public boolean isSuccess() { return success; }
-        
-        /**
-         * @param success sets the login success flag
-         */
-        public void setSuccess(boolean success) { this.success = success; }
-        
-        /**
-         * @return message providing information about the login attempt
-         */
-        public String getMessage() { return message; }
-        
-        /**
-         * @param message sets the response message
-         */
-        public void setMessage(String message) { this.message = message; }
-        
-        /**
-         * @return the authenticated user
-         */
-        public User getUser() { return user; }
-        
-        /**
-         * @param user sets the authenticated user
-         */
-        public void setUser(User user) { this.user = user; }
     }
     
     /**
      * Generic API response DTO.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Generic API response for operations")
     public static class ApiResponse {
+        
+        @Schema(
+            description = "Indicates if the operation was successful",
+            example = "true"
+        )
         private boolean success;
+        
+        @Schema(
+            description = "Descriptive message about the operation",
+            example = "Operation completed successfully"
+        )
         private String message;
-        
-        /**
-         * Default constructor.
-         */
-        public ApiResponse() {}
-        
-        /**
-         * Constructor with all parameters.
-         * 
-         * @param success indicates if the API operation was successful
-         * @param message descriptive message about the operation
-         */
-        public ApiResponse(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-        
-        /**
-         * @return true if the operation succeeded, false otherwise
-         */
-        public boolean isSuccess() { return success; }
-        
-        /**
-         * @param success sets the operation success flag
-         */
-        public void setSuccess(boolean success) { this.success = success; }
-        
-        /**
-         * @return message with additional operation details
-         */
-        public String getMessage() { return message; }
-        
-        /**
-         * @param message sets the response message
-         */
-        public void setMessage(String message) { this.message = message; }
     }
     
     /**
      * DTO representing the response for a permission check.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Response DTO for permission verification")
     public static class PermissionResponse {
+        
+        @Schema(
+            description = "True if the user has the required permission",
+            example = "true"
+        )
         private boolean hasPermission;
+        
+        @Schema(
+            description = "The resource name or identifier being accessed",
+            example = "users_manage"
+        )
         private String resource;
+        
+        @Schema(
+            description = "The user's role description",
+            example = "Vicepresidente Académico"
+        )
         private String userRole;
-        
-        /**
-         * Default constructor.
-         */
-        public PermissionResponse() {}
-        
-        /**
-         * Constructor with all parameters.
-         * 
-         * @param hasPermission true if the user has permission
-         * @param resource the resource being accessed
-         * @param userRole the role of the user
-         */
-        public PermissionResponse(boolean hasPermission, String resource, String userRole) {
-            this.hasPermission = hasPermission;
-            this.resource = resource;
-            this.userRole = userRole;
-        }
-        
-        /**
-         * @return true if the user has the required permission
-         */
-        public boolean isHasPermission() { return hasPermission; }
-        
-        /**
-         * @param hasPermission sets whether the user has permission
-         */
-        public void setHasPermission(boolean hasPermission) { this.hasPermission = hasPermission; }
-        
-        /**
-         * @return the resource name or identifier
-         */
-        public String getResource() { return resource; }
-        
-        /**
-         * @param resource sets the resource name
-         */
-        public void setResource(String resource) { this.resource = resource; }
-        
-        /**
-         * @return the user's role
-         */
-        public String getUserRole() { return userRole; }
-        
-        /**
-         * @param userRole sets the user's role
-         */
-        public void setUserRole(String userRole) { this.userRole = userRole; }
     }
     
     /**
      * DTO representing a request to set a user's password.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Request DTO for setting user password")
     public static class SetPasswordRequest {
+        
+        @NotBlank(message = "User ID is required")
+        @Schema(
+            description = "The ID of the user whose password will be set",
+            example = "507f1f77bcf86cd799439011",
+            requiredMode = Schema.RequiredMode.REQUIRED
+        )
         private String userId;
+        
+        @NotBlank(message = "New password is required")
+        @Schema(
+            description = "The new password to be set",
+            example = "newSecurePassword123",
+            requiredMode = Schema.RequiredMode.REQUIRED
+        )
         private String newPassword;
-        
-        /**
-         * Default constructor.
-         */
-        public SetPasswordRequest() {}
-        
-        /**
-         * Constructor with all parameters.
-         * 
-         * @param userId the ID of the user
-         * @param newPassword the new password to be set
-         */
-        public SetPasswordRequest(String userId, String newPassword) {
-            this.userId = userId;
-            this.newPassword = newPassword;
-        }
-        
-        /**
-         * @return the user ID
-         */
-        public String getUserId() { return userId; }
-        
-        /**
-         * @param userId sets the user ID
-         */
-        public void setUserId(String userId) { this.userId = userId; }
-        
-        /**
-         * @return the new password
-         */
-        public String getNewPassword() { return newPassword; }
-        
-        /**
-         * @param newPassword sets the new password
-         */
-        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     }
     
     /**
      * DTO representing the response with current user information.
      */
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @Schema(description = "Response DTO with current user information")
     public static class CurrentUserResponse {
-        private String id;
-        private String name;
-        private String mail;
-        private String userType;
-        private boolean isActive;
         
-        /**
-         * Default constructor.
-         */
-        public CurrentUserResponse() {}
+        @Schema(
+            description = "Unique identifier of the user",
+            example = "507f1f77bcf86cd799439011"
+        )
+        private String id;
+        
+        @Schema(
+            description = "Full name of the user",
+            example = "Juan Pérez"
+        )
+        private String name;
+        
+        @Schema(
+            description = "Institutional email of the user",
+            example = "juan.perez@escuelaing.edu.co"
+        )
+        private String mail;
+        
+        @Schema(
+            description = "User type description",
+            example = "Estudiante"
+        )
+        private String userType;
+        
+        @Schema(
+            description = "Indicates if the user account is active",
+            example = "true"
+        )
+        private boolean isActive;
         
         /**
          * Constructor that builds a response from a {@link User} entity.
@@ -294,6 +193,5 @@ public class AuthDto {
             this.userType = user.getType().getDescription();
             this.isActive = user.isActive();
         }
-        
     }
 }
