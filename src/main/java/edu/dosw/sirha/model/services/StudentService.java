@@ -214,6 +214,9 @@ public class StudentService {
     public double calculateGPA(String studentId) {
         return trafficLightService.calculateGPA(studentId);
     }
+    //public double calculateGPA(String studentId) {
+        //return trafficLightService.calculateGPA(studentId);
+    //}
 
     /**
      * Retrieves the complete schedule for a student.
