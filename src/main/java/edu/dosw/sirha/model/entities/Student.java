@@ -33,6 +33,8 @@ public class Student extends User{
     @DBRef
     private Deanery deanery;
 
+    private Integer semester ;
+
     /**
      * Constructor for creating a Student with basic user information.
      *
@@ -44,4 +46,13 @@ public class Student extends User{
     public Student(String id, String name, String mail, String document) {
         super(id, name, mail, document, UserType.STUDENT);
     }
+
+    public String getStudentCode() {
+        return super.getId();
+    }
+
+    public void setStudentCode(String studentCode) {
+        super.setId(studentCode);
+    }
+
 }

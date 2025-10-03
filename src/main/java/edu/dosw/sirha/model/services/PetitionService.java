@@ -266,7 +266,7 @@ public class PetitionService {
             throw new IllegalArgumentException("Deanery cannot be null or empty");
         }
 
-        List<Petition> petitions = petitionRepository.findByDeanery(deanery);
+        List<Petition> petitions = petitionRepository.findByAssociateDeanery(deanery);
         logger.debug("Found {} petitions for deanery: {}", petitions.size(), deanery);
         return petitions;
     }

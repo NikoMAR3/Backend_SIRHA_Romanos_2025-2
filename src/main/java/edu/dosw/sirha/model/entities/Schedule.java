@@ -61,4 +61,7 @@ public class Schedule {
 
     @DBRef
     private Professor professor;
+
+    @DBRef
+    private String program;
 }
