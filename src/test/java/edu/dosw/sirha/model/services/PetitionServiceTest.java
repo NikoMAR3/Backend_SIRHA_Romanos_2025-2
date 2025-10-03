@@ -166,7 +166,7 @@ class PetitionServiceTest {
 
     @Test
     void searchPetitionsByDeanery_returnsList() {
-        when(petitionRepository.findByDeanery("Engineering"))
+        when(petitionRepository.findByAssociateDeanery("Engineering"))
                 .thenReturn(Arrays.asList(petition));
         List<Petition> result = petitionService.searchPetitionsByDeanery("Engineering");
         assertEquals(1, result.size());
