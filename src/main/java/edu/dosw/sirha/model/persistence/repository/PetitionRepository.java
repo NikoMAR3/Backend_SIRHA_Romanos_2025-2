@@ -63,7 +63,7 @@ public interface PetitionRepository extends MongoRepository<Petition, String> {
      * @param deanery the name or identifier of the deanery
      * @return a list of petitions associated with the specified deanery
      */
-    List<Petition> findByDeanery(String deanery);
+    List<Petition> findByAssociateDeanery(String deanery);
 
     /**
      * Finds all petitions submitted by a specific student.
