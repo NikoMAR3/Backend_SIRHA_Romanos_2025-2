@@ -46,4 +46,8 @@ public class ChangeGroupCreator extends PetitionCreator {
         return petition;
     }
 
+    @Override
+    public boolean supports(PetitionType type) {
+        return type == PetitionType.CHANGE_GROUP;
+    }
 }

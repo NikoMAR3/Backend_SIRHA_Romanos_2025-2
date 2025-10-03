@@ -43,5 +43,10 @@ public class AddSubjectCreator extends PetitionCreator {
         petition.setCreationDate(LocalDateTime.now());
         return petition;
     }
+
+    @Override
+    public boolean supports(PetitionType type) {
+        return type == PetitionType.ADD_SUBJECT;
+    }
 }
 

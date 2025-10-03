@@ -3,6 +3,7 @@ package edu.dosw.sirha.model.components.util;
 import edu.dosw.sirha.controller.dtos.PetitionRequestDTO;
 import edu.dosw.sirha.model.entities.Petition;
 import edu.dosw.sirha.model.entities.PetitionPriority;
+import edu.dosw.sirha.model.entities.PetitionType;
 import edu.dosw.sirha.model.services.AcademicVicePresidentService;
 import edu.dosw.sirha.model.services.DeanService;
 import edu.dosw.sirha.model.services.ProfessorService;
@@ -26,6 +27,14 @@ public abstract class PetitionCreator {
      * @return the created petition entity
      */
     public abstract Petition createPetition(PetitionRequestDTO dto);
+
+    /**
+     * Determines if this creator can handle the given petition type.
+     *
+     * @param type the petition type to check
+     * @return true if this creator can handle the type, false otherwise
+     */
+    public abstract boolean supports(PetitionType type);
 
     /**
      * Calculates the priority level for the petition based on user-specific criteria.
