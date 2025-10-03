@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StudentServiceTest {
-
     @Mock
     private StudentRepository studentRepository;
     @Mock

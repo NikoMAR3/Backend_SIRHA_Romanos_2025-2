@@ -17,13 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ScheduleServiceTest {
-
     @Mock
     private ScheduleRepository scheduleRepository;
-
     @InjectMocks
     private ScheduleService scheduleService;
-
     private Schedule schedule;
 
     @BeforeEach

@@ -126,7 +126,6 @@ class PeriodServiceTest {
         assertEquals(1, result.size());
     }
 
-    // ---------------- ALL PERIODS ----------------
     @Test
     void searchAllPeriods_ShouldReturnAll() {
         when(periodRepository.findAll()).thenReturn(Arrays.asList(validPeriod));
