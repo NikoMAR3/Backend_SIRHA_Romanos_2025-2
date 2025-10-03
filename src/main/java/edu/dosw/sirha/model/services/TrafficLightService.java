@@ -196,6 +196,12 @@ public class TrafficLightService {
         return trafficLightRepository.findByStatus(TrafficLightStatus.RED);
     }
 
+    /**
+     * Calculates the GPA of the given student.
+     * @param studentId the student whose GPA wants to be calculated
+     * @return the calculated GPA student
+     */
+
     public double calculateGPA(String studentId){
         HashMap<Subject, Double> grades = trafficLightRepository.getSubjectsWithGrades(studentId);
         double finalGPA = 0.0;
