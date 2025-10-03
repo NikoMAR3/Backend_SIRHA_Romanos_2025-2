@@ -129,6 +129,15 @@ public class PetitionResponseDTO {
     private String justification;
 
     /**
+     * ID of the reviewer assigned to handle this petition
+     */
+    @Schema(
+            description = "Identifier of the reviewer assigned to handle this petition",
+            example = "1000098136"
+    )
+    private String assignedReviewer;
+
+    /**
      * Reason for rejection if the petition was denied
      */
     @Schema(
