@@ -1,15 +1,16 @@
 package edu.dosw.sirha.model.services;
 
+import edu.dosw.sirha.controller.dtos.UserDTO;
 import edu.dosw.sirha.model.entities.Student;
 import edu.dosw.sirha.model.persistence.repository.StudentRepository;
-import edu.dosw.sirha.model.dto.StudentDTO;
 import edu.dosw.sirha.model.entities.Schedule;
-import edu.dosw.sirha.model.entities.enums.AcademicStatus;
+import edu.dosw.sirha.model.entities.AcademicStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class StudentService {
@@ -21,15 +22,26 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Student createStudent(StudentDTO dto) {
-        Student student = new Student();
-        student.setName(dto.getName());
-        student.setMail(dto.getMail());
-        student.setDocument(dto.getDocument());
-        student.setStudentCode(dto.getStudentCode());
-        student.setSemester(dto.getSemester());
+    public Student createStudent(UserDTO dto) {
+        Student student = new Student(
+                UUID.randomUUID().toString(),
+                dto.getName(),
+                dto.getMail(),
+                dto.getDocument()
+        );
         return studentRepository.save(student);
     }
+
+    public Optional<Student> modifyStudent(String id, UserDTO dto) {
+        return studentRepository.findById(id)
+                .map(student -> {
+                    student.setName(dto.getName());
+                    student.setMail(dto.getMail());
+                    student.setDocument(dto.getDocument());
+                    return studentRepository.save(student);
+                });
+    }
+
 
     public boolean deleteStudent(String id) {
         if(studentRepository.existsById(id)) {
@@ -37,18 +49,6 @@ public class StudentService {
             return true;
         }
         return false;
-    }
-
-    public Student modifyStudent(String id, StudentDTO dto) {
-        Optional<Student> opt = studentRepository.findById(id);
-        if(opt.isPresent()) {
-            Student student = opt.get();
-            student.setName(dto.getName());
-            student.setMail(dto.getMail());
-            student.setDocument(dto.getDocument());
-            return studentRepository.save(student);
-        }
-        throw new RuntimeException("Student not found");
     }
 
     public Student searchStudentById(String id) {
@@ -78,10 +78,7 @@ public class StudentService {
     }
 
     public List<Student> searchStudentsByProgram(String program) {
-        return studentRepository.findAll()
-                .stream()
-                .filter(s -> s.getProgram().equalsIgnoreCase(program))
-                .toList();
+        return studentRepository.findAll() .stream() .filter(s -> s.getAcademicProgram().getName().equalsIgnoreCase(program)) .toList();
     }
 
     public void enrollInCourse(String studentId, String courseId) {

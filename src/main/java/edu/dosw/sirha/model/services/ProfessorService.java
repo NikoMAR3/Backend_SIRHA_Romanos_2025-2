@@ -1,12 +1,14 @@
 package edu.dosw.sirha.model.services;
 
+import edu.dosw.sirha.controller.dtos.UserDTO;
 import edu.dosw.sirha.model.entities.Professor;
 import edu.dosw.sirha.model.entities.Deanery;
 import edu.dosw.sirha.model.entities.Subject;
-import edu.dosw.sirha.model.persistence.repository.DeaneryRepository;
 import edu.dosw.sirha.model.persistence.repository.ProfessorRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProfessorService {
@@ -17,19 +19,33 @@ public class ProfessorService {
         this.professorRepository = professorRepository;
     }
 
-    public void createProfessor(Professor professor) {
-        professorRepository.save(professor);
+    public Professor createProfessor(UserDTO dto) {
+        Professor professor = new Professor(
+                UUID.randomUUID().toString(),
+                dto.getName(),
+                dto.getMail(),
+                dto.getDocument()
+        );
+        return professorRepository.save(professor);
     }
 
-    public void modifyProfessor(Professor professor) {
-        professorRepository.save(professor);
+    public Optional<Professor> modifyProfessor(String id, UserDTO dto) {
+        return professorRepository.findById(id)
+                .map(existing -> {
+                    existing.setName(dto.getName());
+                    existing.setMail(dto.getMail());
+                    existing.setDocument(dto.getDocument());
+                    return professorRepository.save(existing);
+                });
     }
 
-    public void deleteProfessor(String id) {
+    public boolean deleteProfessor(String id) {
         if (professorRepository.existsById(id)) {
             professorRepository.deleteById(id);
+            return true;
+        }else {
+            return false;
         }
-        // excepcion si no existe ?
     }
 
     public Professor searchProfessorById(String id) {
