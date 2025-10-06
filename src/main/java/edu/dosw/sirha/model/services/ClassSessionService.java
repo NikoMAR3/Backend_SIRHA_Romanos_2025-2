@@ -558,7 +558,7 @@ public class ClassSessionService {
             throw new IllegalArgumentException("Student is already enrolled");
         }
 
-        // Verificar conflictos de horario con otras materias del estudiante
+        
         List<ClassSession> studentSessions = classSessionRepository.findByEnrolledStudentId(studentId);
         for (ClassSession enrolledSession : studentSessions) {
             if (hasScheduleConflictBetweenSessions(session, enrolledSession)) {
@@ -610,6 +610,15 @@ public class ClassSessionService {
             return capacity > 0 ? (double) enrolled / capacity * 100 : 0; 
         }
     }
+
+    public ClassSession searchSessionById(String id) {
+        return classSessionRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    }
+
+    public List<ClassSession> searchAllSessions() {
+        return classSessionRepository.findAll();
+}
 
 
 
