@@ -66,8 +66,14 @@ public class ManagerResponseDTO {
     @Schema(description = "Indicates if the operation was successful", example = "true")
     private Boolean success;
 
-    // Inner classes for structured data
 
+    /**
+     * Nested static classes for detailed components of the response
+     */
+
+    /**
+     * Summary of a petition
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -97,6 +103,9 @@ public class ManagerResponseDTO {
         private String justification;
     }
 
+    /**
+     * Student's schedule details
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -114,6 +123,9 @@ public class ManagerResponseDTO {
         private List<ScheduleEntry> sessions;
     }
 
+    /**
+     * Details of a schedule entry
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -140,6 +152,9 @@ public class ManagerResponseDTO {
         private String classroom;
     }
 
+    /**
+     * Academic status details
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -160,6 +175,9 @@ public class ManagerResponseDTO {
         private Double creditPercentage;
     }
 
+    /**
+     * Details of group availability for subject change
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -195,6 +213,9 @@ public class ManagerResponseDTO {
         private Boolean available;
     }
 
+    /**
+     * Details of a change period
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -218,6 +239,9 @@ public class ManagerResponseDTO {
         private String description;
     }
 
+    /**
+     * Details of a capacity alert
+     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
