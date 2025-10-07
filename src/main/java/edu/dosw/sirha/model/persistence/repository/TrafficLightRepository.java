@@ -105,7 +105,7 @@ public interface TrafficLightRepository extends MongoRepository<TrafficLight, St
      * @param studentId the student's ID
      * @return a map with all the failed and approved subjects, each with its final grade.
      */
-    HashMap<Subject, Double> getSubjectsWithGrades(String studentId);
+    //HashMap<Subject, Double> getSubjectsWithGrades(String studentId);
 
 
 }
