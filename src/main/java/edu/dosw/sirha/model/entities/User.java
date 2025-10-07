@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -30,6 +31,11 @@ public abstract class User {
 
     private List<String> petitionIds;
 
+    private String passwordHash;
+    private boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
+
     /**
      * Constructor for creating a new User with the specified attributes.
      *
@@ -46,5 +52,7 @@ public abstract class User {
         this.document = document;
         this.type = type;
         this.petitionIds = new ArrayList<>();
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
     }
 }

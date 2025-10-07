@@ -1,11 +1,14 @@
 package edu.dosw.sirha.model.persistence.repository;
 
+import edu.dosw.sirha.model.entities.Subject;
 import edu.dosw.sirha.model.entities.TrafficLight;
 import edu.dosw.sirha.model.entities.TrafficLightStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -94,5 +97,16 @@ public interface TrafficLightRepository extends MongoRepository<TrafficLight, St
      * @return a list of traffic lights for students with grades below the threshold
      */
     List<TrafficLight> findByGradeLessThan(double grade);
+
+
+    /**
+     * Finds all the grades of failed and approved subjects.
+     *
+     * @param studentId the student's ID
+     * @return a map with all the failed and approved subjects, each with its final grade.
+     */
+    HashMap<Subject, Double> getSubjectsWithGrades(String studentId);
+
+
 }
 

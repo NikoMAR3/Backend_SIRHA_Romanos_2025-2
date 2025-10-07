@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,8 +29,8 @@ public class TrafficLight {
     private String subjectShortName;
     private String subjectName;
 
-    private List<Subject> failedSubjects = new ArrayList<>();
-    private List<Subject> approvedSubjects = new ArrayList<>();
+    private HashMap<Subject, Integer> failedSubjects = new HashMap<>();
+    private HashMap<Subject, Integer> approvedSubjects = new HashMap<>();
     private List<Subject> onGoingSubjects = new ArrayList<>();
     private List<Subject> unseenSubjects = new ArrayList<>();
     private int semester;

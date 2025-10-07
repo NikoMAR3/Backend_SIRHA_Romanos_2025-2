@@ -97,9 +97,9 @@ public class StudentService {
         classSessionService.withdrawStudent(studentId,courseId);
     }
 
-    //public double calculateGPA(String studentId) {
-        //return trafficLightService.calculateGPA(studentId);
-    //}
+    public double calculateGPA(String studentId) {
+        return trafficLightService.calculateGPA(studentId);
+    }
 
     public Schedule getStudentSchedule(String studentId) {
         return scheduleService.searchScheduleByStudentId(studentId);

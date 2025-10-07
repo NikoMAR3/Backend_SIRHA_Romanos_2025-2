@@ -61,4 +61,19 @@ public interface UserRepository extends MongoRepository<User, String> {
      * @return {@code true} if a user exists with the given document, otherwise {@code false}
      */
     boolean existsByDocument(String document);
+
+    /**
+     * Finds active users only.
+     */
+    List<User> findByIsActiveTrue();
+
+    /**
+     * Finds user by document and checks if active.
+     */
+    Optional<User> findByDocumentAndIsActiveTrue(String document);
+
+    /**
+     * Finds user by email and checks if active.
+     */
+    Optional<User> findByMailAndIsActiveTrue(String mail);
 }
