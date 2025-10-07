@@ -201,14 +201,39 @@ public class TrafficLightService {
      * @param studentId the student whose GPA wants to be calculated
      * @return the calculated GPA student
      */
-
     public double calculateGPA(String studentId){
-        HashMap<Subject, Double> grades = trafficLightRepository.getSubjectsWithGrades(studentId);
+        HashMap<Subject, Double> grades = this.getSubjectsWithGrades(studentId);
         double finalGPA = 0.0;
+        int totalCredits = 0;
+        
         for (Map.Entry<Subject, Double> entry : grades.entrySet()) {
             finalGPA += entry.getKey().getCredits() * entry.getValue();
+            totalCredits += entry.getKey().getCredits();
         }
-        return finalGPA;
+        
+        return totalCredits > 0 ? finalGPA / totalCredits : 0.0;
     }
+
+    public HashMap<Subject, Double> getSubjectsWithGrades(String studentId) {
+    Optional<TrafficLight> trafficLightOpt = trafficLightRepository.findByStudentId(studentId);
+    
+    if (trafficLightOpt.isPresent()) {
+        TrafficLight trafficLight = trafficLightOpt.get();
+        HashMap<Subject, Double> result = new HashMap<>();
+        
+        
+        trafficLight.getApprovedSubjects().forEach((subject, grade) -> 
+            result.put(subject, grade.doubleValue())
+        );
+        
+        trafficLight.getFailedSubjects().forEach((subject, grade) -> 
+            result.put(subject, grade.doubleValue())
+        );
+        
+        return result; 
+    }
+    
+    return new HashMap<>();
+}
 
 }
