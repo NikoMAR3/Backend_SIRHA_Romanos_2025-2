@@ -30,7 +30,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
-@Tag(name = "Students", description = "API para gestión de estudiantes")
+@Tag(name = "Students Management", description = "Endpoints para gestión de estudiantes")
 public class StudentsController {
 
     private final StudentService studentService;

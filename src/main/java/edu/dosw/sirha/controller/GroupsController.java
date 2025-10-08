@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/groups")
 @RequiredArgsConstructor
-@Tag(name = "Groups Management", description = "API para gestión completa de grupos académicos")
+@Tag(name = "Groups Management", description = "Endpoints para gestión completa de grupos académicos")
 public class GroupsController {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupsController.class);

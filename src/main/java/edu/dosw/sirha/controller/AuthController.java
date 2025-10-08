@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
-@Tag(name = "Authentication Management", description = "API for user authentication, authorization and session management")
+@Tag(name = "Authentication Management", description = "Endpoints for user authentication, authorization and session management")
 public class AuthController {
     
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);

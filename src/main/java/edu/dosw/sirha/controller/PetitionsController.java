@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/petitions")
-@Tag(name = "Petition Management", description = "API for comprehensive management of academic petitions with automatic routing and traceability")
+@Tag(name = "Petition Management", description = "Endpoints for comprehensive management of academic petitions with automatic routing and traceability")
 public class PetitionsController {
 
     private static final Logger logger = LoggerFactory.getLogger(PetitionsController.class);
