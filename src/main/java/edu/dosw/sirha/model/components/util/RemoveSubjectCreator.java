@@ -42,5 +42,10 @@ public class RemoveSubjectCreator extends PetitionCreator {
         petition.setCreationDate(LocalDateTime.now());
         return petition;
     }
+
+    @Override
+    public boolean supports(PetitionType type) {
+        return type == PetitionType.REMOVE_SUBJECT;
+    }
 }
 

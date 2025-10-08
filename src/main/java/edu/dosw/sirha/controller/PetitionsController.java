@@ -33,12 +33,12 @@ public class PetitionsController {
     private static final Logger logger = LoggerFactory.getLogger(PetitionsController.class);
 
     private final PetitionService petitionService;
-    private final PetitionCreator petitionCreatorFactory;
+    private final List<PetitionCreator> petitionCreators;
 
     @Autowired
-    public PetitionsController(PetitionService petitionService, PetitionCreator petitionCreatorFactory) {
+    public PetitionsController(PetitionService petitionService, List<PetitionCreator> petitionCreators) {
         this.petitionService = petitionService;
-        this.petitionCreatorFactory = petitionCreatorFactory;
+        this.petitionCreators = petitionCreators;
     }
 
     @PostMapping
@@ -56,12 +56,25 @@ public class PetitionsController {
 
         logger.info("Creating new petition for student: {}", petitionRequest.getUserID());
 
-        Petition petition = petitionCreatorFactory.createPetition(petitionRequest);
+        PetitionCreator selectedCreator = selectPetitionCreator(petitionRequest);
+        Petition petition = selectedCreator.createPetition(petitionRequest);
         Petition savedPetition = petitionService.createPetition(petition);
         PetitionResponseDTO response = convertToResponseDTO(savedPetition);
 
         logger.info("Petition created successfully with ID: {}", savedPetition.getPetitionId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Selects the appropriate PetitionCreator based on the request
+     * @param petitionRequest the petition request
+     * @return the selected PetitionCreator
+     */
+    private PetitionCreator selectPetitionCreator(PetitionRequestDTO petitionRequest) {
+        return petitionCreators.stream()
+                .filter(creator -> creator.supports(petitionRequest.getType()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No suitable petition creator found for type: " + petitionRequest.getType()));
     }
 
     @GetMapping("/{id}")
