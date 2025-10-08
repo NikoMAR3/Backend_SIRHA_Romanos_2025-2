@@ -6,6 +6,8 @@ import edu.dosw.sirha.model.entities.*;
 import edu.dosw.sirha.model.services.ClassSessionService;
 import edu.dosw.sirha.model.services.SubjectService;
 import edu.dosw.sirha.model.services.ProfessorService;
+import edu.dosw.sirha.model.services.PetitionService;
+
 import edu.dosw.sirha.model.components.util.AuthValidationUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +47,7 @@ public class GroupsController {
     private final ClassSessionService classSessionService;
     private final SubjectService subjectService;
     private final ProfessorService professorService;
+    private final PetitionService petitionService;
 
     /**
      * Creates a new academic group - DEAN and ACADEMIC_VICEPRESIDENT only.
@@ -774,4 +779,139 @@ public class GroupsController {
         
         return dto;
     }
+
+    /* */ 
+
+    /**
+     * Generates basic statistics for the most requested groups for changes - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/most-requested-changes")
+    @Operation(summary = "Grupos más solicitados para cambio")
+    public ResponseEntity<Map<String, Object>> getMostRequestedGroupChanges(HttpSession session) {
+        logger.debug("Generating most requested group changes statistics");
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver estadísticas de cambios de grupo");
+        }
+
+        List<Petition> changeGroupPetitions = petitionService.searchPetitionByType(PetitionType.CHANGE_GROUP);
+        Map<String, Object> statistics = generateBasicGroupChangeStatistics(changeGroupPetitions);
+
+        logger.info("Generated group change statistics with {} petitions", changeGroupPetitions.size());
+        return ResponseEntity.ok(statistics);
+    }
+
+    /**
+     * Generates basic detailed change request statistics - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/change-request-statistics")
+    @Operation(summary = "Estadísticas detalladas de solicitudes de cambio")
+    public ResponseEntity<Map<String, Object>> getDetailedChangeRequestStatistics(HttpSession session) {
+        logger.debug("Generating detailed change request statistics");
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver estadísticas detalladas");
+        }
+
+        List<Petition> allChangePetitions = petitionService.searchPetitionByType(PetitionType.CHANGE_GROUP);
+        Map<String, Object> detailedStatistics = generateBasicDetailedStatistics(allChangePetitions);
+
+        logger.info("Generated detailed change statistics");
+        return ResponseEntity.ok(detailedStatistics);
+    }
+
+
+    /**
+     * Generates basic statistics for group change requests.
+     */
+    private Map<String, Object> generateBasicGroupChangeStatistics(List<Petition> changeGroupPetitions) {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        
+        stats.put("totalChangeRequests", changeGroupPetitions.size());
+        
+        Map<String, Long> subjectCounts = changeGroupPetitions.stream()
+                .filter(p -> p.getSubjectShortName() != null)
+                .collect(Collectors.groupingBy(
+                        Petition::getSubjectShortName,
+                        Collectors.counting()
+                ));
+        
+        List<Map<String, Object>> topRequestedSubjects = subjectCounts.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(entry -> Map.<String, Object>of(
+                        "subjectShortName", entry.getKey(),
+                        "changeRequestCount", entry.getValue()
+                ))
+                .collect(Collectors.toList());
+        
+        stats.put("topRequestedSubjects", topRequestedSubjects);
+        
+        Map<String, Long> changesByState = changeGroupPetitions.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getState().name(),
+                        Collectors.counting()
+                ));
+        stats.put("changeRequestsByState", changesByState);
+        
+        stats.put("generatedAt", LocalDateTime.now());
+        return stats;
+    }
+
+    /**
+     * Generates basic detailed change statistics.
+     */
+    private Map<String, Object> generateBasicDetailedStatistics(List<Petition> changePetitions) {
+        Map<String, Object> detailedStats = new LinkedHashMap<>();
+        
+        detailedStats.put("totalRequests", changePetitions.size());
+        
+   
+        Map<String, Map<String, Long>> subjectStateAnalysis = changePetitions.stream()
+                .filter(p -> p.getSubjectShortName() != null)
+                .collect(Collectors.groupingBy(
+                        Petition::getSubjectShortName,
+                        Collectors.groupingBy(
+                                p -> p.getState().name(),
+                                Collectors.counting()
+                        )
+                ));
+        detailedStats.put("subjectStateAnalysis", subjectStateAnalysis);
+        
+        
+        Map<String, Long> studentActivity = changePetitions.stream()
+                .collect(Collectors.groupingBy(
+                        Petition::getStudentId,
+                        Collectors.counting()
+                ));
+        
+        List<Map<String, Object>> mostActiveStudents = studentActivity.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> Map.<String, Object>of(
+                        "studentId", entry.getKey(),
+                        "changeRequestCount", entry.getValue()
+                ))
+                .collect(Collectors.toList());
+        detailedStats.put("mostActiveStudents", mostActiveStudents);
+        
+        
+        long approvedRequests = changePetitions.stream()
+                .filter(p -> p.getState() == PetitionState.APPROVED)
+                .count();
+        
+        double successRate = changePetitions.isEmpty() ? 0.0 : 
+                Math.round((double) approvedRequests / changePetitions.size() * 100 * 100.0) / 100.0;
+        detailedStats.put("overallSuccessRate", successRate);
+        
+        detailedStats.put("generatedAt", LocalDateTime.now());
+        return detailedStats;
+    }
+    
 }

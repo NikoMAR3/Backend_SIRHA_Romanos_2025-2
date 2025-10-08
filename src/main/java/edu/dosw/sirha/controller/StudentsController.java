@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller for managing student operations and functionalities.
@@ -727,4 +728,191 @@ public class StudentsController {
                 ))
                 .toList();
     }
+
+    /*  */
+
+    /**
+         * Generates basic change history report for a student - Students can only see their own, Deans/VP can see any.
+         */
+        @GetMapping("/{studentId}/reports/change-history")
+        @Operation(summary = "Reporte de historial de cambios por estudiante")
+        public ResponseEntity<Map<String, Object>> getStudentChangeHistoryReport(
+                @Parameter(description = "ID del estudiante", required = true)
+                @PathVariable String studentId,
+                HttpSession session) {
+
+        logger.debug("Generating change history report for student: {}", studentId);
+        validateStudentAccess(studentId, session);
+
+        List<Petition> studentPetitions = petitionService.searchPetitionsByStudentId(studentId);
+        Map<String, Object> report = generateBasicChangeHistoryReport(studentId, studentPetitions);
+
+        logger.info("Generated change history report for student: {} with {} petitions", 
+                studentId, studentPetitions.size());
+        return ResponseEntity.ok(report);
+        }
+
+        /**
+         * Generates basic academic progress summary for all students - DEAN and ACADEMIC_VICEPRESIDENT only.
+         */
+        @GetMapping("/reports/academic-progress-summary")
+        @Operation(summary = "Resumen básico de progreso académico de estudiantes")
+        public ResponseEntity<Map<String, Object>> getAcademicProgressSummary(HttpSession session) {
+        logger.debug("Generating academic progress summary");
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+                throw new IllegalArgumentException("No tienes permisos para generar resúmenes de progreso académico");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        List<Student> allStudents = studentService.searchAllStudents();
+        Map<String, Object> summary = generateBasicProgressSummary(allStudents);
+
+        logger.info("Generated academic progress summary for {} students by user: {}", 
+                allStudents.size(), currentUser.getId());
+        return ResponseEntity.ok(summary);
+        }
+
+      
+
+        /**
+         * Generates basic change history report.
+         */
+        private Map<String, Object> generateBasicChangeHistoryReport(String studentId, List<Petition> petitions) {
+        Map<String, Object> report = new LinkedHashMap<>();
+        
+       
+        try {
+                Student student = studentService.searchStudentById(studentId);
+                Map<String, Object> studentInfo = Map.of(
+                        "studentId", studentId,
+                        "name", student.getName(),
+                        "document", student.getDocument(),
+                        "academicStatus", student.getAcademicStatus()
+                );
+                report.put("studentInfo", studentInfo);
+        } catch (Exception e) {
+                report.put("studentInfo", Map.of("studentId", studentId, "error", "Student not found"));
+        }
+        
+        report.put("totalPetitions", petitions.size());
+        
+      
+        Map<String, Long> petitionsByState = petitions.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getState().name(),
+                        Collectors.counting()
+                ));
+        report.put("petitionsByState", petitionsByState);
+       
+        Map<String, Long> petitionsByType = petitions.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getType().name(),
+                        Collectors.counting()
+                ));
+        report.put("petitionsByType", petitionsByType);
+        
+      
+        List<Map<String, Object>> recentHistory = petitions.stream()
+                .sorted((p1, p2) -> p2.getCreationDate().compareTo(p1.getCreationDate()))
+                .limit(10)
+                .map(this::mapBasicPetitionInfo)
+                .collect(Collectors.toList());
+        report.put("recentHistory", recentHistory);
+        
+        
+        long approvedCount = petitions.stream()
+                .filter(p -> p.getState() == PetitionState.APPROVED)
+                .count();
+        double successRate = petitions.isEmpty() ? 0.0 : 
+                Math.round((double) approvedCount / petitions.size() * 100 * 100.0) / 100.0;
+        report.put("successRate", successRate);
+        
+        report.put("generatedAt", LocalDateTime.now());
+        return report;
+        }
+
+        /**
+         * Generates basic academic progress summary.
+         */
+        private Map<String, Object> generateBasicProgressSummary(List<Student> students) {
+        Map<String, Object> summary = new LinkedHashMap<>();
+        
+        summary.put("totalStudents", students.size());
+        
+        
+        Map<String, Long> studentsByStatus = students.stream()
+                .filter(s -> s.getAcademicStatus() != null)
+                .collect(Collectors.groupingBy(
+                        s -> s.getAcademicStatus().name(),
+                        Collectors.counting()
+                ));
+        summary.put("studentsByAcademicStatus", studentsByStatus);
+        
+       
+        Map<String, Long> trafficLightDistribution = new LinkedHashMap<>();
+        trafficLightDistribution.put("GREEN", 0L);
+        trafficLightDistribution.put("BLUE", 0L);
+        trafficLightDistribution.put("RED", 0L);
+        trafficLightDistribution.put("NO_DATA", 0L);
+        
+        for (Student student : students) {
+                try {
+                Optional<TrafficLight> trafficLightOpt = trafficLightService.searchTrafficLightByStudentId(student.getId());
+                if (trafficLightOpt.isPresent()) {
+                        String status = trafficLightOpt.get().getStatus().name();
+                        trafficLightDistribution.merge(status, 1L, Long::sum);
+                } else {
+                        trafficLightDistribution.merge("NO_DATA", 1L, Long::sum);
+                }
+                } catch (Exception e) {
+                trafficLightDistribution.merge("NO_DATA", 1L, Long::sum);
+                }
+        }
+        
+        summary.put("trafficLightDistribution", trafficLightDistribution);
+        
+        
+        List<Petition> allPetitions = petitionService.searchAllPetitions();
+        List<Map<String, Object>> mostActiveStudents = allPetitions.stream()
+                .collect(Collectors.groupingBy(
+                        Petition::getStudentId,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> Map.<String, Object>of(
+                        "studentId", entry.getKey(),
+                        "petitionCount", entry.getValue()
+                ))
+                .collect(Collectors.toList());
+        summary.put("mostActiveStudents", mostActiveStudents);
+        
+        summary.put("generatedAt", LocalDateTime.now());
+        return summary;
+        }
+
+        /**
+         * Maps basic petition information for history display.
+         */
+        private Map<String, Object> mapBasicPetitionInfo(Petition petition) {
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("petitionId", petition.getPetitionId());
+        info.put("type", petition.getType().name());
+        info.put("state", petition.getState().name());
+        info.put("creationDate", petition.getCreationDate());
+        
+        if (petition.getSubjectShortName() != null) {
+                info.put("subjectShortName", petition.getSubjectShortName());
+        }
+        if (petition.getJustification() != null) {
+                info.put("justification", petition.getJustification());
+        }
+        
+        return info;
+        }
 }

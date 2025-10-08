@@ -21,6 +21,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Optional;
 
 /**
  * Controller for managing administrative operations by deans and academic vice presidents.
@@ -749,5 +752,121 @@ public class ManagerController {
         alert.setTotalCapacity(session.getCapacity());
         alert.setOccupancyPercentage((double) session.getEnrolledStudents() / session.getCapacity() * 100);
         return alert;
+    }
+
+    /* */
+
+    /**
+     * Generates global traffic light indicators and academic progress summary - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/global-traffic-light-summary")
+    @Operation(
+            summary = "Indicadores globales de semaforización",
+            description = "Genera resumen global de indicadores de avance en planes de estudio"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Indicadores globales generados exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<Map<String, Object>> getGlobalTrafficLightSummary(
+            @Parameter(description = "ID del manager") @RequestParam String managerId,
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.debug("Generating global traffic light summary for manager: {}", managerId);
+
+        
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver indicadores globales");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a indicadores como otro manager");
+        }
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
+
+        validateManagerAccess(managerId, managerType);
+
+        
+        String deaneryName = getDeaneryForManager(managerId, managerType);
+        Map<String, Object> indicators = generateTrafficLightSummary(deaneryName);
+
+        logger.info("Generated global traffic light summary for manager: {}", managerId);
+        return ResponseEntity.ok(indicators);
+    }
+
+   
+
+    /**
+     * Generates basic traffic light summary.
+     */
+    private Map<String, Object> generateTrafficLightSummary(String deaneryName) {
+        Map<String, Object> summary = new LinkedHashMap<>();
+        
+    
+        List<Student> allStudents = studentService.searchAllStudents();
+        
+   
+        List<Student> students; 
+        if (deaneryName != null) {
+            students = allStudents.stream()
+                    .filter(s -> s.getDeanery() != null && 
+                            deaneryName.equals(s.getDeanery().getDeaneryName()))
+                    .collect(Collectors.toList());
+        } else {
+            students = allStudents; 
+        }
+        
+        summary.put("totalStudents", students.size());
+        summary.put("scope", deaneryName != null ? deaneryName : "INSTITUTIONAL");
+        
+        Map<String, Integer> trafficLightCount = new LinkedHashMap<>();
+        trafficLightCount.put("GREEN", 0);
+        trafficLightCount.put("BLUE", 0);
+        trafficLightCount.put("RED", 0);
+        trafficLightCount.put("NO_DATA", 0);
+        
+        for (Student student : students) {
+            try {
+                Optional<TrafficLight> trafficLight = trafficLightService.searchTrafficLightByStudentId(student.getId());
+                if (trafficLight.isPresent()) {
+                    String status = trafficLight.get().getStatus().name();
+                    trafficLightCount.merge(status, 1, Integer::sum);
+                } else {
+                    trafficLightCount.merge("NO_DATA", 1, Integer::sum);
+                }
+            } catch (Exception e) {
+                trafficLightCount.merge("NO_DATA", 1, Integer::sum);
+            }
+        }
+        
+        summary.put("trafficLightDistribution", trafficLightCount);
+        
+       
+        Map<String, Double> percentages = new LinkedHashMap<>();
+        if (students.size() > 0) {
+            trafficLightCount.forEach((status, count) -> {
+                double percentage = Math.round((double) count / students.size() * 100 * 100.0) / 100.0;
+                percentages.put(status, percentage);
+            });
+        }
+        summary.put("percentages", percentages);
+        
+      
+        int redCount = trafficLightCount.get("RED");
+        double criticalPercentage = students.size() > 0 ? (double) redCount / students.size() * 100 : 0.0;
+        summary.put("studentsInCriticalStatus", redCount);
+        summary.put("criticalPercentage", Math.round(criticalPercentage * 100.0) / 100.0);
+        
+        summary.put("generatedAt", LocalDateTime.now());
+        
+        return summary;
     }
 }
