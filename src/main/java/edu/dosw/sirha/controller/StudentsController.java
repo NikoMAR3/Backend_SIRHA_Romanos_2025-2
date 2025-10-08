@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,8 @@ import java.util.*;
 @Tag(name = "Students Management", description = "Endpoints para gestión de estudiantes")
 public class StudentsController {
 
+    private static final Logger logger = LoggerFactory.getLogger(StudentsController.class);
+
     private final StudentService studentService;
     private final TrafficLightService trafficLightService;
     private final ScheduleService scheduleService;
@@ -43,12 +47,7 @@ public class StudentsController {
     private final AuthenticationService authenticationService;
 
     /**
-     * Authenticates a student with institutional credentials.
-     *
-     * @param request the login request containing credentials
-     * @param session HTTP session for storing authentication data
-     * @return authentication response with user information
-     * @throws IllegalArgumentException if credentials are invalid or user is not a student
+     * Authenticates a student with institutional credentials - Public endpoint.
      */
     @Operation(
             summary = "Autenticación de estudiante",
@@ -64,11 +63,14 @@ public class StudentsController {
             @Valid @RequestBody AuthDto.LoginRequest request,
             HttpSession session) {
 
+        logger.info("Student authentication attempt for credential: {}", request.getCredential());
+
         AuthenticationService.AuthenticationResult result =
                 authenticationService.authenticate(request.getCredential(), request.getPassword());
 
         if (result.isSuccess()) {
             if (result.getUser().getType() != UserType.STUDENT) {
+                logger.warn("Non-student user {} attempted to access student login", result.getUser().getId());
                 throw new IllegalArgumentException("Solo estudiantes pueden acceder a esta funcionalidad");
             }
 
@@ -76,17 +78,16 @@ public class StudentsController {
             session.setAttribute("userId", result.getUser().getId());
             session.setAttribute("userType", result.getUser().getType());
 
+            logger.info("Student {} authenticated successfully", result.getUser().getId());
             return ResponseEntity.ok(new AuthDto.LoginResponse(true, "Autenticación exitosa", result.getUser()));
         } else {
+            logger.warn("Failed authentication attempt for credential: {}", request.getCredential());
             throw new IllegalArgumentException("Credenciales inválidas: " + result.getMessage());
         }
     }
 
     /**
-     * Registers a new student in the system with institutional credentials.
-     *
-     * @param request the student registration request
-     * @return the created student information
+     * Registers a new student in the system - DEAN and ACADEMIC_VICEPRESIDENT only.
      */
     @Operation(
             summary = "Registrar nuevo estudiante",
@@ -95,11 +96,25 @@ public class StudentsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Estudiante creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "409", description = "Estudiante ya existe")
     })
     @PostMapping("/register")
     public ResponseEntity<StudentsResponseDTO> registerStudent(
-            @Valid @RequestBody StudentsRequestDTO request) {
+            @Valid @RequestBody StudentsRequestDTO request,
+            HttpSession session) {
+
+        logger.info("Registering new student: {}", request.getDocument());
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para registrar estudiantes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
 
         UserDTO userDTO = new UserDTO();
         userDTO.setName(request.getName());
@@ -110,24 +125,30 @@ public class StudentsController {
         Student student = studentService.createStudent(userDTO);
         StudentsResponseDTO response = buildStudentResponse(student);
 
+        logger.info("Student created successfully with ID: {} by user: {}", student.getId(), currentUser.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
-     * Retrieves complete information for a specific student including schedules and academic status.
-     *
-     * @param studentId the ID of the student to retrieve
-     * @param session HTTP session for authentication validation
-     * @return complete student information
+     * Retrieves complete information for a specific student - Students can only see their own, Deans/VP can see any.
      */
     @Operation(
             summary = "Obtener información del estudiante",
             description = "Consulta la información completa de un estudiante incluyendo horarios y semáforo académico"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Información obtenida exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver esta información"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
     @GetMapping("/{studentId}")
     public ResponseEntity<StudentsResponseDTO> getStudentInfo(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
+
+        logger.debug("Retrieving student info for ID: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -138,20 +159,25 @@ public class StudentsController {
     }
 
     /**
-     * Retrieves the current semester schedule for a student.
-     *
-     * @param studentId the ID of the student
-     * @param session HTTP session for authentication validation
-     * @return current schedule details
+     * Retrieves the current semester schedule for a student - Students can only see their own, Deans/VP can see any.
      */
     @Operation(
             summary = "Consultar horario actual",
             description = "Obtiene el horario del semestre actual del estudiante"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Horario obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver este horario"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
     @GetMapping("/{studentId}/schedule/current")
     public ResponseEntity<List<Map<String, Object>>> getCurrentSchedule(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
+
+        logger.debug("Retrieving current schedule for student: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -162,20 +188,25 @@ public class StudentsController {
     }
 
     /**
-     * Retrieves the historical schedules for previous semesters.
-     *
-     * @param studentId the ID of the student
-     * @param session HTTP session for authentication validation
-     * @return list of historical schedules
+     * Retrieves the historical schedules for previous semesters - Students can only see their own, Deans/VP can see any.
      */
     @Operation(
             summary = "Consultar historial de horarios",
             description = "Obtiene los horarios de semestres anteriores del estudiante"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historial de horarios obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver este historial"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
     @GetMapping("/{studentId}/schedule/history")
     public ResponseEntity<List<Map<String, Object>>> getScheduleHistory(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
+
+        logger.debug("Retrieving schedule history for student: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -189,21 +220,25 @@ public class StudentsController {
     }
 
     /**
-     * Retrieves the academic traffic light status for a student.
-     * Traffic light indicates: green (normal), blue (in progress), red (failing).
-     *
-     * @param studentId the ID of the student
-     * @param session HTTP session for authentication validation
-     * @return traffic light status information
+     * Retrieves the academic traffic light status for a student - Students can only see their own, Deans/VP can see any.
      */
     @Operation(
             summary = "Consultar semáforo académico",
             description = "Obtiene el estado del semáforo académico del estudiante (verde=normal, azul=en progreso, rojo=perdida)"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Semáforo académico obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver este semáforo"),
+            @ApiResponse(responseCode = "404", description = "Estudiante o semáforo no encontrado")
+    })
     @GetMapping("/{studentId}/traffic-light")
     public ResponseEntity<Map<String, Object>> getTrafficLight(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
+
+        logger.debug("Retrieving traffic light for student: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -220,12 +255,7 @@ public class StudentsController {
     }
 
     /**
-     * Creates a new petition for subject/group changes.
-     *
-     * @param studentId the ID of the student creating the petition
-     * @param request the petition request details
-     * @param session HTTP session for authentication validation
-     * @return the created petition information
+     * Creates a new petition for subject/group changes - STUDENT only (for themselves).
      */
     @Operation(
             summary = "Crear solicitud de cambio",
@@ -234,15 +264,31 @@ public class StudentsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Solicitud creada exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos de solicitud inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autenticado")
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Solo puedes crear solicitudes para ti mismo")
     })
     @PostMapping("/{studentId}/petitions")
     public ResponseEntity<PetitionResponseDTO> createPetition(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             @Valid @RequestBody PetitionRequestDTO request,
             HttpSession session) {
 
-        validateStudentAccess(studentId, session);
+        logger.info("Creating petition for student: {} of type: {}", studentId, request.getType());
+
+        
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Solo estudiantes pueden crear solicitudes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        
+        if (!currentUser.getId().equals(studentId)) {
+            logger.warn("Student {} attempted to create petition for student {}", currentUser.getId(), studentId);
+            throw new IllegalArgumentException("Solo puedes crear solicitudes para ti mismo");
+        }
 
         PetitionCreator appropriateCreator = petitionCreators.stream()
                 .filter(creator -> creator.supports(request.getType()))
@@ -251,37 +297,55 @@ public class StudentsController {
                         "No se encontró un creator para el tipo de petición: " + request.getType()));
 
         Petition petition = appropriateCreator.createPetition(request);
-
         petition.setStudentId(studentId);
 
         Petition createdPetition = petitionService.createPetition(petition);
         PetitionResponseDTO response = buildPetitionResponse(createdPetition);
 
+        logger.info("Petition created successfully with ID: {} for student: {}", 
+                   createdPetition.getPetitionId(), studentId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
-     * Retrieves the current status of a specific petition.
-     *
-     * @param studentId the ID of the student
-     * @param petitionId the ID of the petition to check
-     * @param session HTTP session for authentication validation
-     * @return petition status information
+     * Retrieves the current status of a specific petition - STUDENT only (their own petitions).
      */
     @Operation(
             summary = "Consultar estado de solicitud",
             description = "Obtiene el estado actual de una solicitud específica"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estado de solicitud obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver esta solicitud"),
+            @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
+    })
     @GetMapping("/{studentId}/petitions/{petitionId}")
     public ResponseEntity<PetitionResponseDTO> getPetitionStatus(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
+            @Parameter(description = "ID de la solicitud", required = true)
             @PathVariable String petitionId,
             HttpSession session) {
 
-        validateStudentAccess(studentId, session);
+        logger.debug("Retrieving petition status: {} for student: {}", petitionId, studentId);
+
+     
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Solo estudiantes pueden consultar sus solicitudes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+     
+        if (!currentUser.getId().equals(studentId)) {
+            throw new IllegalArgumentException("Solo puedes consultar tus propias solicitudes");
+        }
 
         Petition petition = petitionService.searchPetitionsById(petitionId);
 
+    
         if (!petition.getStudentId().equals(studentId)) {
             throw new IllegalArgumentException("No tienes permisos para ver esta solicitud");
         }
@@ -291,22 +355,37 @@ public class StudentsController {
     }
 
     /**
-     * Retrieves the complete petition history for a student.
-     *
-     * @param studentId the ID of the student
-     * @param session HTTP session for authentication validation
-     * @return list of all petitions made by the student
+     * Retrieves the complete petition history for a student - STUDENT only (their own history).
      */
     @Operation(
             summary = "Historial de solicitudes",
             description = "Obtiene todas las solicitudes realizadas por el estudiante"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historial de solicitudes obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Solo puedes ver tu propio historial")
+    })
     @GetMapping("/{studentId}/petitions")
     public ResponseEntity<List<PetitionResponseDTO>> getPetitionHistory(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
 
-        validateStudentAccess(studentId, session);
+        logger.debug("Retrieving petition history for student: {}", studentId);
+
+       
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Solo estudiantes pueden consultar su historial");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        
+        if (!currentUser.getId().equals(studentId)) {
+            throw new IllegalArgumentException("Solo puedes ver tu propio historial de solicitudes");
+        }
 
         List<Petition> petitions = petitionService.searchPetitionsByStudentId(studentId);
         List<PetitionResponseDTO> response = petitions.stream()
@@ -317,24 +396,39 @@ public class StudentsController {
     }
 
     /**
-     * Retrieves petitions filtered by their current state.
-     *
-     * @param studentId the ID of the student
-     * @param state the petition state to filter by
-     * @param session HTTP session for authentication validation
-     * @return list of petitions with the specified state
+     * Retrieves petitions filtered by their current state - STUDENT only (their own petitions).
      */
     @Operation(
             summary = "Consultar solicitudes por estado",
             description = "Obtiene las solicitudes del estudiante filtradas por estado"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Solicitudes filtradas obtenidas exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Solo puedes filtrar tus propias solicitudes")
+    })
     @GetMapping("/{studentId}/petitions/by-state")
     public ResponseEntity<List<PetitionResponseDTO>> getPetitionsByState(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
+            @Parameter(description = "Estado de la solicitud", required = true)
             @RequestParam PetitionState state,
             HttpSession session) {
 
-        validateStudentAccess(studentId, session);
+        logger.debug("Retrieving petitions by state {} for student: {}", state, studentId);
+
+       
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Solo estudiantes pueden filtrar sus solicitudes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+    
+        if (!currentUser.getId().equals(studentId)) {
+            throw new IllegalArgumentException("Solo puedes filtrar tus propias solicitudes");
+        }
 
         List<Petition> allPetitions = petitionService.searchPetitionsByStudentId(studentId);
         List<Petition> filteredPetitions = allPetitions.stream()
@@ -349,17 +443,22 @@ public class StudentsController {
     }
 
     /**
-     * Calculates and returns the student's Grade Point Average (GPA).
-     *
-     * @param studentId the ID of the student
-     * @param session HTTP session for authentication validation
-     * @return GPA calculation result
+     * Calculates and returns the student's Grade Point Average (GPA) - Students can only see their own, Deans/VP can see any.
      */
     @Operation(summary = "Calcular GPA del estudiante")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "GPA calculado exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para ver este GPA"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
     @GetMapping("/{studentId}/gpa")
     public ResponseEntity<Map<String, Object>> calculateGPA(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             HttpSession session) {
+
+        logger.debug("Calculating GPA for student: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -375,19 +474,23 @@ public class StudentsController {
     }
 
     /**
-     * Updates the personal information of a student.
-     *
-     * @param studentId the ID of the student to update
-     * @param request the update request with new information
-     * @param session HTTP session for authentication validation
-     * @return updated student information
+     * Updates the personal information of a student - STUDENT only (their own info), or DEAN/VP.
      */
     @Operation(summary = "Actualizar información del estudiante")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Información actualizada exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para actualizar esta información"),
+            @ApiResponse(responseCode = "404", description = "Estudiante no encontrado")
+    })
     @PutMapping("/{studentId}")
     public ResponseEntity<StudentsResponseDTO> updateStudent(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
             @Valid @RequestBody StudentsRequestDTO request,
             HttpSession session) {
+
+        logger.info("Updating student information for ID: {}", studentId);
 
         validateStudentAccess(studentId, session);
 
@@ -408,19 +511,24 @@ public class StudentsController {
     }
 
     /**
-     * Enrolls a student in a specific course.
-     *
-     * @param studentId the ID of the student
-     * @param courseId the ID of the course to enroll in
-     * @param session HTTP session for authentication validation
-     * @return enrollment confirmation
+     * Enrolls a student in a specific course - STUDENT only (for themselves), or DEAN/VP.
      */
     @Operation(summary = "Inscribir materia")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Inscripción exitosa"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para inscribir a este estudiante"),
+            @ApiResponse(responseCode = "404", description = "Estudiante o materia no encontrada")
+    })
     @PostMapping("/{studentId}/enroll/{courseId}")
     public ResponseEntity<Map<String, String>> enrollInCourse(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
+            @Parameter(description = "ID de la materia", required = true)
             @PathVariable String courseId,
             HttpSession session) {
+
+        logger.info("Enrolling student {} in course {}", studentId, courseId);
 
         validateStudentAccess(studentId, session);
 
@@ -437,19 +545,24 @@ public class StudentsController {
     }
 
     /**
-     * Withdraws a student from a specific course.
-     *
-     * @param studentId the ID of the student
-     * @param courseId the ID of the course to withdraw from
-     * @param session HTTP session for authentication validation
-     * @return withdrawal confirmation
+     * Withdraws a student from a specific course - STUDENT only (for themselves), or DEAN/VP.
      */
     @Operation(summary = "Retirar materia")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retiro exitoso"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para retirar a este estudiante"),
+            @ApiResponse(responseCode = "404", description = "Estudiante o materia no encontrada")
+    })
     @DeleteMapping("/{studentId}/withdraw/{courseId}")
     public ResponseEntity<Map<String, String>> withdrawFromCourse(
+            @Parameter(description = "ID del estudiante", required = true)
             @PathVariable String studentId,
+            @Parameter(description = "ID de la materia", required = true)
             @PathVariable String courseId,
             HttpSession session) {
+
+        logger.info("Withdrawing student {} from course {}", studentId, courseId);
 
         validateStudentAccess(studentId, session);
 
@@ -465,35 +578,47 @@ public class StudentsController {
         return ResponseEntity.ok(response);
     }
 
+   
+
     /**
      * Validates that the authenticated user has access to the specified student data.
-     * Ensures the user is authenticated, is a student, and can only access their own data.
-     *
-     * @param studentId the ID of the student to validate access for
-     * @param session HTTP session containing authentication information
-     * @throws IllegalArgumentException if access is not authorized
+     * Students can only access their own data, while Deans and Academic VP can access any student.
      */
     private void validateStudentAccess(String studentId, HttpSession session) {
+     
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session);
         if (authCheck != null) {
             throw new IllegalArgumentException("Usuario no autenticado");
         }
 
         User currentUser = AuthValidationUtils.getCurrentUser(session);
-        if (currentUser.getType() != UserType.STUDENT) {
-            throw new IllegalArgumentException("Solo estudiantes pueden acceder a esta funcionalidad");
-        }
 
-        if (!currentUser.getId().equals(studentId)) {
-            throw new IllegalArgumentException("No tienes permisos para acceder a la información de este estudiante");
+        switch (currentUser.getType()) {
+            case STUDENT:
+               
+                if (!currentUser.getId().equals(studentId)) {
+                    logger.warn("Student {} attempted to access data for student {}", 
+                               currentUser.getId(), studentId);
+                    throw new IllegalArgumentException("No tienes permisos para acceder a la información de este estudiante");
+                }
+                break;
+            case DEAN:
+            case ACADEMIC_VICEPRESIDENT:
+                
+                logger.debug("Admin user {} accessing student data for: {}", currentUser.getId(), studentId);
+                break;
+            case PROFESSOR:
+        
+                throw new IllegalArgumentException("Los profesores no tienen permisos para acceder a información detallada de estudiantes");
+            default:
+                throw new IllegalArgumentException("Tipo de usuario no válido para esta operación");
         }
     }
 
+
+
     /**
      * Builds a complete student response DTO with all relevant information.
-     *
-     * @param student the student entity to convert
-     * @return formatted student response DTO
      */
     private StudentsResponseDTO buildStudentResponse(Student student) {
         StudentsResponseDTO response = new StudentsResponseDTO();
@@ -533,9 +658,6 @@ public class StudentsController {
 
     /**
      * Builds a petition response DTO from a petition entity.
-     *
-     * @param petition the petition entity to convert
-     * @return formatted petition response DTO
      */
     private PetitionResponseDTO buildPetitionResponse(Petition petition) {
         PetitionResponseDTO response = new PetitionResponseDTO();
@@ -560,9 +682,6 @@ public class StudentsController {
     /**
      * Generates an estimated queue position for a petition based on creation date
      * and other pending petitions.
-     *
-     * @param petition the petition to calculate position for
-     * @return estimated position in the processing queue
      */
     private Integer generateQueuePosition(Petition petition) {
         List<Petition> pendingPetitions = petitionService.searchPetitionsByState(PetitionState.PENDING);
@@ -574,9 +693,6 @@ public class StudentsController {
 
     /**
      * Builds a traffic light response map with academic status information.
-     *
-     * @param trafficLight the traffic light entity containing academic status
-     * @return formatted traffic light information
      */
     private Map<String, Object> buildTrafficLightResponse(TrafficLight trafficLight) {
         return Map.of(
@@ -593,9 +709,6 @@ public class StudentsController {
 
     /**
      * Builds a schedule response list from a schedule entity.
-     *
-     * @param schedule the schedule entity to convert
-     * @return formatted list of schedule information
      */
     private List<Map<String, Object>> buildScheduleResponse(Schedule schedule) {
         if (schedule.getSubjects() == null) {

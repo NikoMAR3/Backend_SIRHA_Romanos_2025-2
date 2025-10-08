@@ -67,6 +67,30 @@ public class ManagerResponseDTO {
     @Schema(description = "Indicates if the operation was successful", example = "true")
     private Boolean success;
 
+    /**
+     * Dashboard statistics
+     */
+    @Schema(description = "Total number of petitions in the deanery", example = "150")
+    private Integer totalPetitions;
+
+    /**
+     * Number of pending petitions
+     */
+    @Schema(description = "Number of pending petitions", example = "75")
+    private Integer pendingPetitions;
+
+    /**
+     * Number of approved petitions
+     */
+    @Schema(description = "Number of approved petitions", example = "50")
+    private Integer approvedPetitions;
+
+    /**
+     * Number of rejected petitions
+     */
+    @Schema(description = "Number of rejected petitions", example = "25")
+    private Integer rejectedPetitions;
+
 
     /**
      * Nested static classes for detailed components of the response

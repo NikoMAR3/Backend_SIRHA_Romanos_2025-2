@@ -4,11 +4,16 @@ import edu.dosw.sirha.controller.dtos.ManagerRequestDTO;
 import edu.dosw.sirha.controller.dtos.ManagerResponseDTO;
 import edu.dosw.sirha.model.entities.*;
 import edu.dosw.sirha.model.services.*;
+import edu.dosw.sirha.model.components.util.AuthValidationUtils;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +35,8 @@ import java.util.stream.Collectors;
 @Tag(name = "Managers Management", description = "Endpoints para gestión de decanatura")
 public class ManagerController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
+
     private final DeaneryService deaneryService;
     private final DeanService deanService;
     private final AcademicVicePresidentService academicVicePresidentService;
@@ -42,16 +49,6 @@ public class ManagerController {
 
     /**
      * Constructor for ManagerController.
-     *
-     * @param deaneryService service for deanery operations
-     * @param deanService service for dean operations
-     * @param academicVicePresidentService service for academic vice president operations
-     * @param classSessionService service for class session operations
-     * @param periodService service for period operations
-     * @param observerService service for monitoring operations
-     * @param petitionService service for petition operations
-     * @param studentService service for student operations
-     * @param trafficLightService service for traffic light operations
      */
     public ManagerController(DeaneryService deaneryService,
                              DeanService deanService,
@@ -74,30 +71,59 @@ public class ManagerController {
     }
 
     /**
-     * Retrieves all petitions for a specific deanery based on manager credentials.
+     * Retrieves all petitions for a specific deanery based on manager credentials - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Access is restricted by faculty jurisdiction.
-     *
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager (DEAN or ACADEMIC_VICEPRESIDENT)
-     * @return ResponseEntity containing list of petitions for the deanery
-     * @throws IllegalArgumentException if manager credentials are invalid
-     * @throws RuntimeException if manager type is not supported
      */
     @GetMapping("/petitions")
     @Operation(summary = "Obtener solicitudes de la decanatura")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Solicitudes obtenidas exitosamente"),
             @ApiResponse(responseCode = "400", description = "Credenciales de manager inválidas"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ManagerResponseDTO> getDeaneryPetitions(
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting petitions for manager {} of type {}", managerId, managerType);
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        if (!currentUser.getId().equals(managerId)) {
+            logger.warn("User {} attempted to access petitions for manager {}", currentUser.getId(), managerId);
+            throw new IllegalArgumentException("No puedes acceder a solicitudes de otro manager");
+        }
+
+        
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            logger.warn("User {} with type {} attempted to access as manager type {}", 
+                       currentUser.getId(), currentUser.getType(), managerType);
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
         String deaneryName = getDeaneryForManager(managerId, managerType);
 
-        List<Petition> petitions = petitionService.searchPetitionsByDeanery(deaneryName);
+        List<Petition> petitions;
+        if (deaneryName != null) {
+            
+            petitions = petitionService.searchPetitionsByDeanery(deaneryName);
+            logger.info("Dean {} retrieved {} petitions for deanery {}", managerId, petitions.size(), deaneryName);
+        } else {
+        
+            petitions = petitionService.searchAllPetitions();
+            logger.info("Academic VP {} retrieved {} total petitions", managerId, petitions.size());
+        }
 
         List<ManagerResponseDTO.PetitionSummary> petitionSummaryList = petitions.stream()
                 .map(this::mapToPetitionSummary)
@@ -112,27 +138,45 @@ public class ManagerController {
     }
 
     /**
-     * Retrieves the complete schedule for a specific student.
+     * Retrieves the complete schedule for a specific student - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Requires manager authentication and returns detailed schedule information.
-     *
-     * @param studentId unique identifier of the student
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager requesting the information
-     * @return ResponseEntity containing student schedule details
-     * @throws IllegalArgumentException if student or manager not found
-     * @throws RuntimeException if schedule cannot be retrieved
      */
     @GetMapping("/student-schedule/{studentId}")
     @Operation(summary = "Obtener horario del estudiante")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Horario obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "404", description = "Estudiante no encontrado"),
             @ApiResponse(responseCode = "400", description = "Parámetros inválidos")
     })
     public ResponseEntity<ManagerResponseDTO> getStudentSchedule(
             @Parameter(description = "ID del estudiante") @PathVariable String studentId,
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting schedule for student {} requested by manager {}", studentId, managerId);
+
+    
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+  
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
+        }
+
+
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
 
@@ -144,31 +188,50 @@ public class ManagerController {
         response.setSuccess(true);
         response.setMessage("Horario obtenido exitosamente");
 
+        logger.info("Schedule retrieved successfully for student {} by manager {}", studentId, managerId);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Retrieves the academic traffic light status for a specific student.
+     * Retrieves the academic traffic light status for a specific student - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Includes GPA calculation and detailed academic progress information.
-     *
-     * @param studentId unique identifier of the student
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager requesting the information
-     * @return ResponseEntity containing academic status details
-     * @throws IllegalArgumentException if student not found
-     * @throws RuntimeException if traffic light information is unavailable
      */
     @GetMapping("/academic-status/{studentId}")
     @Operation(summary = "Consultar semáforo académico del estudiante")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Semáforo académico obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "404", description = "Estudiante o semáforo no encontrado"),
             @ApiResponse(responseCode = "400", description = "Parámetros inválidos")
     })
     public ResponseEntity<ManagerResponseDTO> getStudentAcademicStatus(
             @Parameter(description = "ID del estudiante") @PathVariable String studentId,
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting academic status for student {} requested by manager {}", studentId, managerId);
+
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+       
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
+        }
+
+   
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
 
@@ -183,31 +246,49 @@ public class ManagerController {
         response.setSuccess(true);
         response.setMessage("Semáforo académico obtenido exitosamente");
 
+        logger.info("Academic status retrieved successfully for student {} by manager {}", studentId, managerId);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Retrieves alternative groups available for a specific subject.
+     * Retrieves alternative groups available for a specific subject - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Shows capacity, enrollment, and availability information for decision making.
-     *
-     * @param subjectShortName short code of the subject
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager requesting the information
-     * @return ResponseEntity containing alternative group availability
-     * @throws IllegalArgumentException if subject not found
-     * @throws RuntimeException if group information cannot be retrieved
      */
     @GetMapping("/alternative-groups")
     @Operation(summary = "Consultar grupos alternativos disponibles")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Grupos alternativos obtenidos exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "404", description = "Materia no encontrada"),
             @ApiResponse(responseCode = "400", description = "Parámetros inválidos")
     })
     public ResponseEntity<ManagerResponseDTO> getAlternativeGroups(
             @Parameter(description = "Código corto de la materia") @RequestParam String subjectShortName,
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting alternative groups for subject {} requested by manager {}", subjectShortName, managerId);
+
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+    
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
+        }
+
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
 
@@ -222,25 +303,19 @@ public class ManagerController {
         response.setSuccess(true);
         response.setMessage("Grupos alternativos obtenidos exitosamente");
 
+        logger.info("Alternative groups retrieved successfully for subject {} by manager {}", subjectShortName, managerId);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Processes a response to a petition (approve, reject, or request additional information).
+     * Processes a response to a petition - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Updates petition status and maintains decision history.
-     *
-     * @param petitionId unique identifier of the petition
-     * @param request contains the decision and justification
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager responding to the petition
-     * @return ResponseEntity containing updated petition information
-     * @throws IllegalArgumentException if petition not found or invalid decision
-     * @throws RuntimeException if manager lacks permission or update fails
      */
     @PutMapping("/petition/{petitionId}/respond")
     @Operation(summary = "Responder a una solicitud")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Respuesta registrada exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
             @ApiResponse(responseCode = "403", description = "Sin permisos para responder esta solicitud"),
             @ApiResponse(responseCode = "404", description = "Solicitud no encontrada"),
             @ApiResponse(responseCode = "400", description = "Decisión inválida")
@@ -249,15 +324,39 @@ public class ManagerController {
             @Parameter(description = "ID de la solicitud") @PathVariable String petitionId,
             @RequestBody ManagerRequestDTO request,
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Manager {} responding to petition {} with decision: {}", managerId, petitionId, request.getDecision());
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para responder solicitudes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+       
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes responder solicitudes como otro manager");
+        }
+
+      
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
 
         Petition petition = petitionService.searchPetitionsById(petitionId);
 
+
         String managerDeanery = getDeaneryForManager(managerId, managerType);
         if (managerDeanery != null && !petition.getAssociateDeanery().equals(managerDeanery)) {
-            throw new IllegalArgumentException("No tiene permisos para responder esta solicitud");
+            logger.warn("Dean {} attempted to respond to petition {} outside their deanery", managerId, petitionId);
+            throw new IllegalArgumentException("No tiene permisos para responder esta solicitud - fuera de su decanatura");
         }
 
         switch (request.getDecision().toLowerCase()) {
@@ -278,7 +377,7 @@ public class ManagerController {
 
         List<String> history = petition.getDecisionHistory();
         if (history == null) history = new ArrayList<>();
-        history.add(LocalDateTime.now() + ": " + request.getDecision() + " por " + managerId);
+        history.add(LocalDateTime.now() + ": " + request.getDecision() + " por " + managerId + " (" + currentUser.getType() + ")");
         petition.setDecisionHistory(history);
         petition.setAssignedReviewer(managerId);
 
@@ -291,31 +390,49 @@ public class ManagerController {
         response.setSuccess(true);
         response.setMessage("Respuesta registrada exitosamente");
 
+        logger.info("Petition {} responded successfully by manager {}", petitionId, managerId);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Configures enabled periods for student changes and modifications.
+     * Configures enabled periods for student changes and modifications - ACADEMIC_VICEPRESIDENT only.
      * Sets up timeframes when students can submit change requests.
-     *
-     * @param request contains period start and end dates
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager configuring the period
-     * @return ResponseEntity confirming period configuration
-     * @throws IllegalArgumentException if dates are invalid
-     * @throws RuntimeException if period creation fails
      */
     @PostMapping("/periods")
     @Operation(summary = "Configurar periodo de cambios")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Periodo configurado exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo vicepresidente académico"),
             @ApiResponse(responseCode = "400", description = "Fechas inválidas"),
             @ApiResponse(responseCode = "500", description = "Error al crear periodo")
     })
     public ResponseEntity<ManagerResponseDTO> configurePeriod(
             @RequestBody ManagerRequestDTO request,
             @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType) {
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Configuring period by manager {} of type {}", managerId, managerType);
+
+        
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Solo el vicepresidente académico puede configurar períodos");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes configurar períodos como otro manager");
+        }
+
+        
+        if (!"ACADEMIC_VICEPRESIDENT".equalsIgnoreCase(managerType) || 
+            currentUser.getType() != UserType.ACADEMIC_VICEPRESIDENT) {
+            throw new IllegalArgumentException("Solo el vicepresidente académico puede configurar períodos");
+        }
 
         validateManagerAccess(managerId, managerType);
 
@@ -339,31 +456,49 @@ public class ManagerController {
         response.setMessage("Periodo configurado exitosamente para el rango: " +
                 savedPeriod.getStartDate() + " - " + savedPeriod.getEndDate());
 
+        logger.info("Period configured successfully by academic VP {}", managerId);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Monitors class session capacity and generates alerts when threshold is reached.
+     * Monitors class session capacity and generates alerts when threshold is reached - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Helps administrators manage group enrollment and prevent overcrowding.
-     *
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager requesting the alerts
-     * @param threshold capacity percentage threshold for alerts (default: 90)
-     * @return ResponseEntity containing capacity alert information
-     * @throws IllegalArgumentException if threshold is invalid
-     * @throws RuntimeException if monitoring fails
      */
     @GetMapping("/capacity-alerts")
     @Operation(summary = "Obtener alertas de capacidad de grupos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Alertas de capacidad obtenidas exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
             @ApiResponse(responseCode = "400", description = "Umbral inválido"),
             @ApiResponse(responseCode = "500", description = "Error en monitoreo")
     })
     public ResponseEntity<ManagerResponseDTO> getCapacityAlerts(
             @Parameter(description = "ID del manager") @RequestParam String managerId,
             @Parameter(description = "Tipo de manager") @RequestParam String managerType,
-            @Parameter(description = "Umbral de capacidad") @RequestParam(required = false, defaultValue = "90") Integer threshold) {
+            @Parameter(description = "Umbral de capacidad") @RequestParam(required = false, defaultValue = "90") Integer threshold,
+            HttpSession session) {
+
+        logger.info("Getting capacity alerts for manager {} with threshold {}%", managerId, threshold);
+
+    
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+       
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a alertas como otro manager");
+        }
+
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
 
         validateManagerAccess(managerId, managerType);
 
@@ -377,28 +512,107 @@ public class ManagerController {
         List<ClassSession> allSessions = classSessionService.searchAllSessions();
 
         List<ManagerResponseDTO.CapacityAlert> alerts = allSessions.stream()
-                .filter(session -> {
-                    double occupancyPercentage = (double) session.getEnrolledStudents() / session.getCapacity() * 100;
-                    return occupancyPercentage >= threshold;
-                })
-                .map(this::mapToCapacityAlert)
-                .collect(Collectors.toList());
+            .filter(classSession -> {
+    
+                if (classSession.getCapacity() == 0) {
+                    return false;
+                }
+                double occupancyPercentage = (double) classSession.getEnrolledStudents() / classSession.getCapacity() * 100;
+                return occupancyPercentage >= threshold;
+            })
+            .map(this::mapToCapacityAlert)
+            .collect(Collectors.toList());
 
         ManagerResponseDTO response = new ManagerResponseDTO();
         response.setCapacityAlerts(alerts);
         response.setSuccess(true);
         response.setMessage("Alertas de capacidad obtenidas exitosamente");
 
+        logger.info("Capacity alerts retrieved successfully for manager {}: {} alerts found", managerId, alerts.size());
         return ResponseEntity.ok(response);
     }
 
     /**
+     * Gets manager dashboard summary - DEAN and ACADEMIC_VICEPRESIDENT only.
+     * Provides overview of pending petitions, capacity alerts, and key metrics.
+     */
+    @GetMapping("/dashboard")
+    @Operation(summary = "Obtener resumen del dashboard de gestión")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dashboard obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico")
+    })
+    public ResponseEntity<ManagerResponseDTO> getDashboard(
+            @Parameter(description = "ID del manager") @RequestParam String managerId,
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting dashboard for manager {} of type {}", managerId, managerType);
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                 UserType.DEAN, 
+                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder al dashboard como otro manager");
+        }
+
+        validateManagerAccess(managerId, managerType);
+
+        String deaneryName = getDeaneryForManager(managerId, managerType);
+
+       
+        List<Petition> petitions;
+        if (deaneryName != null) {
+            
+            petitions = petitionService.searchPetitionsByDeanery(deaneryName);
+        } else {
+        
+            petitions = petitionService.searchAllPetitions();
+        }
+
+       
+        long pendingPetitions = petitions.stream().filter(p -> p.getState() == PetitionState.PENDING).count();
+        long approvedPetitions = petitions.stream().filter(p -> p.getState() == PetitionState.APPROVED).count();
+        long rejectedPetitions = petitions.stream().filter(p -> p.getState() == PetitionState.REPROVED).count();
+
+        ManagerResponseDTO response = new ManagerResponseDTO();
+        response.setSuccess(true);
+        response.setMessage("Dashboard obtenido exitosamente");
+        
+        
+        response.setTotalPetitions((int) petitions.size());
+        response.setPendingPetitions((int) pendingPetitions);
+        response.setApprovedPetitions((int) approvedPetitions);
+        response.setRejectedPetitions((int) rejectedPetitions);
+
+        logger.info("Dashboard retrieved successfully for manager {}: {} total petitions", managerId, petitions.size());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Validates that the manager type matches the user type.
+     */
+    private boolean isManagerTypeValid(UserType userType, String managerType) {
+        switch (userType) {
+            case DEAN:
+                return "DEAN".equalsIgnoreCase(managerType);
+            case ACADEMIC_VICEPRESIDENT:
+                return "ACADEMIC_VICEPRESIDENT".equalsIgnoreCase(managerType);
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Validates manager access credentials and permissions.
-     *
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager (DEAN or ACADEMIC_VICEPRESIDENT)
-     * @throws IllegalArgumentException if manager not found
-     * @throws RuntimeException if manager type is invalid
      */
     private void validateManagerAccess(String managerId, String managerType) {
         if (managerId == null || managerId.trim().isEmpty()) {
@@ -423,24 +637,17 @@ public class ManagerController {
 
     /**
      * Retrieves the deanery name associated with a manager.
-     *
-     * @param managerId unique identifier of the manager
-     * @param managerType type of manager
-     * @return deanery name for deans, null for academic vice presidents (access to all deaneries)
      */
     private String getDeaneryForManager(String managerId, String managerType) {
         if ("DEAN".equalsIgnoreCase(managerType)) {
             Dean dean = deanService.searchDeanById(managerId);
             return dean.getDeanery() != null ? dean.getDeanery().getDeaneryName() : null;
         }
-        return null;
+        return null; 
     }
 
     /**
      * Calculates the credit percentage completion for a student based on their traffic light status.
-     *
-     * @param trafficLight traffic light object containing academic progress information
-     * @return percentage of credits completed
      */
     private Double calculateCreditPercentage(TrafficLight trafficLight) {
         int approvedCredits = 0;
@@ -466,12 +673,8 @@ public class ManagerController {
         return ((double) approvedCredits / totalCredits) * 100;
     }
 
-    /**
-     * Maps a Petition entity to a PetitionSummary DTO.
-     *
-     * @param petition petition entity to map
-     * @return mapped petition summary DTO
-     */
+ 
+
     private ManagerResponseDTO.PetitionSummary mapToPetitionSummary(Petition petition) {
         ManagerResponseDTO.PetitionSummary summary = new ManagerResponseDTO.PetitionSummary();
         summary.setPetitionId(petition.getPetitionId());
@@ -485,13 +688,6 @@ public class ManagerController {
         return summary;
     }
 
-    /**
-     * Maps Student and Schedule entities to a StudentSchedule DTO.
-     *
-     * @param student student entity
-     * @param schedule schedule entity
-     * @return mapped student schedule DTO
-     */
     private ManagerResponseDTO.StudentSchedule mapToStudentSchedule(Student student, Schedule schedule) {
         ManagerResponseDTO.StudentSchedule studentSchedule = new ManagerResponseDTO.StudentSchedule();
         studentSchedule.setStudentId(student.getId());
@@ -513,14 +709,6 @@ public class ManagerController {
         return studentSchedule;
     }
 
-    /**
-     * Maps Student, TrafficLight, and GPA information to an AcademicStatus DTO.
-     *
-     * @param student student entity
-     * @param trafficLight traffic light entity
-     * @param gpa calculated GPA
-     * @return mapped academic status DTO
-     */
     private ManagerResponseDTO.AcademicStatus mapToAcademicStatus(Student student, TrafficLight trafficLight, double gpa) {
         ManagerResponseDTO.AcademicStatus academicStatus = new ManagerResponseDTO.AcademicStatus();
         academicStatus.setStudentId(student.getId());
@@ -538,17 +726,11 @@ public class ManagerController {
         return academicStatus;
     }
 
-    /**
-     * Maps a ClassSession entity to a GroupAvailability DTO.
-     *
-     * @param session class session entity
-     * @return mapped group availability DTO
-     */
     private ManagerResponseDTO.GroupAvailability mapToGroupAvailability(ClassSession session) {
         ManagerResponseDTO.GroupAvailability availability = new ManagerResponseDTO.GroupAvailability();
         availability.setSessionId(session.getId());
         availability.setSubjectShortName(session.getSubjectShortName());
-        availability.setGroupId("Grupo " + session.getId().substring(0, 2));
+        availability.setGroupId("Grupo " + session.getId().substring(0, Math.min(2, session.getId().length())));
         availability.setProfessorName(session.getProfessor() != null ? session.getProfessor().getName() : "N/A");
         availability.setCurrentEnrollment(session.getEnrolledStudents());
         availability.setTotalCapacity(session.getCapacity());
@@ -559,12 +741,6 @@ public class ManagerController {
         return availability;
     }
 
-    /**
-     * Maps a ClassSession entity to a CapacityAlert DTO.
-     *
-     * @param session class session entity
-     * @return mapped capacity alert DTO
-     */
     private ManagerResponseDTO.CapacityAlert mapToCapacityAlert(ClassSession session) {
         ManagerResponseDTO.CapacityAlert alert = new ManagerResponseDTO.CapacityAlert();
         alert.setSessionId(session.getId());

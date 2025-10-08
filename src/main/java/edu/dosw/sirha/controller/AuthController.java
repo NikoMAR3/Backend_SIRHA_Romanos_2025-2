@@ -58,12 +58,19 @@ public class AuthController {
             authenticationService.authenticate(request.getCredential(), request.getPassword());
         
         if (result.isSuccess()) {
+            if (!result.getUser().isActive()) {
+                logger.warn("Login attempt by inactive user: {}", result.getUser().getId());
+                throw new IllegalArgumentException("User account is deactivated");
+            }
+
             session.setAttribute("user", result.getUser());
             session.setAttribute("userId", result.getUser().getId());
             session.setAttribute("userType", result.getUser().getType());
             
-            logger.info("Login successful for user: {} ({})", 
-                       result.getUser().getName(), result.getUser().getType().getDescription());
+            logger.info("Login successful for user: {} ({}) - Role: {}", 
+                       result.getUser().getName(), 
+                       result.getUser().getId(),
+                       result.getUser().getType().getDescription());
             
             return ResponseEntity.ok(new AuthDto.LoginResponse(true, "Login successful", result.getUser()));
         } else {
@@ -107,6 +114,8 @@ public class AuthController {
         if (authCheck != null) return authCheck;
         
         User user = AuthValidationUtils.getCurrentUser(session);
+        logger.debug("Current user: {} with role: {}", user.getId(), user.getType().getDescription());
+
         return ResponseEntity.ok(new AuthDto.CurrentUserResponse(user));
     }
     
@@ -131,6 +140,9 @@ public class AuthController {
         
         User user = AuthValidationUtils.getCurrentUser(session);
         boolean hasPermission = authenticationService.canAccessResource(user.getType(), resource);
+
+        logger.debug("Permission check for user {} on resource {}: {}", 
+                    user.getId(), resource, hasPermission);
         
         return ResponseEntity.ok(new AuthDto.PermissionResponse(hasPermission, resource, user.getType().getDescription()));
     }
@@ -156,6 +168,12 @@ public class AuthController {
         if (authCheck != null) return (ResponseEntity<AuthDto.ApiResponse>) authCheck;
         
         User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        if (currentUser.getId().equals(request.getUserId())) {
+            logger.warn("User {} attempted to set password for themselves", currentUser.getId());
+            return ResponseEntity.badRequest()
+                .body(new AuthDto.ApiResponse(false, "Cannot set password for your own account"));
+        }
         
         authenticationService.setUserPassword(request.getUserId(), request.getNewPassword(), currentUser.getType());
         
@@ -182,22 +200,26 @@ public class AuthController {
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) return authCheck;
         
-  
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        logger.info("User {} requesting all users list", currentUser.getId());
+        
+
         List<User> users = authenticationService.getAllUsers();
         logger.info("Retrieved {} users", users.size());
+
         return ResponseEntity.ok(users);
     }
     
     /**
-     * Toggle user status (activate/deactivate) (admin only).
+     * Toggle user status (activate/deactivate) - ACADEMIC_VICEPRESIDENT only.
      */
     @PutMapping("/users/{userId}/toggle-status")
     @Operation(summary = "Toggle user status", description = "Activates or deactivates a user account (admin only)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User status changed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid user ID"),
+        @ApiResponse(responseCode = "400", description = "Invalid user ID or cannot deactivate own account"),
         @ApiResponse(responseCode = "401", description = "User not authenticated"),
-        @ApiResponse(responseCode = "403", description = "Insufficient privileges"),
+        @ApiResponse(responseCode = "403", description = "Insufficient privileges - Only Academic Vice President can change user status"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<AuthDto.ApiResponse> toggleUserStatus(
@@ -210,13 +232,21 @@ public class AuthController {
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) return (ResponseEntity<AuthDto.ApiResponse>) authCheck;
         
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        
+        if (currentUser.getId().equals(userId)) {
+            logger.warn("User {} attempted to toggle their own status", currentUser.getId());
+            return ResponseEntity.badRequest()
+                .body(new AuthDto.ApiResponse(false, "Cannot change status of your own account"));
+        }
+        
         User updatedUser = authenticationService.toggleUserStatus(userId);
         String status = updatedUser.isActive() ? "activated" : "deactivated";
         
-        User currentUser = AuthValidationUtils.getCurrentUser(session);
-        logger.info("User {} successfully {} by admin: {}", 
-                   updatedUser.getName(), status, currentUser.getName());
+        logger.info("User {} ({}) successfully {} by admin: {}", 
+                   updatedUser.getName(), updatedUser.getId(), status, currentUser.getName());
         
-        return ResponseEntity.ok(new AuthDto.ApiResponse(true, "User " + status + " successfully"));
+        return ResponseEntity.ok(new AuthDto.ApiResponse(true, 
+            String.format("User %s successfully %s", updatedUser.getName(), status)));
     }
 }
