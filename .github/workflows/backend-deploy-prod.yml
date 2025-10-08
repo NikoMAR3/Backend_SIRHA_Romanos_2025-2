@@ -1,8 +1,9 @@
 name: Deploy to Production
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+  #release:
+    #types: [published]
 
 env:
   AZURE_WEBAPP_NAME: your-app-name-prod

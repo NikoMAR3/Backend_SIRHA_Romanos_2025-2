@@ -1,8 +1,9 @@
 name: Deploy to PreProduction
 
 on:
-  push:
-    branches: [ staging ]
+  workflow_dispatch:
+  #push:
+    #branches: [ staging ]
 
 env:
   AZURE_WEBAPP_NAME: your-app-name-preprod
