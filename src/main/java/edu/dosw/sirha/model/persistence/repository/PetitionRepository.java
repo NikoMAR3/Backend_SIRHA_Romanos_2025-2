@@ -164,6 +164,15 @@ public interface PetitionRepository extends MongoRepository<Petition, String> {
     long countByStudentId(String studentId);
 
     /**
+     * Counts the number of petitions by their type.
+     * Useful for generating statistical reports by petition category.
+     *
+     * @param type the petition type to count
+     * @return the number of petitions with the specified type
+     */
+    long countByType(PetitionType type);
+
+    /**
      * Checks if a petition exists with the given identifier.
      *
      * @param id the petition unique identifier

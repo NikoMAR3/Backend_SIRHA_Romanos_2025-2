@@ -22,6 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -720,4 +723,169 @@ public class PetitionsController {
         int position = pendingPetitions.indexOf(petition) + 1;
         return position > 0 ? position : null;
     }
+
+
+    /*   */
+
+    /**
+     * Generates basic petition statistics - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/statistics")
+    @Operation(summary = "Estadísticas básicas de solicitudes")
+    public ResponseEntity<Map<String, Object>> getPetitionStatistics(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para generar estadísticas");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        List<Petition> allPetitions = getPetitionsForUser(currentUser);
+        
+        Map<String, Object> stats = generateBasicStatistics(allPetitions);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Generates approval rate report - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/approval-rate")
+    @Operation(summary = "Tasa de aprobación vs rechazo")
+    public ResponseEntity<Map<String, Object>> getApprovalRateReport(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para generar reportes de tasas");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        List<Petition> allPetitions = getPetitionsForUser(currentUser);
+        
+        Map<String, Object> rates = generateBasicApprovalRates(allPetitions);
+        return ResponseEntity.ok(rates);
+    }
+
+    /**
+     * Generates reassignment statistics - DEAN and ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/reassignment-statistics")
+    @Operation(summary = "Estadísticas de reasignaciones por materia")
+    public ResponseEntity<Map<String, Object>> getReassignmentStatistics(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
+                                                                                UserType.DEAN, 
+                                                                                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para generar estadísticas de reasignaciones");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        List<Petition> changePetitions = getPetitionsForUser(currentUser).stream()
+                .filter(petition -> petition.getType() == PetitionType.CHANGE_GROUP)
+                .collect(Collectors.toList());
+        
+        Map<String, Object> stats = generateBasicReassignmentStats(changePetitions);
+        return ResponseEntity.ok(stats);
+    }
+
+
+    /**
+     * Generates basic statistics.
+     */
+    private Map<String, Object> generateBasicStatistics(List<Petition> petitions) {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        
+        stats.put("totalPetitions", petitions.size());
+        
+        Map<String, Long> byState = petitions.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getState().name(),
+                        Collectors.counting()
+                ));
+        stats.put("byState", byState);
+        
+
+        Map<String, Long> byType = petitions.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getType().name(),
+                        Collectors.counting()
+                ));
+        stats.put("byType", byType);
+        
+        stats.put("generatedAt", LocalDateTime.now());
+        return stats;
+    }
+
+    /**
+     * Generates basic approval rates.
+     */
+    private Map<String, Object> generateBasicApprovalRates(List<Petition> petitions) {
+        Map<String, Object> rates = new LinkedHashMap<>();
+        
+        long total = petitions.size();
+        long approved = petitions.stream().filter(p -> p.getState() == PetitionState.APPROVED).count();
+        long rejected = petitions.stream().filter(p -> p.getState() == PetitionState.REPROVED).count();
+        long pending = petitions.stream().filter(p -> p.getState() == PetitionState.PENDING).count();
+        
+        rates.put("totalPetitions", total);
+        rates.put("approvedCount", approved);
+        rates.put("rejectedCount", rejected);
+        rates.put("pendingCount", pending);
+        
+        if (total > 0) {
+            rates.put("approvalRate", Math.round((double) approved / total * 100 * 100.0) / 100.0);
+            rates.put("rejectionRate", Math.round((double) rejected / total * 100 * 100.0) / 100.0);
+            rates.put("pendingRate", Math.round((double) pending / total * 100 * 100.0) / 100.0);
+        } else {
+            rates.put("approvalRate", 0.0);
+            rates.put("rejectionRate", 0.0);
+            rates.put("pendingRate", 0.0);
+        }
+        
+        rates.put("generatedAt", LocalDateTime.now());
+        return rates;
+    }
+
+    /**
+     * Generates basic reassignment statistics.
+     */
+    private Map<String, Object> generateBasicReassignmentStats(List<Petition> changePetitions) {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        
+        stats.put("totalReassignments", changePetitions.size());
+        
+        
+        Map<String, Long> bySubject = changePetitions.stream()
+                .filter(p -> p.getSubjectShortName() != null)
+                .collect(Collectors.groupingBy(
+                        Petition::getSubjectShortName,
+                        Collectors.counting()
+                ));
+        stats.put("bySubject", bySubject);
+        
+       
+        List<Map<String, Object>> topSubjects = bySubject.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> Map.<String, Object>of(
+                        "subject", entry.getKey(),
+                        "count", entry.getValue()
+                ))
+                .collect(Collectors.toList());
+        stats.put("topRequestedSubjects", topSubjects);
+        
+      
+        long approvedReassignments = changePetitions.stream()
+                .filter(p -> p.getState() == PetitionState.APPROVED)
+                .count();
+        
+        double successRate = changePetitions.isEmpty() ? 0.0 : 
+                Math.round((double) approvedReassignments / changePetitions.size() * 100 * 100.0) / 100.0;
+        stats.put("successRate", successRate);
+        
+        stats.put("generatedAt", LocalDateTime.now());
+        return stats;
+    }
+
 }
