@@ -1,6 +1,9 @@
 package edu.dosw.sirha.controller;
 
 import edu.dosw.sirha.controller.dtos.AuthDto;
+import edu.dosw.sirha.model.entities.AcademicVicePresident;
+import edu.dosw.sirha.model.entities.Dean;
+import edu.dosw.sirha.model.entities.Student;
 import edu.dosw.sirha.model.entities.User;
 import edu.dosw.sirha.model.entities.UserType;
 import edu.dosw.sirha.model.services.AuthenticationService;
@@ -249,4 +252,42 @@ public class AuthController {
         return ResponseEntity.ok(new AuthDto.ApiResponse(true, 
             String.format("User %s successfully %s", updatedUser.getName(), status)));
     }
-}
+
+    @PostMapping("/register")
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public ResponseEntity<AuthDto.ApiResponse> registerUser(
+            @Valid @RequestBody AuthDto.RegisterRequest request) {
+
+        User newUser;
+        switch (request.getType()) {
+            case STUDENT:
+                newUser = new Student();
+                break;
+            case DEAN:
+                newUser = new Dean();
+                break;
+            case ACADEMIC_VICEPRESIDENT:
+                newUser = new AcademicVicePresident();
+                break;
+            default:
+                return ResponseEntity.badRequest()
+                    .body(new AuthDto.ApiResponse(false, "Tipo de usuario no soportado"));
+        }
+
+        newUser.setId(request.getId());
+        newUser.setName(request.getName());
+        newUser.setMail(request.getMail());
+        newUser.setCredential(request.getCredential());
+        newUser.setDocument(request.getDocument());
+        newUser.setType(request.getType());
+        newUser.setActive(true);
+
+        authenticationService.registerUser(newUser, request.getPassword());
+
+        return ResponseEntity.status(201).body(new AuthDto.ApiResponse(true, "Usuario creado exitosamente"));
+    }
+    }
