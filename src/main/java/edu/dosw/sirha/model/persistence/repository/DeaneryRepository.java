@@ -2,7 +2,6 @@ package edu.dosw.sirha.model.persistence.repository;
 
 import edu.dosw.sirha.model.entities.Deanery;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
