@@ -20,7 +20,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "classSchedules")
 public class ClassSchedule {
 
     @Id
