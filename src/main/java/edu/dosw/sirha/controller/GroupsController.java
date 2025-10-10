@@ -2,6 +2,7 @@ package edu.dosw.sirha.controller;
 
 import edu.dosw.sirha.controller.dtos.GroupsRequestDTO;
 import edu.dosw.sirha.controller.dtos.GroupsResponseDTO;
+import edu.dosw.sirha.controller.dtos.UserDTO;
 import edu.dosw.sirha.model.entities.*;
 import edu.dosw.sirha.model.services.ClassSessionService;
 import edu.dosw.sirha.model.services.SubjectService;
@@ -233,6 +234,242 @@ public class GroupsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    //------------------------------------------------Subjects---------------------------------------------------------------
+
+    /**
+     * Creates a new subject in the system.
+     * Only users with DEAN or ACADEMIC_VICEPRESIDENT roles can access this endpoint.
+     *
+     * @param request DTO containing the subject data to be registered.
+     * @param session HTTP session for authentication and role validation.
+     * @return The created Subject entity with status 201 if successful.
+     * @throws IllegalArgumentException if the user does not have permissions or if required data is missing.
+     */
+    @PostMapping("/subjects")
+    @Operation(
+        summary = "Registrar materia",
+        description = "Crea una nueva materia en el sistema. Solo decanos y vicepresidente académico pueden acceder."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Materia creada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de materia inválidos"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
+        @ApiResponse(responseCode = "409", description = "Materia duplicada")
+    })
+    public ResponseEntity<Subject> createSubject(
+            @Valid @RequestBody GroupsRequestDTO.SubjectRequest request,
+            HttpSession session) {
+
+        
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para registrar materias");
+        }
+
+        
+        if (request.getSubjectId() == null || request.getSubjectShortName() == null ||
+            request.getSubjectName() == null || request.getSubjectCredits() == null ||
+            request.getSubjectLevel() == null) {
+            throw new IllegalArgumentException("Faltan datos obligatorios para la materia");
+        }
+
+        
+        Subject subject = new Subject();
+        subject.setId(request.getSubjectId());
+        subject.setShortName(request.getSubjectShortName());
+        subject.setName(request.getSubjectName());
+        subject.setCredits(request.getSubjectCredits());
+        subject.setLevel(request.getSubjectLevel());
+
+        
+        Subject saved = subjectService.createSubject(subject);
+
+       
+        return ResponseEntity.status(201).body(saved);
+    }
+
+    private GroupsResponseDTO.ProfessorResponseDTO buildProfessorResponse(Professor professor) {
+    GroupsResponseDTO.ProfessorResponseDTO response = new GroupsResponseDTO.ProfessorResponseDTO();
+    response.setProfessorCode(professor.getProfessorCode());
+    response.setName(professor.getName());
+    response.setMail(professor.getMail());
+    response.setDocument(professor.getDocument());
+    return response;
+    }
+
+//-------------------------------------------------- Professors --------------------------------------------------
+
+    /**
+     * Registers a new professor in the system.
+     * Only users with DEAN or ACADEMIC_VICEPRESIDENT roles can access this endpoint.
+     *
+     * @param request DTO containing the professor data to be registered.
+     * @param session HTTP session for authentication and role validation.
+     * @return The created ProfessorResponseDTO with status 201 if successful.
+     * @throws IllegalArgumentException if the user does not have permissions or if required data is missing.
+     */
+    @PostMapping("/professors")
+    @Operation(
+        summary = "Registrar profesor",
+        description = "Crea un nuevo profesor en el sistema. Solo decanos y vicepresidente académico pueden acceder."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Profesor creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de profesor inválidos"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
+        @ApiResponse(responseCode = "409", description = "Profesor duplicado")
+    })
+    public ResponseEntity<GroupsResponseDTO.ProfessorResponseDTO> registerProfessor(
+            @Valid @RequestBody GroupsRequestDTO.ProfessorRequest request,
+            HttpSession session) {
+
+        logger.info("Registering new professor: {}", request.getDocument());
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para registrar profesores");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(request.getName());
+        userDTO.setMail(request.getMail());
+        userDTO.setDocument(request.getDocument());
+        userDTO.setType(UserType.PROFESSOR);
+
+        Professor professor = professorService.createProfessor(userDTO);
+
+        
+        professor.setProfessorCode(request.getProfessorCode());
+        professorService.save(professor); 
+
+        GroupsResponseDTO.ProfessorResponseDTO response = buildProfessorResponse(professor);
+
+        logger.info("Professor created successfully with ID: {} by user: {}", professor.getId(), currentUser.getId());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Retrieves all professors in the system - All authenticated users.
+     *
+     * @param session HTTP session for authentication.
+     * @return List of ProfessorResponseDTO with status 200 if successful.
+     * @throws IllegalArgumentException if the user is not authenticated.
+     */
+    @GetMapping("/professors")
+    @Operation(summary = "Obtener todos los profesores", description = "Devuelve la lista de todos los profesores registrados")
+    public ResponseEntity<List<GroupsResponseDTO.ProfessorResponseDTO>> getAllProfessors(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        List<Professor> professors = professorService.searchAllProfessors();
+        List<GroupsResponseDTO.ProfessorResponseDTO> response = professors.stream()
+            .map(this::buildProfessorResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Retrieves a specific professor by code - All authenticated users.
+     *
+     * @param professorCode      The code of the professor to retrieve.
+     * @param session HTTP session for authentication.
+     * @return ProfessorResponseDTO with status 200 if found, 404 if not found.
+     * @throws IllegalArgumentException if the user is not authenticated.
+     */
+    @GetMapping("/professors/code/{professorCode}")
+    @Operation(summary = "Obtener profesor por código", description = "Devuelve la información de un profesor por su código")
+    public ResponseEntity<GroupsResponseDTO.ProfessorResponseDTO> getProfessorByCode(
+            @PathVariable String professorCode,
+            HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        Professor professor = professorService.searchProfessorByCode(professorCode);
+        if (professor == null) {
+            return ResponseEntity.notFound().build();
+        }
+        GroupsResponseDTO.ProfessorResponseDTO response = buildProfessorResponse(professor);
+        return ResponseEntity.ok(response);
+}
+
+    /**
+     * Updates a professor's information by code - DEAN, ACADEMIC_VICEPRESIDENT, and PROFESSOR (self-update) only.
+     *
+     * @param professorCode The code of the professor to update.
+     * @param request       DTO containing the updated professor data.
+     * @param session HTTP session for authentication and role validation.
+     * @return Updated ProfessorResponseDTO with status 200 if successful, 404 if not found.
+     * @throws IllegalArgumentException if the user does not have permissions.
+     */
+    @PutMapping("/professors/code/{professorCode}")
+    @Operation(summary = "Actualizar profesor por código", description = "Actualiza la información de un profesor usando su código")
+    public ResponseEntity<GroupsResponseDTO.ProfessorResponseDTO> updateProfessorByCode(
+            @PathVariable String professorCode,
+            @Valid @RequestBody GroupsRequestDTO.ProfessorRequest request,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT, UserType.PROFESSOR);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para actualizar profesores");
+        }
+
+        Professor professor = professorService.searchProfessorByCode(professorCode);
+        if (professor == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        professor.setName(request.getName());
+        professor.setMail(request.getMail());
+        professor.setDocument(request.getDocument());
+        professor.setProfessorCode(request.getProfessorCode());
+
+        Professor updated = professorService.save(professor);
+        GroupsResponseDTO.ProfessorResponseDTO response = buildProfessorResponse(updated);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Deletes a professor by ID - DEAN and ACADEMIC_VICEPRESIDENT only.
+     *
+     * @param professorCode      The ID of the professor to delete.
+     * @param session HTTP session for authentication and role validation.
+     * @return ResponseEntity with status 204 if deleted, 404 if not found.
+     * @throws IllegalArgumentException if the user does not have permissions.
+     */
+    @DeleteMapping("/professors/code/{professorCode}")
+    @Operation(summary = "Eliminar profesor", description = "Elimina un profesor del sistema")
+    public ResponseEntity<Void> deleteProfessor(
+            @PathVariable String professorCode,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para eliminar profesores");
+        }
+
+        Professor professor = professorService.searchProfessorByCode(professorCode);
+        if (professor == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        professorService.deleteProfessorByCode(professorCode);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
     /**
      * Retrieves detailed capacity information - All authenticated users.

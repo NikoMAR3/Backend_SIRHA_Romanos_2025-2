@@ -29,4 +29,6 @@ public class Professor extends User{
 
     private List<Subject> subjects;
 
+    private String professorCode;
+
 }

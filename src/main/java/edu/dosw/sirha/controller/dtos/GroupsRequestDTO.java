@@ -3,12 +3,15 @@ package edu.dosw.sirha.controller.dtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
 import java.util.List;
 import java.util.Map;
+
+import edu.dosw.sirha.model.entities.UserType;
 
 /**
  * Data Transfer Object for creating new groups (Request).
@@ -18,6 +21,7 @@ import java.util.Map;
 @Schema(description = "Data transfer object for group creation requests")
 public class GroupsRequestDTO {
 
+        //grupos
     /**
      * Name of the group
      */
@@ -126,4 +130,39 @@ public class GroupsRequestDTO {
             additionalProperties = Schema.AdditionalPropertiesValue.TRUE
     )
     private Map<String, Object> details;
+
+        @Data
+        @Schema(description = "Request DTO for subject creation")
+        public static class SubjectRequest {
+        @NotBlank
+        private String subjectId;
+        @NotBlank
+        private String subjectShortName;
+        @NotBlank
+        private String subjectName;
+        @NotNull
+        private Integer subjectCredits;
+        @NotNull
+        private Integer subjectLevel;
+        }
+
+        @Data
+        @Schema(description = "Request DTO for professor creation")
+        public static class ProfessorRequest {
+        @NotBlank
+        private String name;
+
+        @NotBlank
+        private String mail;
+
+        @NotBlank
+        @Pattern(
+            regexp = "^[0-9]{10}$",
+            message = "Document must contain exactly 10 digits"
+        )
+        private String document;
+        
+        @NotNull
+        private String professorCode;
+        }
 }

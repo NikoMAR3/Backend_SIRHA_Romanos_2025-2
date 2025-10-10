@@ -50,8 +50,8 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void modifyProfessor_success() {
-        when(professorRepository.findById("1")).thenReturn(Optional.of(professor));
+    void modifyProfessorByCode_success() {
+        when(professorRepository.findByProfessorCode("PROF001")).thenReturn(Optional.of(professor));
         when(professorRepository.save(any(Professor.class))).thenReturn(professor);
 
         UserDTO updateDto = new UserDTO();
@@ -59,7 +59,7 @@ class ProfessorServiceTest {
         updateDto.setMail("jane.doe@example.com");
         updateDto.setDocument("67890");
 
-        Optional<Professor> result = professorService.modifyProfessor("1", updateDto);
+        Optional<Professor> result = professorService.modifyProfessorByCode("PROF001", updateDto);
 
         assertTrue(result.isPresent());
         assertEquals("Jane Doe", result.get().getName());
@@ -69,33 +69,33 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void modifyProfessor_notFound_returnsEmpty() {
-        when(professorRepository.findById("1")).thenReturn(Optional.empty());
+    void modifyProfessorByCode_notFound_returnsEmpty() {
+        when(professorRepository.findByProfessorCode("PROF001")).thenReturn(Optional.empty());
 
-        Optional<Professor> result = professorService.modifyProfessor("1", dto);
+        Optional<Professor> result = professorService.modifyProfessorByCode("PROF001", dto);
 
         assertTrue(result.isEmpty());
         verify(professorRepository, never()).save(any(Professor.class));
     }
 
     @Test
-    void deleteProfessor_success() {
-        when(professorRepository.existsById("1")).thenReturn(true);
+    void deleteProfessorByCode_success() {
+        when(professorRepository.findByProfessorCode("PROF001")).thenReturn(Optional.of(professor));
 
-        boolean deleted = professorService.deleteProfessor("1");
+        boolean deleted = professorService.deleteProfessorByCode("PROF001");
 
         assertTrue(deleted);
-        verify(professorRepository).deleteById("1");
+        verify(professorRepository).delete(professor);
     }
 
     @Test
-    void deleteProfessor_notFound_returnsFalse() {
-        when(professorRepository.existsById("1")).thenReturn(false);
+    void deleteProfessorByCode_notFound_returnsFalse() {
+        when(professorRepository.findByProfessorCode("PROF001")).thenReturn(Optional.empty());
 
-        boolean deleted = professorService.deleteProfessor("1");
+        boolean deleted = professorService.deleteProfessorByCode("PROF001");
 
         assertFalse(deleted);
-        verify(professorRepository, never()).deleteById("1");
+        verify(professorRepository, never()).delete(any(Professor.class));
     }
 
     @Test

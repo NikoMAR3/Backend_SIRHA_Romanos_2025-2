@@ -27,6 +27,10 @@ public interface ProfessorRepository extends MongoRepository<Professor, String> 
      */
     Optional<Professor> findById(String id);
 
+    Optional<Professor> findByProfessorCode(String professorCode);
+
+    void deleteByProfessorCode(String professorCode);
+
     /**
      * Finds all professors associated with a specific deanery.
      * Useful for retrieving faculty members by academic department or faculty.
