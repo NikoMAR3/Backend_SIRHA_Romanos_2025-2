@@ -204,4 +204,14 @@ public interface PetitionRepository extends MongoRepository<Petition, String> {
      * @return a list of petitions in the specified state, sorted by priority (highest first)
      */
     List<Petition> findByStateOrderByPriorityDesc(PetitionState state);
+
+
+    /**
+     * Finds all petitions depending on the exceptional case.
+     * @param isExceptionalCase boolean to look for
+     * @return a list of all petitions that share the boolean.
+     */
+    List<Petition> findByIsExceptionalCase(Boolean isExceptionalCase);
+
+
 }

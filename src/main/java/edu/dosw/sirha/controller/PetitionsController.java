@@ -37,7 +37,7 @@ public class PetitionsController {
 
     private final PetitionService petitionService;
     private final List<PetitionCreator> petitionCreators;
-        private final DeanService deanService;
+    private final DeanService deanService;
 
     @Autowired
     public PetitionsController(PetitionService petitionService, List<PetitionCreator> petitionCreators, DeanService deanService) {
@@ -625,17 +625,16 @@ public class PetitionsController {
      * Gets petitions based on user permissions.
      */
     private List<Petition> getPetitionsForUser(User user) {
-        switch (user.getType()) {
-            case DEAN:
+        return switch (user.getType()) {
+            case DEAN -> {
                 String deanery = getCurrentUserDeanery(user.getId());
-                return deanery != null ? 
-                    petitionService.searchPetitionsByDeanery(deanery) : 
-                    petitionService.searchAllPetitions();
-            case ACADEMIC_VICEPRESIDENT:
-                return petitionService.searchAllPetitions();
-            default:
-                throw new IllegalArgumentException("Tipo de usuario no puede ver todas las peticiones");
-        }
+                yield deanery != null ?
+                        petitionService.searchPetitionsByDeanery(deanery) :
+                        petitionService.searchAllPetitions();
+            }
+            case ACADEMIC_VICEPRESIDENT -> petitionService.searchAllPetitions();
+            default -> throw new IllegalArgumentException("Tipo de usuario no puede ver todas las peticiones");
+        };
     }
 
     /**
@@ -789,6 +788,128 @@ public class PetitionsController {
         return ResponseEntity.ok(stats);
     }
 
+    /**
+     * Generates a report of the approval rate by deanery - DEAN y ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/approval-rate/deanery/{deanery}")
+    @Operation(
+            summary = "Tasa de aprobación por decanatura",
+            description = "Genera reporte detallado de tasa de aprobación vs rechazo para una decanatura específica"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y VP académico"),
+            @ApiResponse(responseCode = "404", description = "Decanatura no encontrada")
+    })
+    public ResponseEntity<Map<String, Object>> getApprovalRateByDeanery(
+            @Parameter(description = "Nombre de la decanatura", required = true)
+            @PathVariable String deanery,
+            HttpSession session) {
+
+        logger.debug("Generating approval rate report for deanery: {}", deanery);
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
+                UserType.DEAN,
+                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para generar reportes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        validateDeaneryAccess(currentUser, deanery);
+
+        List<Petition> deaneryPetitions = petitionService.searchPetitionsByDeanery(deanery);
+
+        if (deaneryPetitions.isEmpty()) {
+            Map<String, Object> emptyReport = new LinkedHashMap<>();
+            emptyReport.put("deanery", deanery);
+            emptyReport.put("filterType", "DEANERY");
+            emptyReport.put("totalPetitions", 0L);
+            emptyReport.put("approvedCount", 0L);
+            emptyReport.put("rejectedCount", 0L);
+            emptyReport.put("pendingCount", 0L);
+            emptyReport.put("approvalRate", 0.0);
+            emptyReport.put("rejectionRate", 0.0);
+            emptyReport.put("pendingRate", 0.0);
+            emptyReport.put("generatedAt", LocalDateTime.now());
+            return ResponseEntity.ok(emptyReport);
+        }
+
+        Map<String, Object> report = generateBasicApprovalRates(deaneryPetitions);
+
+        report.put("deanery", deanery);
+        report.put("filterType", "DEANERY");
+
+        logger.info("Approval rate report generated for deanery: {} with {} petitions by user: {}",
+                deanery, deaneryPetitions.size(), currentUser.getId());
+        return ResponseEntity.ok(report);
+    }
+
+    /**
+     * GGenerates a report on the approval rate by subject - DEAN y ACADEMIC_VICEPRESIDENT only.
+     */
+    @GetMapping("/reports/approval-rate/subject/{subjectId}")
+    @Operation(
+            summary = "Tasa de aprobación por materia",
+            description = "Genera reporte detallado de tasa de aprobación vs rechazo para una materia específica"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y VP académico"),
+            @ApiResponse(responseCode = "404", description = "Materia no encontrada")
+    })
+    public ResponseEntity<Map<String, Object>> getApprovalRateBySubject(
+            @Parameter(description = "ID de la materia", required = true)
+            @PathVariable String subjectId,
+            HttpSession session) {
+
+        logger.debug("Generating approval rate report for subject: {}", subjectId);
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
+                UserType.DEAN,
+                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para generar reportes");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        List<Petition> subjectPetitions = petitionService.searchPetitionsBySubjectId(subjectId);
+
+        subjectPetitions = filterPetitionsByUserAccess(currentUser, subjectPetitions);
+
+        if (subjectPetitions.isEmpty()) {
+            Map<String, Object> emptyReport = new LinkedHashMap<>();
+            emptyReport.put("subjectId", subjectId);
+            emptyReport.put("filterType", "SUBJECT");
+            emptyReport.put("totalPetitions", 0L);
+            emptyReport.put("approvedCount", 0L);
+            emptyReport.put("rejectedCount", 0L);
+            emptyReport.put("pendingCount", 0L);
+            emptyReport.put("approvalRate", 0.0);
+            emptyReport.put("rejectionRate", 0.0);
+            emptyReport.put("pendingRate", 0.0);
+            emptyReport.put("generatedAt", LocalDateTime.now());
+            return ResponseEntity.ok(emptyReport);
+        }
+
+        Map<String, Object> report = generateBasicApprovalRates(subjectPetitions);
+
+        report.put("subjectId", subjectId);
+        report.put("filterType", "SUBJECT");
+
+        if (!subjectPetitions.isEmpty()) {
+            Petition samplePetition = subjectPetitions.get(0);
+            report.put("subjectShortName", samplePetition.getSubjectShortName());
+            report.put("subjectName", samplePetition.getSubjectName());
+        }
+
+        logger.info("Approval rate report generated for subject: {} with {} petitions by user: {}",
+                subjectId, subjectPetitions.size(), currentUser.getId());
+        return ResponseEntity.ok(report);
+    }
 
     /**
      * Generates basic statistics.
@@ -887,5 +1008,10 @@ public class PetitionsController {
         stats.put("generatedAt", LocalDateTime.now());
         return stats;
     }
+
+    /**
+     * Extracts the group ID from the petition
+     */
+    private String extractGroupId(Petition petition) {return petition.getGroupId();}
 
 }
