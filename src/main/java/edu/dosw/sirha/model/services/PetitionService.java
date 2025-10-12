@@ -11,8 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service class for managing petition operations.
@@ -339,4 +342,109 @@ public class PetitionService {
             throw new IllegalArgumentException("Petition priority cannot be null");
         }
     }
+
+    /*   */
+
+    /**
+     * Counts petitions by state.
+     * @param state the petition state to count
+     * @return count of petitions with the specified state
+     */
+    public long countByState(PetitionState state) {
+        if (state == null) {
+            throw new IllegalArgumentException("State cannot be null");
+        }
+        
+        long count = petitionRepository.countByState(state);
+        logger.debug("Found {} petitions with state: {}", count, state);
+        return count;
+    }
+
+    /**
+     * Counts petitions by type.
+     * @param type the petition type to count
+     * @return count of petitions with the specified type
+     */
+    public long countByType(PetitionType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null");
+        }
+        
+        long count = petitionRepository.countByType(type);
+        logger.debug("Found {} petitions with type: {}", count, type);
+        return count;
+    }
+
+    /**
+     * Gets petition statistics for a specific deanery.
+     * @param deanery the deanery name
+     * @return map with petition statistics
+     */
+    public Map<String, Long> getPetitionStatsByDeanery(String deanery) {
+        if (deanery == null || deanery.trim().isEmpty()) {
+            throw new IllegalArgumentException("Deanery cannot be null or empty");
+        }
+        
+        List<Petition> deaneryPetitions = petitionRepository.findByAssociateDeanery(deanery);
+        
+        Map<String, Long> stats = new LinkedHashMap<>();
+        stats.put("total", (long) deaneryPetitions.size());
+        stats.put("pending", deaneryPetitions.stream().filter(p -> p.getState() == PetitionState.PENDING).count());
+        stats.put("approved", deaneryPetitions.stream().filter(p -> p.getState() == PetitionState.APPROVED).count());
+        stats.put("rejected", deaneryPetitions.stream().filter(p -> p.getState() == PetitionState.REPROVED).count());
+        
+        logger.debug("Generated statistics for deanery '{}': {} petitions", deanery, stats.get("total"));
+        return stats;
+    }
+
+    /**
+     * Gets the most requested subjects for changes.
+     * @param limit maximum number of subjects to return
+     * @return list of subjects with their request counts
+     */
+    public List<Map<String, Object>> getMostRequestedSubjects(int limit) {
+        List<Petition> changePetitions = petitionRepository.findByType(PetitionType.CHANGE_GROUP);
+        
+        return changePetitions.stream()
+                .filter(p -> p.getSubjectShortName() != null)
+                .collect(Collectors.groupingBy(
+                        Petition::getSubjectShortName,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> Map.<String, Object>of(
+                        "subject", entry.getKey(),
+                        "count", entry.getValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Looks for all the petitions marked as exceptional cases.
+     * Exceptional cases are petitions that requires special attention
+     * @return list of the petitions marked as exceptional, sorted by creation date
+     * @throws IllegalArgumentException if there's an error accessing the repository.
+     */
+    public List<Petition> searchExceptionalCases() {
+        try {
+            List<Petition> cases = petitionRepository.findByIsExceptionalCase(true);
+            logger.debug("Found {} exceptional cases", cases.size());
+
+            cases.sort((p1, p2) -> {
+                if (p1.getCreationDate() == null && p2.getCreationDate() == null) return 0;
+                if (p1.getCreationDate() == null) return 1;
+                if (p2.getCreationDate() == null) return -1;
+                return p2.getCreationDate().compareTo(p1.getCreationDate());
+            });
+
+            return cases;
+        } catch (Exception e) {
+            logger.error("Error searching for exceptional cases: {}", e.getMessage());
+            throw new IllegalArgumentException("Error al buscar casos excepcionales", e);
+        }
+    }
+
+
 }

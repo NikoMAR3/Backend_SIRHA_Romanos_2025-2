@@ -37,6 +37,9 @@ public class Petition {
     private String subjectShortName;
 
     @Field
+    private String groupId;
+
+    @Field
     private String subjectName;
 
     @Field
@@ -68,5 +71,11 @@ public class Petition {
 
     @Field
     private String associateDeanery;
+
+    @Field
+    private Boolean isExceptionalCase = false;
+
+    @Field
+    private String exceptionalCaseJustification;
 
 }

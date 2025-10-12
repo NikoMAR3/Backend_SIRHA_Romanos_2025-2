@@ -312,4 +312,22 @@ public class GroupsResponseDTO {
                     "\"2025-01-10T09:45:00 - Schedule updated\"]"
     )
     private List<String> eventHistory;
+
+
+    @Data
+    @Schema(description = "Response DTO for professor information")
+    public static class ProfessorResponseDTO {
+        @Schema(description = "Unique identifier of the professor", example = "1000098653")
+        private String professorCode;
+
+        @Schema(description = "Full name of the professor", example = "Juan Perez")
+        private String name;
+
+        @Schema(description = "Email address of the professor", example = "juan.perez@mail.escuelaing.edu.co")
+        private String mail;
+
+        @Schema(description = "Document number of the professor", example = "123456789")
+        private String document;
+    }
+
 }

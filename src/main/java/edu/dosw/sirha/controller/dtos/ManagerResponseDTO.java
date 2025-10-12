@@ -1,5 +1,6 @@
 package edu.dosw.sirha.controller.dtos;
 
+import edu.dosw.sirha.model.entities.TrafficLightStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -66,6 +67,30 @@ public class ManagerResponseDTO {
     @Schema(description = "Indicates if the operation was successful", example = "true")
     private Boolean success;
 
+    /**
+     * Dashboard statistics
+     */
+    @Schema(description = "Total number of petitions in the deanery", example = "150")
+    private Integer totalPetitions;
+
+    /**
+     * Number of pending petitions
+     */
+    @Schema(description = "Number of pending petitions", example = "75")
+    private Integer pendingPetitions;
+
+    /**
+     * Number of approved petitions
+     */
+    @Schema(description = "Number of approved petitions", example = "50")
+    private Integer approvedPetitions;
+
+    /**
+     * Number of rejected petitions
+     */
+    @Schema(description = "Number of rejected petitions", example = "25")
+    private Integer rejectedPetitions;
+
 
     /**
      * Nested static classes for detailed components of the response
@@ -81,8 +106,8 @@ public class ManagerResponseDTO {
         @Schema(description = "Petition unique identifier", example = "petition-123")
         private String petitionId;
 
-        @Schema(description = "Student name who made the petition", example = "Juan Pérez")
-        private String studentName;
+        @Schema(description = "Student Id who made the petition", example = "1000098136")
+        private String studentId;
 
         @Schema(description = "Subject involved in the petition", example = "CALC1 - Cálculo I")
         private String subject;
@@ -159,8 +184,14 @@ public class ManagerResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AcademicStatus {
-        @Schema(description = "Traffic light color", allowableValues = {"GREEN", "BLUE", "RED"}, example = "GREEN")
-        private String status;
+        @Schema(description = "Student identifier", example = "1000098136")
+        private String studentId;
+
+        @Schema(description = "Student full name", example = "Juan Carlos Pérez")
+        private String studentName;
+
+        @Schema(description = "Traffic light status", allowableValues = {"GREEN", "BLUE", "RED"}, example = "GREEN")
+        private TrafficLightStatus trafficLightStatus;
 
         @Schema(description = "Status description", example = "Normal academic progress")
         private String description;
@@ -168,8 +199,14 @@ public class ManagerResponseDTO {
         @Schema(description = "Current GPA", example = "4.2")
         private Double gpa;
 
+        @Schema(description = "Number of approved subjects", example = "15")
+        private Integer approvedSubjects;
+
         @Schema(description = "Number of failed subjects", example = "0")
         private Integer failedSubjects;
+
+        @Schema(description = "Number of ongoing subjects", example = "5")
+        private Integer ongoingSubjects;
 
         @Schema(description = "Credit percentage completed", example = "75.5")
         private Double creditPercentage;

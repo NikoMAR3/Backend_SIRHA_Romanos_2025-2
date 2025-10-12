@@ -20,6 +20,18 @@ import java.util.Optional;
 public interface ProfessorRepository extends MongoRepository<Professor, String> {
 
     /**
+     * Finds a professor by their unique identifier.
+     *
+     * @param id the professor unique identifier
+     * @return an Optional containing the professor if found, empty otherwise
+     */
+    Optional<Professor> findById(String id);
+
+    Optional<Professor> findByProfessorCode(String professorCode);
+
+    void deleteByProfessorCode(String professorCode);
+
+    /**
      * Finds all professors associated with a specific deanery.
      * Useful for retrieving faculty members by academic department or faculty.
      *

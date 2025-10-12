@@ -109,33 +109,6 @@ public class StudentsResponseDTO {
     private List<Map<String, Object>> currentSchedule;
 
     /**
-     * Historical schedules from previous semesters
-     */
-    @Schema(
-            description = "Historical schedules from previous semesters for consultation",
-            example = "[{\"semester\": \"2026-1\", \"subjects\": [{\"subjectId\": \"AYSR\", \"grade\": 4.5}]}]"
-    )
-    private List<Map<String, Object>> historicalSchedules;
-
-    /**
-     * List of active petitions
-     */
-    @Schema(
-            description = "List of active petitions (pending, in review, approved, rejected)",
-            example = "[{\"petitionId\": \"pet-123\", \"type\": \"ADD_SUBJECT\", \"state\": \"PENDING\", \"creationDate\": \"2025-01-08T10:30:00\"}]"
-    )
-    private List<Map<String, Object>> activePetitions;
-
-    /**
-     * Complete history of all petitions made by the student
-     */
-    @Schema(
-            description = "Complete history of all petitions made by the student",
-            example = "[{\"petitionId\": \"pet-122\", \"type\": \"CHANGE_GROUP\", \"state\": \"APPROVED\", \"completionDate\": \"2025-01-05T14:30:00\"}]"
-    )
-    private List<Map<String, Object>> petitionHistory;
-
-    /**
      * Authentication status
      */
     @Schema(
@@ -143,15 +116,6 @@ public class StudentsResponseDTO {
             example = "{\"isAuthenticated\": true, \"lastLogin\": \"2025-01-08T09:15:00\", \"loginAttempts\": 0}"
     )
     private Map<String, Object> authenticationInfo;
-
-    /**
-     * Academic performance summary
-     */
-    @Schema(
-            description = "Summary of academic performance including GPA and credit progress",
-            example = "{\"overallGPA\": 4.1, \"semesterGPA\": 4.3, \"completedCredits\": 85, \"remainingCredits\": 59}"
-    )
-    private Map<String, Object> academicPerformance;
 
     /**
      * Registration date in the system
@@ -170,22 +134,4 @@ public class StudentsResponseDTO {
             example = "2025-01-08T10:30:00"
     )
     private LocalDateTime lastUpdateDate;
-
-    /**
-     * Available actions for the student
-     */
-    @Schema(
-            description = "List of actions currently available for the student",
-            example = "[\"CREATE_PETITION\", \"VIEW_SCHEDULE\", \"CHECK_GRADES\", \"UPDATE_PROFILE\"]"
-    )
-    private List<String> availableActions;
-
-    /**
-     * Notifications and alerts for the student
-     */
-    @Schema(
-            description = "Current notifications and alerts for the student",
-            example = "[{\"type\": \"ACADEMIC_ALERT\", \"message\": \"Registration period ends in 3 days\", \"priority\": \"HIGH\"}]"
-    )
-    private List<Map<String, Object>> notifications;
 }

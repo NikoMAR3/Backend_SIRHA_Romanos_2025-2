@@ -248,4 +248,11 @@ public class AuthenticationService {
          */
         public User getUser() { return user; }
     }
+
+    public User registerUser(User user, String plainPassword) {
+    user.setPasswordHash(passwordEncoder.encode(plainPassword));
+    user.setActive(true);
+    user.setLastLogin(null);
+    return userRepository.save(user);
+    }
 }

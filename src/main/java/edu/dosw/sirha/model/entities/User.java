@@ -35,6 +35,7 @@ public abstract class User {
     private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
+    private String credential;
 
     /**
      * Constructor for creating a new User with the specified attributes.
