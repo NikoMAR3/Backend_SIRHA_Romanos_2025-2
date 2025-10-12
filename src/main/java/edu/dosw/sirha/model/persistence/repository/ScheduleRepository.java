@@ -18,14 +18,6 @@ import java.util.Optional;
 public interface ScheduleRepository extends MongoRepository<Schedule, String> {
 
     /**
-     * Finds a schedule by its unique identifier.
-     *
-     * @param id the schedule unique identifier
-     * @return an Optional containing the schedule if found, empty otherwise
-     */
-    Optional<Schedule> findById(String id);
-
-    /**
      * Finds the schedule associated with a specific student.
      * Retrieves the current or most recent schedule for the student.
      *
