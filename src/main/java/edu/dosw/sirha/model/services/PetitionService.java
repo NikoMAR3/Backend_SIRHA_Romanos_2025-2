@@ -422,19 +422,16 @@ public class PetitionService {
     }
 
     /**
-     * Busca todas las peticiones marcadas como casos excepcionales.
-     * Los casos excepcionales son peticiones que requieren atención especial
-     * y han sido aprobadas bajo circunstancias extraordinarias por el VP académico.
-     *
-     * @return lista de peticiones marcadas como casos excepcionales, ordenadas por fecha de creación
-     * @throws IllegalArgumentException si hay un error al acceder al repositorio
+     * Looks for all the petitions marked as exceptional cases.
+     * Exceptional cases are petitions that requires special attention
+     * @return list of the petitions marked as exceptional, sorted by creation date
+     * @throws IllegalArgumentException if there's an error accessing the repository.
      */
     public List<Petition> searchExceptionalCases() {
         try {
             List<Petition> cases = petitionRepository.findByIsExceptionalCase(true);
             logger.debug("Found {} exceptional cases", cases.size());
 
-            // Ordenar por fecha de creación descendente (más recientes primero)
             cases.sort((p1, p2) -> {
                 if (p1.getCreationDate() == null && p2.getCreationDate() == null) return 0;
                 if (p1.getCreationDate() == null) return 1;
