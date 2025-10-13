@@ -34,7 +34,7 @@ class ScheduleServiceTest {
         schedule.setStudentId("123");
         schedule.setSubjectShortName("MAT101");
         schedule.setName("Matemáticas");
-        schedule.setSemester(1);
+        schedule.setSemester("2024-1");
         schedule.setCredits(3);
     }
 
@@ -162,7 +162,7 @@ class ScheduleServiceTest {
         classSession.setId("1");
         classSession.setCapacity(50);
 
-        when(scheduleRepository.countBySubjectId(1)).thenReturn(10L);
+        when(scheduleRepository.countBySubjectId("1")).thenReturn(10L);
 
         boolean result = scheduleService.validateScheduleCapacity(classSession);
 
@@ -175,7 +175,7 @@ class ScheduleServiceTest {
         classSession.setId("1");
         classSession.setCapacity(10);
 
-        when(scheduleRepository.countBySubjectId(1)).thenReturn(15L);
+        when(scheduleRepository.countBySubjectId("1")).thenReturn(15L);
 
         boolean result = scheduleService.validateScheduleCapacity(classSession);
 

@@ -48,7 +48,7 @@ public class Schedule {
     private LocalDateTime endTime;
 
     @Field
-    private int semester;
+    private String semester;
 
     @Field
     private int credits;
@@ -56,12 +56,10 @@ public class Schedule {
     @DBRef
     private List<ClassSession> classSessions;
 
-    @DBRef
     private List<Subject> subjects;
 
     @DBRef
     private Professor professor;
 
-    @DBRef
     private String program;
 }

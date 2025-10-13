@@ -122,7 +122,7 @@ public class ScheduleService {
                 existingSchedule.setDayOfWeek(schedule.getDayOfWeek().trim());
             }
 
-            if (schedule.getSemester() > 0) {
+            if ((schedule.getSemester() != null && schedule.getSemester().matches("\\d{4}-[12]"))) {
                 existingSchedule.setSemester(schedule.getSemester());
             }
 
@@ -201,11 +201,7 @@ public class ScheduleService {
      * @throws IllegalArgumentException if subject ID is invalid
      * @throws RuntimeException if search fails
      */
-    public List<Schedule> searchScheduleBySubject(int subjectId) {
-        if (subjectId <= 0) {
-            throw new IllegalArgumentException("Subject ID must be greater than zero");
-        }
-
+    public List<Schedule> searchScheduleBySubject(String subjectId) {
         try {
             return scheduleRepository.findBySubjectId(subjectId);
         } catch (Exception e) {
@@ -343,7 +339,7 @@ public class ScheduleService {
         }
 
         try {
-            long enrollmentCount = scheduleRepository.countBySubjectId(Integer.parseInt(classSession.getId()));
+            long enrollmentCount = scheduleRepository.countBySubjectId(classSession.getId());
             int maxCapacity = getClassSessionMaxCapacity(classSession);
 
             return enrollmentCount < maxCapacity;
