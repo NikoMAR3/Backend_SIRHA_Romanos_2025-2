@@ -54,7 +54,7 @@ class ClassSessionServiceTest {
         testSession.setId("session123");
         testSession.setSubjectShortName("CALC1");
         testSession.setSubjectName("Cálculo I");
-        testSession.setProfessorId("prof123");
+        testSession.setProfessorCode("prof123");
         testSession.setCapacity(30);
         testSession.setEnrolledStudents(15);
         testSession.setEnrolledStudentIds(new ArrayList<>(Arrays.asList("student1", "student2")));
@@ -75,7 +75,7 @@ class ClassSessionServiceTest {
         conflictSession.setId("conflict123");
         conflictSession.setSubjectShortName("PHYS1");
         conflictSession.setSubjectName("Física I");
-        conflictSession.setProfessorId("prof456");
+        conflictSession.setProfessorCode("prof456");
         conflictSession.setCapacity(25);
         conflictSession.setEnrolledStudents(10);
 
@@ -100,7 +100,7 @@ class ClassSessionServiceTest {
         @Test
         @DisplayName("Should create class session successfully when valid session is provided")
         void createClassSession_ValidSession_ShouldReturnCreatedSession() {
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(new ArrayList<>());
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(new ArrayList<>());
             when(classSessionRepository.findAll()).thenReturn(new ArrayList<>());
             when(classSessionRepository.save(any(ClassSession.class))).thenReturn(testSession);
 
@@ -185,9 +185,9 @@ class ClassSessionServiceTest {
         @Test
         @DisplayName("Should throw exception when professor has schedule conflict")
         void createClassSession_ProfessorScheduleConflict_ShouldThrowException() {
-            conflictSession.setProfessorId("prof123");
-            
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(Arrays.asList(conflictSession));
+            conflictSession.setProfessorCode("prof123");
+
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(Arrays.asList(conflictSession));
 
             IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -195,8 +195,8 @@ class ClassSessionServiceTest {
             );
 
             assertTrue(exception.getMessage().contains("Professor prof123 has a time conflict"));
-            
-            verify(classSessionRepository).findByProfessorId("prof123");
+
+            verify(classSessionRepository).findByProfessorCode("prof123");
         }
 
         /**
@@ -205,7 +205,7 @@ class ClassSessionServiceTest {
         @Test
         @DisplayName("Should throw exception when classroom has conflict")
         void createClassSession_ClassroomConflict_ShouldThrowException() {
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(new ArrayList<>());
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(new ArrayList<>());
             when(classSessionRepository.findAll()).thenReturn(Arrays.asList(conflictSession));
 
             IllegalArgumentException exception = assertThrows(
@@ -228,7 +228,7 @@ class ClassSessionServiceTest {
         @DisplayName("Should update class session successfully when valid session is provided")
         void updateClassSession_ValidSession_ShouldReturnUpdatedSession() {
             when(classSessionRepository.existsById("session123")).thenReturn(true);
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(Arrays.asList(testSession));
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(Arrays.asList(testSession));
             when(classSessionRepository.findAll()).thenReturn(Arrays.asList(testSession));
             when(classSessionRepository.save(any(ClassSession.class))).thenReturn(testSession);
 
@@ -343,7 +343,7 @@ class ClassSessionServiceTest {
             testSession.setSchedules(new ArrayList<>());
 
             when(classSessionRepository.findById("session123")).thenReturn(Optional.of(testSession));
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(Arrays.asList(testSession));
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(Arrays.asList(testSession));
             when(classSessionRepository.findAll()).thenReturn(Arrays.asList(testSession));
             when(classSessionRepository.save(any(ClassSession.class))).thenReturn(testSession);
 
@@ -468,14 +468,14 @@ class ClassSessionServiceTest {
         @DisplayName("Should return sessions for valid professor ID")
         void searchSessionsByProfessor_ValidProfessorId_ShouldReturnSessions() {
             List<ClassSession> expectedSessions = Arrays.asList(testSession);
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(expectedSessions);
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(expectedSessions);
 
             List<ClassSession> result = classSessionService.searchSessionsByProfessor("prof123");
 
             assertNotNull(result);
             assertEquals(1, result.size());
             assertEquals(testSession, result.get(0));
-            verify(classSessionRepository).findByProfessorId("prof123");
+            verify(classSessionRepository).findByProfessorCode("prof123");
         }
 
         /**
@@ -539,18 +539,18 @@ class ClassSessionServiceTest {
         @Test
         @DisplayName("Should return true when conflicts exist")
         void checkScheduleConflicts_ConflictsExist_ShouldReturnTrue() {
-    
-            conflictSession.setProfessorId("prof123"); 
-           
+
+            conflictSession.setProfessorCode("prof123");
+
             when(classSessionRepository.findById("session123")).thenReturn(Optional.of(testSession));
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(Arrays.asList(testSession, conflictSession));
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(Arrays.asList(testSession, conflictSession));
 
             boolean result = classSessionService.checkScheduleConflicts("session123");
 
             assertTrue(result);
             
             verify(classSessionRepository).findById("session123");
-            verify(classSessionRepository).findByProfessorId("prof123");
+            verify(classSessionRepository).findByProfessorCode("prof123");
         }
 
         /**
@@ -560,7 +560,7 @@ class ClassSessionServiceTest {
         @DisplayName("Should return false when no conflicts exist")
         void checkScheduleConflicts_NoConflicts_ShouldReturnFalse() {
             when(classSessionRepository.findById("session123")).thenReturn(Optional.of(testSession));
-            when(classSessionRepository.findByProfessorId("prof123")).thenReturn(Arrays.asList(testSession));
+            when(classSessionRepository.findByProfessorCode("prof123")).thenReturn(Arrays.asList(testSession));
             when(classSessionRepository.findAll()).thenReturn(Arrays.asList(testSession));
 
             boolean result = classSessionService.checkScheduleConflicts("session123");

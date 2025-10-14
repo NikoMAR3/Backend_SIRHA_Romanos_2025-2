@@ -56,7 +56,7 @@ public class GroupsResponseDTO {
             description = "Unique identifier of the professor assigned to the group",
             example = "prof123"
     )
-    private String professorId;
+    private String professorCode;
 
     /**
      * Full name of the professor assigned to this group.
@@ -131,17 +131,6 @@ public class GroupsResponseDTO {
             example = "3"
     )
     private Integer subjectLevel;
-
-    // Class Session information (flattened, following PetitionResponseDTO pattern)
-    /**
-     * Unique identifier of the class session associated with this group.
-     * May be null if the group is not tied to a specific class session.
-     */
-    @Schema(
-            description = "Unique identifier of the class session associated with the group",
-            example = "session789"
-    )
-    private String classSessionId;
 
     /**
      * Total capacity of the associated class session.
@@ -282,7 +271,7 @@ public class GroupsResponseDTO {
     )
     private Boolean isActive;
 
-    // Flexible additional information (following PetitionResponseDTO pattern)
+    
     /**
      * Additional details and metadata about the group.
      * This flexible structure can contain various types of information
@@ -313,6 +302,25 @@ public class GroupsResponseDTO {
     )
     private List<String> eventHistory;
 
+    @Data
+        @Schema(description = "Response DTO for subject information")
+        public static class SubjectResponseDTO {
+        @Schema(description = "ID de la materia", example = "DOSW")
+        private String subjectId;
+        @Schema(description = "Nombre corto", example = "DOSW")
+        private String shortName;
+        @Schema(description = "Nombre completo", example = "Desarrollo de Software")
+        private String name;
+        @Schema(description = "Créditos", example = "4")
+        private Integer credits;
+        @Schema(description = "Nivel", example = "2")
+        private Integer level;
+        @Schema(description = "IDs de materias prerequisito", example = "[\"MBDA\", \"POOB\"]")
+        private List<String> prerequisiteIds;
+
+        @Schema(description = "Lista de IDs de grupos (ClassSession) asociados a la materia", example = "[\"GRUPO1\", \"GRUPO2\"]")
+        private List<String> classSessionIds;
+        }
 
     @Data
     @Schema(description = "Response DTO for professor information")
@@ -328,6 +336,8 @@ public class GroupsResponseDTO {
 
         @Schema(description = "Document number of the professor", example = "123456789")
         private String document;
+
+        private List<String> groupIds;
     }
 
 }

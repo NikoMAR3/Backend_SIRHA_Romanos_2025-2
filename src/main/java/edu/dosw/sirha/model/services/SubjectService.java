@@ -211,4 +211,13 @@ public class SubjectService {
             throw new IllegalArgumentException("Subject level must be greater than 0");
         }
     }
+
+    public Subject save(Subject subject) {
+        if (subject == null) {
+            throw new IllegalArgumentException("Subject cannot be null");
+        }
+        validateSubjectData(subject);
+        return subjectRepository.save(subject);
+    }
+
 }

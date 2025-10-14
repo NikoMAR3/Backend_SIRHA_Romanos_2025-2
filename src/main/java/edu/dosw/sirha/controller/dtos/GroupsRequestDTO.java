@@ -33,6 +33,9 @@ public class GroupsRequestDTO {
     )
     private String groupName;
 
+    @Schema(description = "ID único del grupo", example = "10001", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String groupId;
+
     /**
      * Description of the group
      */
@@ -42,17 +45,6 @@ public class GroupsRequestDTO {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private String description;
-
-    /**
-     * ID of the professor assigned to this group
-     */
-    @NotBlank(message = "Professor ID is required")
-    @Schema(
-            description = "Unique identifier of the professor assigned to the group",
-            example = "prof123",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    private String professorId;
 
     /**
      * ID of the subject this group belongs to
@@ -65,15 +57,12 @@ public class GroupsRequestDTO {
     )
     private String subjectId;
 
-    /**
-     * ID of the class session this group is associated with
-     */
     @Schema(
-            description = "Unique identifier of the class session associated with the group",
-            example = "session789",
+            description = "Código del profesor asignado al grupo",
+            example = "7900076543",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    private String classSessionId;
+    private String professorCode;
 
     /**
      * Maximum number of students allowed in this group
@@ -131,21 +120,39 @@ public class GroupsRequestDTO {
     )
     private Map<String, Object> details;
 
+
+//-------------------------------------------materias-------------------------------------------------------
         @Data
         @Schema(description = "Request DTO for subject creation")
         public static class SubjectRequest {
         @NotBlank
+        @Schema(description = "ID único de la materia", example = "DOSW")
         private String subjectId;
+
         @NotBlank
+        @Schema(description = "Nombre corto de la materia", example = "DOSW")
         private String subjectShortName;
+
         @NotBlank
+        @Schema(description = "Nombre completo de la materia", example = "Desarrollo de Software")
         private String subjectName;
+
         @NotNull
+        @Schema(description = "Cantidad de créditos de la materia", example = "4")
         private Integer subjectCredits;
+
         @NotNull
+        @Schema(description = "Nivel académico de la materia", example = "2")
         private Integer subjectLevel;
+
+        @Schema(description = "Lista de IDs de materias prerequisito", example = "[\"MBDA\", \"POOB\"]")
+        private List<String> prerequisiteIds;
+
+        @Schema(description = "Lista de IDs de grupos (ClassSession) asociados a la materia", example = "[\"GRUPO1\", \"GRUPO2\"]")
+        private List<String> classSessionIds;
         }
 
+//-------------------------------------------profesores-------------------------------------------------------
         @Data
         @Schema(description = "Request DTO for professor creation")
         public static class ProfessorRequest {
@@ -161,8 +168,12 @@ public class GroupsRequestDTO {
             message = "Document must contain exactly 10 digits"
         )
         private String document;
-        
+
         @NotNull
         private String professorCode;
+
+        @Schema(description = "Lista de IDs de grupos donde el profesor está asignado", example = "[\"GRUPO1\", \"GRUPO2\"]")
+        private List<String> groupIds;
+
         }
 }

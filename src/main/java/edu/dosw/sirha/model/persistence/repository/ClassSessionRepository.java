@@ -24,11 +24,11 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
     Optional<ClassSession> findById(String id);
 
     /**
-     * Finds class sessions by professor ID.
-     * @param professorId the ID of the professor
+     * Finds class sessions by professor code.
+     * @param professorCode the code of the professor
      * @return a list of ClassSessions assigned to the given professor
      */
-    List<ClassSession> findByProfessorId(String professorId);
+    List<ClassSession> findByProfessorCode(String professorCode);
 
     /**
      * Finds class sessions by subject short name.
