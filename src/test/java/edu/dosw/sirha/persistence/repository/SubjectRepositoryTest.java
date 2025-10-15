@@ -37,7 +37,7 @@ class SubjectRepositoryTest {
     private SubjectRepository subjectRepository;
 
     @Autowired
-    private ClassSessionRepository classSessionRepository; // 👈 agregar esto
+    private ClassSessionRepository classSessionRepository;
 
     private Subject mathSubject;
     private Subject physicsSubject;
