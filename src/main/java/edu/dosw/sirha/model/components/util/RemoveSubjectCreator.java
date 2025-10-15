@@ -37,6 +37,7 @@ public class RemoveSubjectCreator extends PetitionCreator {
         petition.setStudentId(dto.getUserID());
         petition.setType(PetitionType.REMOVE_SUBJECT);
         petition.setSubjectId((String) dto.getDetails().get("subjectId"));
+        petition.setJustification(dto.getDescription());
         petition.setPriority(calculatePriorityByUser(dto));
         petition.setState(PetitionState.PENDING);
         petition.setCreationDate(LocalDateTime.now());
