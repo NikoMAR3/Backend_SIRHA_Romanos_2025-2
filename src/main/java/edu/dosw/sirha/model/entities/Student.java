@@ -27,7 +27,6 @@ public class Student extends User{
     @DBRef
     private AcademicProgram academicProgram;
 
-    @DBRef
     private AcademicStatus academicStatus;
 
     @DBRef

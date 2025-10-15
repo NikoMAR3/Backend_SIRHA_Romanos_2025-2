@@ -15,14 +15,6 @@ import java.util.List;
 public interface StudentRepository extends MongoRepository<Student, String> {
 
     /**
-     * Finds a student by their unique student code.
-     *
-     * @param studentCode the unique code assigned to the student
-     * @return an {@link Optional} containing the matching student if found, otherwise empty
-     */
-    Optional<Student> findByStudentCode(String studentCode);
-
-    /**
      * Retrieves all students enrolled in a given semester.
      *
      * @param semester the semester number to search for
