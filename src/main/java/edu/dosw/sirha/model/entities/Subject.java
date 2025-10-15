@@ -34,6 +34,6 @@ public class Subject {
     @DBRef
     private ClassSession classSession;
 
-    @DBRef
+
     private String programId;
 }
