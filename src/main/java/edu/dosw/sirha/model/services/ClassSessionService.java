@@ -3,6 +3,8 @@ package edu.dosw.sirha.model.services;
 import edu.dosw.sirha.model.entities.ClassSession;
 import edu.dosw.sirha.model.entities.ClassSchedule;
 import edu.dosw.sirha.model.persistence.repository.ClassSessionRepository;
+import edu.dosw.sirha.model.persistence.repository.ClassScheduleRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -20,9 +22,11 @@ import java.util.Optional;
 public class ClassSessionService {
 
     private final ClassSessionRepository classSessionRepository;
+    private final ClassScheduleRepository classScheduleRepository;
 
-    public ClassSessionService(ClassSessionRepository classSessionRepository) {
+    public ClassSessionService(ClassSessionRepository classSessionRepository, ClassScheduleRepository classScheduleRepository) {
         this.classSessionRepository = classSessionRepository;
+        this.classScheduleRepository = classScheduleRepository;
     }
 
     /**
@@ -620,7 +624,11 @@ public class ClassSessionService {
 
     public List<ClassSession> searchAllSessions() {
         return classSessionRepository.findAll();
-}
+    }
+
+    public ClassSchedule searchScheduleById(String id) {
+        return classScheduleRepository.findById(id).orElse(null);
+    }
 
 
 

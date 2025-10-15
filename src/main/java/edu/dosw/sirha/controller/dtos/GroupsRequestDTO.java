@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Max;
 import java.util.List;
 import java.util.Map;
 
+import edu.dosw.sirha.model.entities.Schedule;
 import edu.dosw.sirha.model.entities.UserType;
 
 /**
@@ -18,7 +19,42 @@ import edu.dosw.sirha.model.entities.UserType;
  * Contains the information sent by the client to create a group.
  */
 @Data
-@Schema(description = "Data transfer object for group creation requests")
+@Schema(
+        description = "Data transfer object for group creation requests",       
+        example = """
+        {
+        "groupId": "1947",
+        "groupName": "Grupo PRUEBA3",
+        "description": "Grupo 1947 prueba3",
+        "professorCode": "1000058786",
+        "subjectId": "SOGR",
+        "subjectShortName": "SOGR",
+        "subjectName": "seminario",
+        "subjectCredits": 1,
+        "sessionCapacity": null,
+        "maxStudents": 35,
+        "currentStudents": 0,
+        "isFull": false,
+        "occupancyPercentage": 0,
+        "enrolledStudentIds": null,
+        "isActive": true,
+        "schedules": [
+                {
+                "startTime": "12:00",
+                "endTime": "15:00",
+                "classroom": "A-301",
+                "dayOfWeek": "Lunes"
+                },
+                {
+                "startTime": "01:00",
+                "endTime": "02:00",
+                "classroom": "B-101",
+                "dayOfWeek": "Miércoles"
+                }
+        ]
+        }
+        """
+        )
 public class GroupsRequestDTO {
 
         //grupos
@@ -96,7 +132,8 @@ public class GroupsRequestDTO {
             example = "[\"schedule123\", \"schedule456\"]",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    private List<String> scheduleIds;
+
+    private List<ScheduleRequest> schedules;
 
     /**
      * List of class schedule IDs for specific time slots
@@ -119,8 +156,16 @@ public class GroupsRequestDTO {
             additionalProperties = Schema.AdditionalPropertiesValue.TRUE
     )
     private Map<String, Object> details;
+//-----------------------------------------------------------------------------------------------------------------
 
-
+@Data
+public static class GlobalScheduleRequest {
+    private List<String> days; 
+    private String startTime; 
+    private String endTime;    
+    private String classroom;
+    
+}
 //-------------------------------------------materias-------------------------------------------------------
         @Data
         @Schema(description = "Request DTO for subject creation")
@@ -175,5 +220,14 @@ public class GroupsRequestDTO {
         @Schema(description = "Lista de IDs de grupos donde el profesor está asignado", example = "[\"GRUPO1\", \"GRUPO2\"]")
         private List<String> groupIds;
 
+        }
+
+        @Data
+        @Schema(description = "Horario individual para el grupo")
+        public static class ScheduleRequest {
+                private String dayOfWeek;
+                private String startTime; // Ejemplo: "08:00"
+                private String endTime;   // Ejemplo: "10:00"
+                private String classroom;
         }
 }

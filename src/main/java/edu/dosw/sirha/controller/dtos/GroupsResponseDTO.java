@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Data Transfer Object for group responses.
  * Contains the complete information of a group returned to the client.
@@ -65,6 +67,7 @@ public class GroupsResponseDTO {
             description = "Full name of the professor assigned to the group",
             example = "Dr. Maria Rodriguez Garcia"
     )
+    @JsonIgnore
     private String professorName;
 
     /**
@@ -74,6 +77,7 @@ public class GroupsResponseDTO {
             description = "Email address of the professor assigned to the group",
             example = "maria.rodriguez@escuelaing.edu.co"
     )
+    @JsonIgnore
     private String professorEmail;
 
     /**
@@ -83,6 +87,7 @@ public class GroupsResponseDTO {
             description = "Document number of the professor assigned to the group",
             example = "12345678"
     )
+    @JsonIgnore
     private String professorDocument;
 
     // Subject information (flattened, following PetitionResponseDTO pattern)
@@ -130,6 +135,7 @@ public class GroupsResponseDTO {
             description = "Academic level of the subject",
             example = "3"
     )
+    @JsonIgnore
     private Integer subjectLevel;
 
     /**
@@ -139,6 +145,7 @@ public class GroupsResponseDTO {
             description = "Total capacity of the associated class session",
             example = "35"
     )
+
     private Integer sessionCapacity;
 
     /**
@@ -148,6 +155,7 @@ public class GroupsResponseDTO {
             description = "Number of students currently enrolled in the associated class session",
             example = "28"
     )
+    @JsonIgnore
     private Integer sessionEnrolledStudents;
 
     /**
@@ -157,6 +165,7 @@ public class GroupsResponseDTO {
             description = "Start date and time of the associated class session",
             example = "2025-01-15T08:00:00"
     )
+    @JsonIgnore
     private LocalDateTime sessionStartDate;
 
     /**
@@ -166,6 +175,7 @@ public class GroupsResponseDTO {
             description = "End date and time of the associated class session",
             example = "2025-01-15T10:00:00"
     )
+    @JsonIgnore
     private LocalDateTime sessionEndDate;
 
     // Group capacity and enrollment information
@@ -218,6 +228,7 @@ public class GroupsResponseDTO {
             description = "List of student IDs currently enrolled in the group",
             example = "[\"student123\", \"student456\", \"student789\"]"
     )
+    
     private List<String> enrolledStudentIds;
 
     /**
@@ -228,6 +239,7 @@ public class GroupsResponseDTO {
             description = "List of schedule IDs associated with the group",
             example = "[\"schedule123\", \"schedule456\"]"
     )
+    @JsonIgnore
     private List<String> scheduleIds;
 
     /**
@@ -238,6 +250,7 @@ public class GroupsResponseDTO {
             description = "List of class schedule IDs for specific time slots",
             example = "[\"classSchedule123\", \"classSchedule456\"]"
     )
+    @JsonIgnore
     private List<String> classScheduleIds;
 
     // Metadata and timestamps (following PetitionResponseDTO pattern)
@@ -249,6 +262,7 @@ public class GroupsResponseDTO {
             description = "Timestamp when the group was created",
             example = "2025-01-08T10:30:00"
     )
+    @JsonIgnore
     private LocalDateTime creationDate;
 
     /**
@@ -259,6 +273,7 @@ public class GroupsResponseDTO {
             description = "Timestamp when the group was last modified",
             example = "2025-01-08T14:45:00"
     )
+    @JsonIgnore
     private LocalDateTime modificationDate;
 
     /**
@@ -285,7 +300,16 @@ public class GroupsResponseDTO {
                     "group type, special requirements, or other relevant data.",
             example = "{\"classroom\": \"Lab A-301\", \"semester\": \"2025-1\", \"groupType\": \"LABORATORY\", \"specialRequirements\": \"Laptops required\"}"
     )
+    @JsonIgnore
     private Map<String, Object> details;
+
+    @Schema(
+            description = "List of schedules associated with the group. " +
+                    "Each schedule entry contains day of the week and time range.",
+            example = "[{\"day\": \"Monday\", \"startTime\": \"08:00\", \"endTime\": \"10:00\"}, " +
+                    "{\"day\": \"Wednesday\", \"startTime\": \"08:00\", \"endTime\": \"10:00\"}]"
+    )
+    private List<Map<String, String>> schedules;
 
     /**
      * History of important events and changes for this group.
@@ -300,6 +324,7 @@ public class GroupsResponseDTO {
                     "\"2025-01-09T14:15:00 - Student John Doe enrolled\", " +
                     "\"2025-01-10T09:45:00 - Schedule updated\"]"
     )
+    @JsonIgnore
     private List<String> eventHistory;
 
     @Data

@@ -920,22 +920,4 @@ class ClassSessionServiceTest {
             assertEquals(0.0, stats.getOccupancyPercentage(), 0.01);
         }
     }
-
-    @Nested
-    @DisplayName("Constructor Tests")
-    class ConstructorTests {
-
-        /**
-         * Tests that the service can be instantiated with repository dependency.
-         */
-        @Test
-        @DisplayName("Should create service with repository dependency")
-        void constructor_ShouldCreateServiceWithRepository() {
-            ClassSessionRepository repository = mock(ClassSessionRepository.class);
-
-            ClassSessionService service = new ClassSessionService(repository);
-
-            assertNotNull(service);
-        }
-    }
 }

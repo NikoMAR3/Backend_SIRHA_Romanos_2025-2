@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,6 +235,348 @@ public class GroupsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/{id}/capacity")
+    @Operation(
+        summary = "Modificar cupos del grupo",
+        description = "Actualiza la capacidad máxima (cupos) de un grupo específico"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Capacidad actualizada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Valor de capacidad inválido"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes"),
+        @ApiResponse(responseCode = "404", description = "Grupo no encontrado")
+    })
+    public ResponseEntity<GroupsResponseDTO> updateGroupCapacity(
+            @PathVariable String id,
+            @RequestParam Integer maxStudents,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar cupos");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(id);
+        if (sessionEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (maxStudents == null || maxStudents <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        sessionEntity.setCapacity(maxStudents);
+        ClassSession updatedSession = classSessionService.updateClassSession(sessionEntity);
+        GroupsResponseDTO response = convertToResponseDTO(updatedSession);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{groupId}/professor/remove")
+    @Operation(
+        summary = "Retirar profesor del grupo",
+        description = "Elimina la asignación de un profesor específico en un grupo"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Profesor retirado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "El profesor no está asignado a este grupo"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes"),
+        @ApiResponse(responseCode = "404", description = "Grupo no encontrado")
+    })
+    public ResponseEntity<GroupsResponseDTO> removeProfessorFromGroup(
+            @PathVariable String groupId,
+            @RequestParam String professorCode,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para retirar profesores");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+        if (sessionEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        
+        if (!professorCode.equals(sessionEntity.getProfessorCode())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        sessionEntity.setProfessorCode(null);
+        sessionEntity.setProfessorName(null);
+        sessionEntity.setProfessorEmail(null);
+        sessionEntity.setProfessorDocument(null);
+
+        ClassSession updatedSession = classSessionService.updateClassSession(sessionEntity);
+        GroupsResponseDTO response = convertToResponseDTO(updatedSession);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/{groupId}/schedule")
+    @Operation(
+        summary = "Agregar horario individual a grupo",
+        description = "Agrega un horario específico (día, hora, salón) a un grupo"
+    )
+    public ResponseEntity<GroupsResponseDTO> addScheduleToGroup(
+            @PathVariable String groupId,
+            @RequestBody GroupsRequestDTO.ScheduleRequest scheduleRequest,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar horarios");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+        ClassSchedule newSchedule = new ClassSchedule(
+            null,
+            scheduleRequest.getDayOfWeek(),
+            LocalTime.parse(scheduleRequest.getStartTime()),
+            LocalTime.parse(scheduleRequest.getEndTime()),
+            scheduleRequest.getClassroom()
+        );
+        classSessionService.assignScheduleToSession(groupId, newSchedule);
+
+        GroupsResponseDTO response = convertToResponseDTO(classSessionService.searchSessionById(groupId));
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/{groupId}/schedule/global")
+    @Operation(
+        summary = "Agregar horario global a grupo",
+        description = "Agrega el mismo horario para varios días a un grupo"
+    )
+    public ResponseEntity<GroupsResponseDTO> addGlobalScheduleToGroup(
+            @PathVariable String groupId,
+            @RequestBody GroupsRequestDTO.GlobalScheduleRequest globalRequest,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar horarios");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+
+        for (String day : globalRequest.getDays()) {
+            ClassSchedule newSchedule = new ClassSchedule(
+                null,
+                day,
+                LocalTime.parse(globalRequest.getStartTime()),
+                LocalTime.parse(globalRequest.getEndTime()),
+                globalRequest.getClassroom()
+            );
+            classSessionService.assignScheduleToSession(groupId, newSchedule);
+        }
+
+        GroupsResponseDTO response = convertToResponseDTO(classSessionService.searchSessionById(groupId));
+        return ResponseEntity.ok(response);
+    }
+
+
+
+    @PutMapping("/{groupId}/schedules")
+    @Operation(
+        summary = "Modificar/agregar varios horarios al grupo",
+        description = "Reemplaza o agrega una lista de horarios al grupo"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Horarios modificados exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de horarios inválidos"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes"),
+        @ApiResponse(responseCode = "404", description = "Grupo no encontrado")
+    })
+    public ResponseEntity<GroupsResponseDTO> updateGroupSchedules(
+            @PathVariable String groupId,
+            @RequestBody List<GroupsRequestDTO.ScheduleRequest> schedules,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar horarios");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+        if (sessionEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<ClassSchedule> newSchedules = schedules.stream()
+            .map(s -> new ClassSchedule(
+                null,
+                s.getDayOfWeek(),
+                LocalTime.parse(s.getStartTime()),
+                LocalTime.parse(s.getEndTime()),
+                s.getClassroom()
+            ))
+            .toList();
+
+        sessionEntity.setSchedules(newSchedules);
+        ClassSession updatedSession = classSessionService.updateClassSession(sessionEntity);
+        GroupsResponseDTO response = convertToResponseDTO(updatedSession);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PutMapping("/{groupId}/schedule")
+    @Operation(
+        summary = "Actualizar horario individual de grupo",
+        description = "Actualiza el horario de un día específico en el grupo"
+    )
+    public ResponseEntity<GroupsResponseDTO> updateIndividualSchedule(
+            @PathVariable String groupId,
+            @RequestBody GroupsRequestDTO.ScheduleRequest scheduleRequest,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar horarios");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+        if (sessionEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        boolean updated = false;
+        if (sessionEntity.getSchedules() != null) {
+            for (ClassSchedule schedule : sessionEntity.getSchedules()) {
+                if (schedule.getDayOfWeek().equalsIgnoreCase(scheduleRequest.getDayOfWeek())) {
+                    schedule.setStartTime(LocalTime.parse(scheduleRequest.getStartTime()));
+                    schedule.setEndTime(LocalTime.parse(scheduleRequest.getEndTime()));
+                    schedule.setClassroom(scheduleRequest.getClassroom());
+                    updated = true;
+                    break;
+                }
+            }
+        }
+
+        if (!updated) {
+            return ResponseEntity.badRequest().body(null); 
+        }
+
+        ClassSession updatedSession = classSessionService.updateClassSession(sessionEntity);
+        GroupsResponseDTO response = convertToResponseDTO(updatedSession);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PutMapping("/{groupId}/schedule/global")
+    @Operation(
+        summary = "Actualizar horario global de grupo",
+        description = "Actualiza el mismo horario para varios días en el grupo"
+    )
+    public ResponseEntity<GroupsResponseDTO> updateGlobalSchedule(
+            @PathVariable String groupId,
+            @RequestBody GroupsRequestDTO.GlobalScheduleRequest globalRequest,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para modificar horarios");
+        }
+
+        ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
+        if (sessionEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        int updatedCount = 0;
+        if (sessionEntity.getSchedules() != null) {
+            for (String day : globalRequest.getDays()) {
+                for (ClassSchedule schedule : sessionEntity.getSchedules()) {
+                    if (schedule.getDayOfWeek().equalsIgnoreCase(day)) {
+                        schedule.setStartTime(LocalTime.parse(globalRequest.getStartTime()));
+                        schedule.setEndTime(LocalTime.parse(globalRequest.getEndTime()));
+                        schedule.setClassroom(globalRequest.getClassroom());
+                        updatedCount++;
+                    }
+                }
+            }
+        }
+
+        if (updatedCount == 0) {
+            return ResponseEntity.badRequest().body(null); 
+        }
+
+        ClassSession updatedSession = classSessionService.updateClassSession(sessionEntity);
+        GroupsResponseDTO response = convertToResponseDTO(updatedSession);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search/by-schedule")
+    @Operation(
+        summary = "Buscar grupos por horario",
+        description = "Devuelve los grupos que tienen clase en el día y hora especificados"
+    )
+    public ResponseEntity<List<Map<String, Object>>> getGroupsBySchedule(
+            @RequestParam String dayOfWeek,
+            @RequestParam String startTime) {
+
+        List<ClassSession> allSessions = classSessionService.searchAllSessions();
+
+        List<Map<String, Object>> result = allSessions.stream()
+            .filter(session -> session.getSchedules() != null)
+            .flatMap(session -> session.getSchedules().stream()
+                .filter(schedule ->
+                    schedule.getDayOfWeek().equalsIgnoreCase(dayOfWeek) &&
+                    schedule.getStartTime().toString().equals(startTime)
+                )
+                .map(schedule -> Map.<String, Object>of(
+                    "groupId", session.getId(),
+                    "groupName", session.getGroupName(),
+                    "classroom", schedule.getClassroom(),
+                    "dayOfWeek", schedule.getDayOfWeek(),
+                    "startTime", schedule.getStartTime().toString(),
+                    "endTime", schedule.getEndTime().toString()
+                ))
+            )
+            .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    @GetMapping("/search/by-classroom")
+    @Operation(
+        summary = "Buscar grupos por salón",
+        description = "Devuelve los grupos que tienen clase en el salón especificado"
+    )
+    public ResponseEntity<List<Map<String, Object>>> getGroupsByClassroom(
+            @RequestParam String classroom) {
+
+        List<ClassSession> allSessions = classSessionService.searchAllSessions();
+
+        List<Map<String, Object>> result = allSessions.stream()
+            .filter(session -> session.getSchedules() != null)
+            .flatMap(session -> session.getSchedules().stream()
+                .filter(schedule -> schedule.getClassroom().equalsIgnoreCase(classroom))
+                .map(schedule -> Map.<String, Object>of(
+                    "groupId", session.getId(),
+                    "groupName", session.getGroupName(),
+                    "classroom", schedule.getClassroom(),
+                    "dayOfWeek", schedule.getDayOfWeek(),
+                    "startTime", schedule.getStartTime().toString(),
+                    "endTime", schedule.getEndTime().toString()
+                ))
+            )
+            .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+
 
     //------------------------------------------------Subjects---------------------------------------------------------------
 
@@ -1133,6 +1476,20 @@ public class GroupsController {
         if (professor == null) {
             throw new IllegalArgumentException("El profesor con código " + request.getProfessorCode() + " no existe");
         }
+
+        if (request.getSchedules() != null && !request.getSchedules().isEmpty()) {
+            List<ClassSchedule> schedules = request.getSchedules().stream()
+                .map(s -> new ClassSchedule(
+                    null, 
+                    s.getDayOfWeek(),
+                    LocalTime.parse(s.getStartTime()),
+                    LocalTime.parse(s.getEndTime()),
+                    s.getClassroom()
+                ))
+                .toList();
+            sessionEntity.setSchedules(schedules);
+        }
+
         sessionEntity.setProfessorCode(request.getProfessorCode());
         sessionEntity.setProfessorName(professor.getName());
         sessionEntity.setProfessorEmail(professor.getMail());
@@ -1212,6 +1569,20 @@ public class GroupsController {
             }
         }
 
+        if (sessionEntity.getSchedules() != null) {
+            List<Map<String, String>> scheduleInfo = sessionEntity.getSchedules().stream()
+                .map(schedule -> Map.of(
+                    "dayOfWeek", schedule.getDayOfWeek(),
+                    "startTime", schedule.getStartTime().toString(),
+                    "endTime", schedule.getEndTime().toString(),
+                    "classroom", schedule.getClassroom()
+                ))
+                .toList();
+            dto.setSchedules(scheduleInfo);
+        } else {
+            dto.setSchedules(List.of());
+        }
+
         dto.setSubjectId(sessionEntity.getSubjectId());
         dto.setSubjectShortName(sessionEntity.getSubjectShortName());
         dto.setSubjectName(sessionEntity.getSubjectName());
@@ -1222,6 +1593,8 @@ public class GroupsController {
         dto.setEnrolledStudentIds(sessionEntity.getEnrolledStudentIds());
         dto.setCreationDate(sessionEntity.getStartDate());
         dto.setIsActive(true);
+
+
 
         return dto;
     }
