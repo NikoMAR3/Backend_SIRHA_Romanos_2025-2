@@ -236,27 +236,27 @@ El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estr
 Para la documentación y análisis del proyecto se generaron los siguientes diagramas UML:
 
 - **Diagrama de Contexto**  
-  ![DiagramaContexto.png](docs/imagenes/DiagramaContexto.png)
+  ![DiagramaContexto.png](docs/uml/DiagramaContexto.png)
 
 - **Diagrama de Casos de Uso**  
-  ![DiagramaDeCasosDeUso.png](docs/imagenes/DiagramaDeCasosDeUso.png)
+  ![DiagramaDeCasosDeUso.png](docs/uml/DiagramaDeCasosDeUso.png)
 
 - **Diagrama de Clases** 
-    ![DiagramaDeClases.png](docs/imagenes/DiagramaDeClases.png)
+    ![DiagramaDeClases.png](docs/uml/DiagramaDeClases.png)
   https://lucid.app/lucidchart/85abc96b-6dc9-425f-99f8-2e3076d53ab4/edit?viewport_loc=-5114%2C-3188%2C9738%2C4070%2CnWZN8rpCuUsd&invitationId=inv_50cbed5a-0579-4f02-905c-2f4d0018f68d
 
 
 - **Diagrama de Componentes (General)**  
-  ![DiagramaComponentesGeneral.png](docs/imagenes/DiagramaComponentesGeneral.png)
+  ![DiagramaComponentesGeneral.png](docs/uml/DiagramaComponentesGeneral.png)
 
 - **Diagrama de Componentes (Específico)**  
-  ![DiagramaDeComponentesEspecifico](docs/imagenes/DiagramaDeComponentesEspecifico.png)
+  ![DiagramaDeComponentesEspecifico](docs/uml/DiagramaDeComponentesEspecifico.png)
 
 - **Diagramas de Secuencia**  
   ![DiagramaSecuencia](docs/imagenes/)
 
 - **Diagrama de Base de Datos (MongoDB)**  
-  ![DiagramaBD.png](docs/imagenes/DiagramaBD.png)
+  ![DiagramaBD.png](docs/uml/DiagramaBD.png)
 
 
 ---
