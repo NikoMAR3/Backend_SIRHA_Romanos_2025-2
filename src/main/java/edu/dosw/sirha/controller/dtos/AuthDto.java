@@ -24,13 +24,13 @@ public class AuthDto {
     @Schema(description = "Request DTO for user authentication")
     public static class LoginRequest {
         
-        @NotBlank(message = "Credential is required")
+        @NotBlank(message = "ID is required")
         @Schema(
-            description = "User credential (document number or institutional email)",
-            example = "12345678",
+            description = "User ID",
+            example = "1000057643",
             requiredMode = Schema.RequiredMode.REQUIRED
         )
-        private String credential;
+        private String id;
         
         @NotBlank(message = "Password is required")
         @Schema(
@@ -213,12 +213,8 @@ public class AuthDto {
         @Email
         private String mail;
         @NotBlank
-        private String credential;
-        @NotBlank
         private String password;
         @NotNull
         private UserType type;
-        @NotBlank
-        private String document;
     }
 }

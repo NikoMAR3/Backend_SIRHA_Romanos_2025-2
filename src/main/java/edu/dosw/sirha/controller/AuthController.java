@@ -4,6 +4,7 @@ import edu.dosw.sirha.controller.dtos.AuthDto;
 import edu.dosw.sirha.model.entities.AcademicVicePresident;
 import edu.dosw.sirha.model.entities.Dean;
 import edu.dosw.sirha.model.entities.Student;
+import edu.dosw.sirha.model.entities.Professor;
 import edu.dosw.sirha.model.entities.User;
 import edu.dosw.sirha.model.entities.UserType;
 import edu.dosw.sirha.model.services.AuthenticationService;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
@@ -55,11 +57,11 @@ public class AuthController {
             @Valid @RequestBody AuthDto.LoginRequest request, 
             HttpSession session) {
         
-        logger.info("Login attempt for credential: {}", request.getCredential());
-        
-        AuthenticationService.AuthenticationResult result = 
-            authenticationService.authenticate(request.getCredential(), request.getPassword());
-        
+        logger.info("Login attempt for credential: {}", request.getId());
+
+        AuthenticationService.AuthenticationResult result =
+            authenticationService.authenticate(request.getId(), request.getPassword());
+
         if (result.isSuccess()) {
             if (!result.getUser().isActive()) {
                 logger.warn("Login attempt by inactive user: {}", result.getUser().getId());
@@ -77,7 +79,7 @@ public class AuthController {
             
             return ResponseEntity.ok(new AuthDto.LoginResponse(true, "Login successful", result.getUser()));
         } else {
-            logger.warn("Login failed for credential: {} - {}", request.getCredential(), result.getMessage());
+            logger.warn("Login failed for credential: {} - {}", request.getId(), result.getMessage());
         
             throw new IllegalArgumentException("Invalid credentials: " + result.getMessage());
         }
@@ -273,6 +275,9 @@ public class AuthController {
             case ACADEMIC_VICEPRESIDENT:
                 newUser = new AcademicVicePresident();
                 break;
+            case PROFESSOR:
+                newUser = new Professor();
+                break;  
             default:
                 return ResponseEntity.badRequest()
                     .body(new AuthDto.ApiResponse(false, "Tipo de usuario no soportado"));
@@ -281,8 +286,6 @@ public class AuthController {
         newUser.setId(request.getId());
         newUser.setName(request.getName());
         newUser.setMail(request.getMail());
-        newUser.setCredential(request.getCredential());
-        newUser.setDocument(request.getDocument());
         newUser.setType(request.getType());
         newUser.setActive(true);
 

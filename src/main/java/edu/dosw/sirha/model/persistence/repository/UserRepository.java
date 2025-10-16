@@ -76,4 +76,11 @@ public interface UserRepository extends MongoRepository<User, String> {
      * Finds user by email and checks if active.
      */
     Optional<User> findByMailAndIsActiveTrue(String mail);
+
+    /**
+     * Finds user by id and checks if active.
+     */
+    Optional<User> findByIdAndIsActiveTrue(String id);
+
+
 }
