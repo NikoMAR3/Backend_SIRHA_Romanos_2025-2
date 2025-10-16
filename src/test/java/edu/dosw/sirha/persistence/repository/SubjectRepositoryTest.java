@@ -63,7 +63,7 @@ class SubjectRepositoryTest {
         mathSubject.setCredits(4);
         mathSubject.setLevel(1);
         mathSubject.setProgramId("PROG1");
-        mathSubject.setClassSession(mathSession);
+        mathSubject.setClassSessions(List.of(mathSession));
 
         physicsSubject = new Subject();
         physicsSubject.setShortName("PHYS201");
@@ -161,8 +161,8 @@ class SubjectRepositoryTest {
         Optional<Subject> savedMath = subjectRepository.findByShortName("MATH101");
 
         assertThat(savedMath).isPresent();
-        assertThat(savedMath.get().getClassSession()).isNotNull();
-        assertThat(savedMath.get().getClassSession().getSubjectShortName())
+        assertThat(savedMath.get().getClassSessions()).isNotNull();
+        assertThat(savedMath.get().getClassSessions().get(0).getSubjectShortName())
                 .isEqualTo("MATH101");
     }
 }

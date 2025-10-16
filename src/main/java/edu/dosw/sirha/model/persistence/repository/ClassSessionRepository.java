@@ -1,6 +1,7 @@
 package edu.dosw.sirha.model.persistence.repository;
 
 import edu.dosw.sirha.model.entities.ClassSession;
+import edu.dosw.sirha.model.entities.Professor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -123,4 +124,5 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
 """)
     List<ClassSession> findBySubjectShortNameWithAvailableCapacity(String subjectShortName);
 
+    List<ClassSession> findByProfessor(Professor professor);
 }
