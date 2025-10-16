@@ -49,6 +49,7 @@ public class ManagerController {
     private final PetitionService petitionService;
     private final StudentService studentService;
     private final TrafficLightService trafficLightService;
+    private final SubjectService subjectService;
 
     /**
      * Constructor for ManagerController.
@@ -61,7 +62,7 @@ public class ManagerController {
                              ObserverService observerService,
                              PetitionService petitionService,
                              StudentService studentService,
-                             TrafficLightService trafficLightService) {
+                             TrafficLightService trafficLightService, SubjectService subjectService) {
         this.deaneryService = deaneryService;
         this.deanService = deanService;
         this.academicVicePresidentService = academicVicePresidentService;
@@ -71,6 +72,7 @@ public class ManagerController {
         this.petitionService = petitionService;
         this.studentService = studentService;
         this.trafficLightService = trafficLightService;
+        this.subjectService = subjectService;
     }
 
     /**
@@ -656,16 +658,9 @@ public class ManagerController {
         int approvedCredits = 0;
         int totalCredits = 0;
 
-        for (Subject subject : trafficLight.getApprovedSubjects().keySet()) {
+        for (String subjectname : trafficLight.getApprovedSubjects().keySet()) {
+            Subject subject = subjectService.searchSubjectByFullName(subjectname);
             approvedCredits += subject.getCredits();
-            totalCredits += subject.getCredits();
-        }
-
-        for (Subject subject : trafficLight.getFailedSubjects().keySet()) {
-            totalCredits += subject.getCredits();
-        }
-
-        for (Subject subject : trafficLight.getOnGoingSubjects()) {
             totalCredits += subject.getCredits();
         }
 

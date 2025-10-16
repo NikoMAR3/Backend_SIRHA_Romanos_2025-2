@@ -211,4 +211,9 @@ public class SubjectService {
             throw new IllegalArgumentException("Subject level must be greater than 0");
         }
     }
+
+    public Subject searchSubjectByFullName(String subjectName) {
+        return subjectRepository.findByName(subjectName)
+                .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectName));
+    }
 }

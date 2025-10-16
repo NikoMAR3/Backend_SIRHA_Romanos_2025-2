@@ -39,6 +39,7 @@ class TrafficLightRepositoryTest {
     private Subject mathSubject;
     private Subject physicsSubject;
     private Subject chemistrySubject;
+
     private TrafficLight trafficLight1;
     private TrafficLight trafficLight2;
     private TrafficLight trafficLight3;
@@ -72,12 +73,12 @@ class TrafficLightRepositoryTest {
         chemistrySubject.setLevel(3);
         chemistrySubject.setProgramId("PROG2");
 
-        // Crear TrafficLight instances
-        HashMap<Subject, Integer> failedSubjects1 = new HashMap<>();
-        failedSubjects1.put(mathSubject, 2); // 2 intentos fallidos
+        // Crear TrafficLight instances usando nombres de materias como claves
+        HashMap<String, Integer> failedSubjects1 = new HashMap<>();
+        failedSubjects1.put("Mathematics", 2);
 
-        HashMap<Subject, Integer> approvedSubjects1 = new HashMap<>();
-        approvedSubjects1.put(physicsSubject, 85); // Calificación 85
+        HashMap<String, Integer> approvedSubjects1 = new HashMap<>();
+        approvedSubjects1.put("Physics", 85);
 
         trafficLight1 = new TrafficLight();
         trafficLight1.setId("TL001");
@@ -94,9 +95,9 @@ class TrafficLightRepositoryTest {
         trafficLight1.setGrade(2.8);
         trafficLight1.setCredits(45);
 
-        HashMap<Subject, Integer> approvedSubjects2 = new HashMap<>();
-        approvedSubjects2.put(mathSubject, 90);
-        approvedSubjects2.put(physicsSubject, 88);
+        HashMap<String, Integer> approvedSubjects2 = new HashMap<>();
+        approvedSubjects2.put("Mathematics", 90);
+        approvedSubjects2.put("Physics", 88);
 
         trafficLight2 = new TrafficLight();
         trafficLight2.setId("TL002");
@@ -107,18 +108,18 @@ class TrafficLightRepositoryTest {
         trafficLight2.setFailedSubjects(new HashMap<>());
         trafficLight2.setApprovedSubjects(approvedSubjects2);
         trafficLight2.setOnGoingSubjects(Arrays.asList(chemistrySubject));
-        trafficLight2.setUnseenSubjects(Arrays.asList());
+        trafficLight2.setUnseenSubjects(List.of());
         trafficLight2.setSemester(4);
         trafficLight2.setStatus(TrafficLightStatus.GREEN);
         trafficLight2.setGrade(4.2);
         trafficLight2.setCredits(60);
 
-        HashMap<Subject, Integer> failedSubjects3 = new HashMap<>();
-        failedSubjects3.put(chemistrySubject, 1);
+        HashMap<String, Integer> failedSubjects3 = new HashMap<>();
+        failedSubjects3.put("Chemistry", 1);
 
         trafficLight3 = new TrafficLight();
         trafficLight3.setId("TL003");
-        trafficLight3.setStudentId("STU001"); // Mismo estudiante, diferente programa
+        trafficLight3.setStudentId("STU001");
         trafficLight3.setProgramId("PROG2");
         trafficLight3.setSubjectShortName("CHEM301");
         trafficLight3.setSubjectName("Chemistry");
@@ -146,7 +147,6 @@ class TrafficLightRepositoryTest {
     @Test
     void findByStudentId_WhenNotExists_ShouldReturnEmpty() {
         Optional<TrafficLight> found = trafficLightRepository.findByStudentId("STU999");
-
         assertThat(found).isEmpty();
     }
 
@@ -247,22 +247,22 @@ class TrafficLightRepositoryTest {
         newTrafficLight.setSubjectShortName("TEST101");
         newTrafficLight.setSubjectName("Test Subject");
 
-        HashMap<Subject, Integer> failed = new HashMap<>();
-        failed.put(mathSubject, 1);
+        HashMap<String, Integer> failed = new HashMap<>();
+        failed.put("Mathematics", 1);
 
-        HashMap<Subject, Integer> approved = new HashMap<>();
-        approved.put(physicsSubject, 92);
+        HashMap<String, Integer> approved = new HashMap<>();
+        approved.put("Physics", 92);
 
         newTrafficLight.setFailedSubjects(failed);
         newTrafficLight.setApprovedSubjects(approved);
         newTrafficLight.setOnGoingSubjects(Arrays.asList(chemistrySubject));
-        newTrafficLight.setUnseenSubjects(Arrays.asList());
+        newTrafficLight.setUnseenSubjects(List.of());
         newTrafficLight.setSemester(1);
         newTrafficLight.setStatus(TrafficLightStatus.WHITE);
         newTrafficLight.setGrade(3.8);
         newTrafficLight.setCredits(15);
 
-        TrafficLight saved = trafficLightRepository.save(newTrafficLight);
+        trafficLightRepository.save(newTrafficLight);
 
         Optional<TrafficLight> retrieved = trafficLightRepository.findById("TL004");
         assertThat(retrieved).isPresent();

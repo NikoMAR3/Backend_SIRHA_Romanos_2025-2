@@ -29,8 +29,8 @@ public class TrafficLight {
     private String subjectShortName;
     private String subjectName;
 
-    private HashMap<Subject, Integer> failedSubjects = new HashMap<>();
-    private HashMap<Subject, Integer> approvedSubjects = new HashMap<>();
+    private HashMap<String, Integer> failedSubjects = new HashMap<>();
+    private HashMap<String, Integer> approvedSubjects = new HashMap<>();
     private List<Subject> onGoingSubjects = new ArrayList<>();
     private List<Subject> unseenSubjects = new ArrayList<>();
     private int semester;
