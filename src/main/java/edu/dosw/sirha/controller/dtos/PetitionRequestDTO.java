@@ -40,16 +40,6 @@ public class PetitionRequestDTO {
     private PetitionType type;
 
     /**
-     * Deanery associated with the petition for automatic routing
-     */
-    @Schema(
-            description = "Deanery for automatic routing of the petition",
-            example = "Systems engineering",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
-    private String Deanery;
-
-    /**
      * Description or justification provided by the user
      */
     @Schema(
@@ -66,7 +56,7 @@ public class PetitionRequestDTO {
     @Schema(
             description = "Map of additional details specific to the petition type. " +
                     "May contain variable information such as subjectId, associatedDeanery, classSessionId, etc.",
-            example = "{\"subjectId\": \"1767\", \"groupId\": \"2\", \"associatedDeanery\": \"Systems engineering\"}",
+            example = "{\"subjectId\": \"1767\", \"groupId\": \"2\"}",
             additionalProperties = Schema.AdditionalPropertiesValue.TRUE
     )
     private Map<String, Object> details;

@@ -58,7 +58,7 @@ public class PetitionsController {
             @ApiResponse(responseCode = "201", description = "Petition created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid petition data"),
             @ApiResponse(responseCode = "401", description = "User not authenticated"),
-            @ApiResponse(responseCode = "403", description = "Insufficient privileges - Only students can create petitions for themselves"),
+            @ApiResponse(responseCode = "403", description = "Insufficient privileges"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<PetitionResponseDTO> createPetition(
@@ -68,9 +68,9 @@ public class PetitionsController {
         logger.info("Creating new petition for student: {}", petitionRequest.getUserID());
 
         
-        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT);
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) {
-            throw new IllegalArgumentException("Solo estudiantes pueden crear solicitudes");
+            throw new IllegalArgumentException("Este usuario no puede crear solicitudes");
         }
 
         User currentUser = AuthValidationUtils.getCurrentUser(session);

@@ -28,7 +28,7 @@ public class Subject {
     private int level;
 
     @DBRef
-    private ClassSession classSession;
+    private List<ClassSession> classSessions;
 
 
     private String programId;

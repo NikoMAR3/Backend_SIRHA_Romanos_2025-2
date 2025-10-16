@@ -28,12 +28,36 @@ public class ClassSession {
     
     @Field
     private String subjectShortName;
-    
+
+    @Field
+    private String subjectId;
+
     @Field
     private String subjectName;
-    
+
     @Field
-    private String professorId;
+    private String description;
+
+    @Field
+    private String professorCode;
+
+    @Field
+    private String professorName;
+
+    @Field
+    private String professorEmail;
+
+    @Field
+    private String professorDocument;
+
+    @Field
+    private int subjectCredits;
+
+    @Field
+    private int subjectLevel;
+
+    @Field
+    private String groupName;
     
     @Field
     private int capacity;

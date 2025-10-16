@@ -216,4 +216,13 @@ public class SubjectService {
         return subjectRepository.findByName(subjectName)
                 .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectName));
     }
+
+    public Subject save(Subject subject) {
+        if (subject == null) {
+            throw new IllegalArgumentException("Subject cannot be null");
+        }
+        validateSubjectData(subject);
+        return subjectRepository.save(subject);
+    }
+
 }
