@@ -269,7 +269,7 @@ class ProfessorRepositoryTest {
     @Test
     void findByDeaneryAndSubject_WhenMatchesExist_ShouldReturnProfessors() {
         // When
-        List<Professor> professors = professorRepository.findByDeaneryAndSubject(computerScienceDeanery, algorithmsSubject);
+        List<Professor> professors = professorRepository.findByDeaneryAndSubject(computerScienceDeanery.getId(), algorithmsSubject.getId());
 
         // Then
         assertThat(professors).hasSize(2);
