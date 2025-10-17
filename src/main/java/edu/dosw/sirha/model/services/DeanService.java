@@ -2,6 +2,7 @@ package edu.dosw.sirha.model.services;
 
 import edu.dosw.sirha.controller.dtos.UserDTO;
 import edu.dosw.sirha.model.entities.Dean;
+import edu.dosw.sirha.model.entities.Professor;
 import edu.dosw.sirha.model.persistence.repository.DeanRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -48,6 +49,10 @@ public class DeanService {
         return deanRepository.save(dean);
     }
 
+    public Dean save(Dean dean) {
+        return deanRepository.save(dean);
+    }
+
     /**
      * Modifies an existing Dean record.
      * Updates the dean's information while preserving the original ID.
@@ -57,7 +62,7 @@ public class DeanService {
      * @return an Optional containing the updated Dean if found, or empty Optional if not found
      */
     public Optional<Dean> modifyDean(String id, UserDTO dto) {
-        return deanRepository.findById(id)
+        return deanRepository.findByDeanCode(id)
                 .map(existing -> {
                     existing.setName(dto.getName());
                     existing.setMail(dto.getMail());
@@ -83,13 +88,13 @@ public class DeanService {
     /**
      * Searches for a Dean by their unique identifier.
      *
-     * @param id the unique identifier of the Dean to find
+     * @param code the unique identifier of the Dean to find
      * @return the Dean entity if found
-     * @throws IllegalArgumentException if no Dean is found with the given ID
+     * @throws IllegalArgumentException if no Dean is found with the given code
      */
-    public Dean searchDeanById(String id) {
-        return deanRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Dean no encontrado con id: " + id));
+    public Dean searchDeanByCode(String code) {
+        return deanRepository.findByDeanCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("Dean no encontrado con código: " + code));
     }
 
     /**

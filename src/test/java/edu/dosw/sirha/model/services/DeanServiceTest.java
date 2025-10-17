@@ -397,7 +397,7 @@ class DeanServiceTest {
         void searchDeanById_ValidId_ShouldReturnDean() {
             when(deanRepository.findById("dean123")).thenReturn(Optional.of(testDean));
 
-            Dean result = deanService.searchDeanById("dean123");
+            Dean result = deanService.searchDeanByCode("dean123");
 
             assertNotNull(result);
             assertEquals(testDean.getId(), result.getId());
@@ -417,7 +417,7 @@ class DeanServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> deanService.searchDeanById("nonexistent123")
+                () -> deanService.searchDeanByCode("nonexistent123")
             );
 
             assertEquals("Dean no encontrado con id: nonexistent123", exception.getMessage());
@@ -434,7 +434,7 @@ class DeanServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> deanService.searchDeanById(null)
+                () -> deanService.searchDeanByCode(null)
             );
 
             assertEquals("Dean no encontrado con id: null", exception.getMessage());
@@ -450,7 +450,7 @@ class DeanServiceTest {
 
             IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> deanService.searchDeanById("")
+                () -> deanService.searchDeanByCode("")
             );
 
             assertEquals("Dean no encontrado con id: ", exception.getMessage());
@@ -466,7 +466,7 @@ class DeanServiceTest {
 
             when(deanRepository.findById("dean123")).thenReturn(Optional.of(testDean));
 
-            Dean result = deanService.searchDeanById("dean123");
+            Dean result = deanService.searchDeanByCode("dean123");
 
             assertNotNull(result);
             assertNotNull(result.getDeanery());
@@ -650,7 +650,7 @@ class DeanServiceTest {
 
             when(deanRepository.findById(specialId)).thenReturn(Optional.of(specialDean));
 
-            Dean result = deanService.searchDeanById(specialId);
+            Dean result = deanService.searchDeanByCode(specialId);
 
             assertNotNull(result);
             assertEquals(specialId, result.getId());
@@ -666,7 +666,7 @@ class DeanServiceTest {
             when(deanRepository.findById(testDean.getId())).thenReturn(Optional.of(testDean));
 
             Dean created = deanService.createDean(testUserDTO);
-            Dean found = deanService.searchDeanById(created.getId());
+            Dean found = deanService.searchDeanByCode(created.getId());
 
             assertNotNull(created);
             assertNotNull(found);

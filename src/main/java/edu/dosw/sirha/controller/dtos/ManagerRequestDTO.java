@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -132,4 +133,48 @@ public class ManagerRequestDTO {
             description = "List of session IDs for bulk monitoring or operations"
     )
     private List<String> sessionIds;
+
+
+    @Data
+    @Schema(description = "Datos para crear una decanatura")
+    public static class DeaneryRequest {
+        @Schema(description = "Nombre de la decanatura", example = "Decanatura de Ingeniería de Sistemas")
+        private String deaneryName;
+
+        @Schema(description = "ID de la decanatura", example = "sistemas-15")
+        private String deaneryId;
+        
+    }
+
+    @Data
+    public static class AcademicProgramRequest {
+        @Schema(description = "Nombre del programa académico", example = "Ingeniería de Sistemas")
+
+        private String name;
+
+        @Schema(description = "ID del programa académico", example = "ingsistemas2025")
+        private String id;
+    }
+
+        @Data
+        @Schema(description = "Request DTO for professor creation")
+        public static class DeanRequest {
+                @NotBlank
+                private String name;
+
+                @NotBlank
+                private String mail;
+
+                @NotBlank
+                @Pattern(
+                regexp = "^[0-9]{10}$",
+                message = "Document must contain exactly 10 digits"
+                )
+                private String document;
+
+                @NotNull
+                private String deanCode;
+                
+                }
+
 }

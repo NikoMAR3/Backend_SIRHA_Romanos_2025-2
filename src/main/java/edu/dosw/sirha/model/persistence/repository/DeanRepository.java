@@ -2,6 +2,8 @@ package edu.dosw.sirha.model.persistence.repository;
 
 import edu.dosw.sirha.model.entities.Dean;
 import edu.dosw.sirha.model.entities.Deanery;
+import edu.dosw.sirha.model.entities.Professor;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -52,4 +54,10 @@ public interface DeanRepository extends MongoRepository<Dean, String> {
      */
     @Override
     List<Dean> findAll();
+
+    Optional<Dean> findByDeanCode(String deanCode);
+
+    void deleteByDeanCode(String deanCode);
+
+
 }

@@ -37,6 +37,8 @@ public class Dean extends User {
     public Dean(String id, String name, String mail, String document) {
         super(id, name, mail, document, UserType.DEAN);
     }
+
+    private String deanCode;
 }
 
 

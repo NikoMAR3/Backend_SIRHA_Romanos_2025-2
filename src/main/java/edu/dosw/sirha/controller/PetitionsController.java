@@ -657,7 +657,7 @@ public class PetitionsController {
      */
     private String getCurrentUserDeanery(String userId) {
         try {
-            Dean dean = deanService.searchDeanById(userId);
+            Dean dean = deanService.searchDeanByCode(userId);
             
             if (dean != null && dean.getDeanery() != null) {
                 String deaneryName = dean.getDeanery().getDeaneryName();

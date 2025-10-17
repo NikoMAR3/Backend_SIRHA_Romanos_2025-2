@@ -60,7 +60,7 @@ public abstract class PetitionCreator {
         }
 
         try {
-            if (deanService.searchDeanById(dto.getUserID()) != null) {
+            if (deanService.searchDeanByCode(dto.getUserID()) != null) {
                 return PetitionPriority.URGENT;
             }
         } catch (RuntimeException e) {

@@ -1,7 +1,10 @@
 package edu.dosw.sirha.controller;
 
+import edu.dosw.sirha.controller.dtos.GroupsRequestDTO;
+import edu.dosw.sirha.controller.dtos.GroupsResponseDTO;
 import edu.dosw.sirha.controller.dtos.ManagerRequestDTO;
 import edu.dosw.sirha.controller.dtos.ManagerResponseDTO;
+import edu.dosw.sirha.controller.dtos.UserDTO;
 import edu.dosw.sirha.model.entities.*;
 import edu.dosw.sirha.model.services.*;
 import edu.dosw.sirha.model.components.util.AuthValidationUtils;
@@ -12,8 +15,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +56,9 @@ public class ManagerController {
     private final StudentService studentService;
     private final TrafficLightService trafficLightService;
     private final SubjectService subjectService;
+    private final AcademicProgramService academicProgramService;
+    private final ProfessorService professorService;
+
 
     /**
      * Constructor for ManagerController.
@@ -62,7 +71,9 @@ public class ManagerController {
                              ObserverService observerService,
                              PetitionService petitionService,
                              StudentService studentService,
-                             TrafficLightService trafficLightService, SubjectService subjectService) {
+                             TrafficLightService trafficLightService, SubjectService subjectService, AcademicProgramService academicProgramService, ProfessorService professorService) {
+                                
+        this.professorService = professorService;
         this.deaneryService = deaneryService;
         this.deanService = deanService;
         this.academicVicePresidentService = academicVicePresidentService;
@@ -73,6 +84,7 @@ public class ManagerController {
         this.studentService = studentService;
         this.trafficLightService = trafficLightService;
         this.subjectService = subjectService;
+        this.academicProgramService = academicProgramService;
     }
 
     /**
@@ -630,7 +642,7 @@ public class ManagerController {
 
         switch (managerType.toUpperCase()) {
             case "DEAN":
-                deanService.searchDeanById(managerId);
+                deanService.searchDeanByCode(managerId);
                 break;
             case "ACADEMIC_VICEPRESIDENT":
                 academicVicePresidentService.searchAcademicVicePresidentById(managerId);
@@ -645,7 +657,7 @@ public class ManagerController {
      */
     private String getDeaneryForManager(String managerId, String managerType) {
         if ("DEAN".equalsIgnoreCase(managerType)) {
-            Dean dean = deanService.searchDeanById(managerId);
+            Dean dean = deanService.searchDeanByCode(managerId);
             return dean.getDeanery() != null ? dean.getDeanery().getDeaneryName() : null;
         }
         return null; 
@@ -863,5 +875,271 @@ public class ManagerController {
         summary.put("generatedAt", LocalDateTime.now());
         
         return summary;
+    }
+
+
+    //------------------------------------------Decanaturas--------------------------------------------
+    private ManagerResponseDTO.DeaneryInfo buildDeaneryResponse(Deanery deanery) {
+        ManagerResponseDTO.DeaneryInfo response = new ManagerResponseDTO.DeaneryInfo();
+        response.setDeaneryId(deanery.getId());
+        response.setDeaneryName(deanery.getDeaneryName());
+        response.setDeanName(deanery.getDean() != null ? deanery.getDean().getName() : null);
+        response.setProfessorNames(deanery.getProfessors() != null ?
+            deanery.getProfessors().stream().map(Professor::getName).toList() : new ArrayList<>());
+        response.setAcademicProgramNames(deanery.getAcademicPrograms() != null ?
+            deanery.getAcademicPrograms().stream().map(AcademicProgram::getName).toList() : new ArrayList<>());
+        return response;
+    }
+    
+@PostMapping("/deaneries")
+@Operation(summary = "Crear decanatura", description = "Crea una nueva decanatura con código y nombre.")
+@ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Decanatura creada exitosamente"),
+    @ApiResponse(responseCode = "400", description = "Datos inválidos o decanatura ya existe"),
+    @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+    @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+})
+public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
+        @Valid @RequestBody ManagerRequestDTO.DeaneryRequest request,
+        HttpSession session) {
+
+    ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
+    if (authCheck != null) {
+        throw new IllegalArgumentException("No tienes permisos para crear decanaturas");
+    }
+
+    if (request.getDeaneryName() == null || request.getDeaneryName().isBlank()) {
+        throw new IllegalArgumentException("El nombre de la decanatura es obligatorio");
+    }
+
+    Deanery deanery = new Deanery();
+    deanery.setDeaneryName(request.getDeaneryName());
+    deanery.setId(request.getDeaneryId());
+    
+
+    Deanery saved = deaneryService.createDeanery(deanery);
+    ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(saved);
+    return ResponseEntity.status(201).body(response);
+}
+
+
+private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
+        ManagerResponseDTO.DeanResponseDTO response = new ManagerResponseDTO.DeanResponseDTO();
+        response.setDeanCode(dean.getDeanCode());
+        response.setName(dean.getName());
+        response.setMail(dean.getMail());
+        response.setDocument(dean.getDocument());
+        return response;
+    }
+
+    @PostMapping("/deans")
+    @Operation(summary = "Crear decano", description = "Crea un nuevo decano en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Decano creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<ManagerResponseDTO.DeanResponseDTO> createDean(
+            @Valid @RequestBody ManagerRequestDTO.DeanRequest request,
+            HttpSession session) {
+
+            logger.info("Registering new dean: {}", request.getDocument());
+
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para crear decanos");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(request.getName());
+        userDTO.setMail(request.getMail());
+        userDTO.setDocument(request.getDocument());
+        userDTO.setType(UserType.DEAN);
+
+        Dean dean = deanService.createDean(userDTO);
+
+        dean.setDeanCode(request.getDeanCode());
+        deanService.save(dean);
+
+        ManagerResponseDTO.DeanResponseDTO response = buildDeanResponse(dean);
+
+        logger.info("Dean registered successfully: {}", dean.getDeanCode());
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
+    @GetMapping("/deans")
+    @Operation(
+        summary = "Obtener decanos",
+        description = "Retorna la lista de todos los decanos registrados en el sistema."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de decanos obtenida exitosamente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<List<ManagerResponseDTO.DeanResponseDTO>> getAllDeans(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver decanos");
+        }
+
+        List<Dean> deans = deanService.searchAllDeans();
+        List<ManagerResponseDTO.DeanResponseDTO> response = deans.stream()
+            .map(this::buildDeanResponse)
+            .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    /*
+     * Asocia un decano existente a una decanatura.
+     * Se requiere que el decano y la decanatura existan en el sistema.
+     */
+    @PostMapping("/deaneries/{deaneryId}/dean/{deanCode}")
+    @Operation(summary = "Asociar decano a decanatura", description = "Asocia un decano existente a una decanatura.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Decano asociado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Decanatura o decano no encontrado"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<ManagerResponseDTO.DeaneryInfo> assignDeanToDeanery(
+            @PathVariable String deaneryId,
+            @PathVariable String deanCode,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para asociar decanos");
+        }
+
+        Deanery deanery = deaneryService.searchDeaneryById(deaneryId);
+        Dean dean = deanService.searchDeanByCode(deanCode);
+
+        deanery.setDean(dean);
+        deaneryService.modifyDeanery(deanery);
+
+        ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/deaneries/{deaneryId}/professors/{professorId}")
+    @Operation(summary = "Asociar profesor a decanatura", description = "Asocia un profesor existente a una decanatura.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Profesor asociado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Decanatura o profesor no encontrado"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<ManagerResponseDTO.DeaneryInfo> addProfessorToDeanery(
+            @PathVariable String deaneryId,
+            @PathVariable String professorCode,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para asociar profesores");
+        }
+
+        Deanery deanery = deaneryService.searchDeaneryById(deaneryId);
+        Professor professor = professorService.searchProfessorByCode(professorCode);
+
+        List<Professor> professors = deanery.getProfessors() != null ? deanery.getProfessors() : new ArrayList<>();
+        if (!professors.contains(professor)) {
+            professors.add(professor);
+            deanery.setProfessors(professors);
+            deaneryService.modifyDeanery(deanery);
+        }
+
+        ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+    //------------------------------------------Programas Academicos--------------------------------------------
+    
+    @PostMapping("/academic-programs")
+    @Operation(summary = "Crear programa académico", description = "Crea un nuevo programa académico con código y nombre.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Programa académico creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o programa ya existe"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<ManagerResponseDTO.AcademicProgramInfo> createAcademicProgram(
+            @Valid @RequestBody ManagerRequestDTO.AcademicProgramRequest request,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para crear programas académicos");
+        }
+
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new IllegalArgumentException("El nombre del programa académico es obligatorio");
+        }
+        if (request.getId() == null || request.getId().isBlank()) {
+            throw new IllegalArgumentException("El ID del programa académico es obligatorio");
+        }
+
+        AcademicProgram program = new AcademicProgram();
+        program.setId(request.getId());
+        program.setName(request.getName());
+
+        AcademicProgram saved = academicProgramService.createProgram(program);
+        ManagerResponseDTO.AcademicProgramInfo response = buildAcademicProgramResponse(saved);
+
+        return ResponseEntity.status(201).body(response);
+        
+    }
+
+    private ManagerResponseDTO.AcademicProgramInfo buildAcademicProgramResponse(AcademicProgram program) {
+        ManagerResponseDTO.AcademicProgramInfo response = new ManagerResponseDTO.AcademicProgramInfo();
+        response.setId(program.getId());
+        response.setName(program.getName());
+        response.setDeaneryName(program.getDeanery() != null ? program.getDeanery().getDeaneryName() : null);
+        return response;
+    }
+
+    @PostMapping("/deaneries/{deaneryId}/programs/{programId}")
+    @Operation(summary = "Asociar programa académico a decanatura", description = "Asocia un programa académico existente a una decanatura.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Programa académico asociado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Decanatura o programa no encontrado"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<ManagerResponseDTO.DeaneryInfo> addProgramToDeanery(
+            @PathVariable String deaneryId,
+            @PathVariable String programId,
+            HttpSession session) {
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para asociar programas");
+        }
+
+        Deanery deanery = deaneryService.searchDeaneryById(deaneryId);
+        AcademicProgram program = academicProgramService.searchProgramById(programId);
+
+        List<AcademicProgram> programs = deanery.getAcademicPrograms() != null ? deanery.getAcademicPrograms() : new ArrayList<>();
+        if (!programs.contains(program)) {
+            programs.add(program);
+            deanery.setAcademicPrograms(programs);
+            deaneryService.modifyDeanery(deanery);
+        }
+
+        ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
+        return ResponseEntity.ok(response);
     }
 }
