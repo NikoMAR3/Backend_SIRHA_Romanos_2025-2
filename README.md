@@ -279,6 +279,7 @@ Resultados del análisis de calidad de código con SonarQube:
 
 ---
 
+![CI Pipeline](https://github.com/NikoMAR3/Backend_SIRHA_Romanos_2025-2/workflows/CI%20Pipeline/badge.svg)
 
 
 
