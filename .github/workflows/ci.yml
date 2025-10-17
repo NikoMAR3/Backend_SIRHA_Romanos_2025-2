@@ -71,3 +71,4 @@ jobs:
           name: jacoco-coverage-report
           path: target/site/jacoco/
           retention-days: 7
+
