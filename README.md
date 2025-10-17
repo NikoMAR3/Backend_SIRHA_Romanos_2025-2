@@ -1,3 +1,5 @@
+![CI Pipeline](https://github.com/NikoMAR3/Backend_SIRHA_Romanos_2025-2/workflows/CI%20Pipeline/badge.svg)
+
 # Backend_SIRHA_Romanos_2025-2
 
 En este repositorio se manejara todo el Backend del proyecto inicial "SIRHA" para la materia DOSW.
@@ -278,8 +280,4 @@ Resultados del análisis de calidad de código con SonarQube:
 ![sonarqube.jpg](docs/imagenes/sonarqube.png)
 
 ---
-
-![CI Pipeline](https://github.com/NikoMAR3/Backend_SIRHA_Romanos_2025-2/workflows/CI%20Pipeline/badge.svg)
-
-
 
