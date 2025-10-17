@@ -211,9 +211,7 @@ public class StudentService {
      * @return the calculated GPA as a double value
      * @throws RuntimeException if the student is not found or has no grade records
      */
-    public double calculateGPA(String studentId) {
-        return trafficLightService.calculateGPA(studentId);
-    }
+    public double calculateGPA(String studentId) {return trafficLightService.calculateGPA(studentId);}
     //public double calculateGPA(String studentId) {
         //return trafficLightService.calculateGPA(studentId);
     //}

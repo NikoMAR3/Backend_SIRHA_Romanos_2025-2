@@ -158,7 +158,7 @@ public class ManagerController {
      * Retrieves the complete schedule for a specific student - DEAN and ACADEMIC_VICEPRESIDENT only.
      * Requires manager authentication and returns detailed schedule information.
      */
-    @GetMapping("/student-schedule/{studentId}")
+    @GetMapping("/student-schedule/student/{studentId}")
     @Operation(summary = "Obtener horario del estudiante")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Horario obtenido exitosamente"),
@@ -208,6 +208,64 @@ public class ManagerController {
         logger.info("Schedule retrieved successfully for student {} by manager {}", studentId, managerId);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Retrieves the complete schedule for the student of an specific petition - DEAN and ACADEMIC_VICEPRESIDENT only.
+     * Requires manager authentication and returns detailed schedule information.
+     */
+    @GetMapping("/student-schedule/petition/{petitionId}")
+    @Operation(summary = "Obtener horario del estudiante de la petición ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Horario obtenido exitosamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+            @ApiResponse(responseCode = "403", description = "Permisos insuficientes - Solo decanos y vicepresidente académico"),
+            @ApiResponse(responseCode = "404", description = "Solicitud no encontrada"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos")
+    })
+    public ResponseEntity<ManagerResponseDTO> getStudentScheduleWithPetition(
+            @Parameter(description = "ID de la solicitud") @PathVariable String petitionId,
+            @Parameter(description = "ID del manager") @RequestParam String managerId,
+            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
+            HttpSession session) {
+
+        logger.info("Getting schedule for student from petition {} requested by manager {}", petitionId, managerId);
+
+
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
+                UserType.DEAN,
+                UserType.ACADEMIC_VICEPRESIDENT);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
+        }
+
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+
+        if (!currentUser.getId().equals(managerId)) {
+            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
+        }
+
+
+        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
+            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
+        }
+
+        validateManagerAccess(managerId, managerType);
+
+        Petition petition = petitionService.searchPetitionsById(petitionId);
+        Student student = studentService.searchStudentById(petition.getStudentId());
+        Schedule schedule = studentService.getStudentSchedule(petition.getStudentId());
+
+        ManagerResponseDTO response = new ManagerResponseDTO();
+        response.setStudentSchedule(mapToStudentSchedule(student, schedule));
+        response.setSuccess(true);
+        response.setMessage("Horario obtenido exitosamente");
+
+        logger.info("Schedule retrieved successfully for student with petition {} by manager {}", petitionId, managerId);
+        return ResponseEntity.ok(response);
+    }
+
+
 
     /**
      * Retrieves the academic traffic light status for a specific student - DEAN and ACADEMIC_VICEPRESIDENT only.
