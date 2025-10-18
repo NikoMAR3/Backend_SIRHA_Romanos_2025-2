@@ -20,3 +20,12 @@ logging:
 springdoc:
   swagger-ui:
     enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
