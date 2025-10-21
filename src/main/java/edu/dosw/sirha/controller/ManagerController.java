@@ -224,11 +224,9 @@ public class ManagerController {
     })
     public ResponseEntity<ManagerResponseDTO> getStudentScheduleWithPetition(
             @Parameter(description = "ID de la solicitud") @PathVariable String petitionId,
-            @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
             HttpSession session) {
 
-        logger.info("Getting schedule for student from petition {} requested by manager {}", petitionId, managerId);
+        logger.info("Getting schedule for student from petition {} requested by manager", petitionId);
 
 
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
@@ -241,30 +239,18 @@ public class ManagerController {
         User currentUser = AuthValidationUtils.getCurrentUser(session);
 
 
-        if (!currentUser.getId().equals(managerId)) {
-            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
-        }
-
-
-        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
-            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
-        }
-
-        validateManagerAccess(managerId, managerType);
-
         Petition petition = petitionService.searchPetitionsById(petitionId);
         Student student = studentService.searchStudentById(petition.getStudentId());
         Schedule schedule = studentService.getStudentSchedule(petition.getStudentId());
 
         ManagerResponseDTO response = new ManagerResponseDTO();
         response.setStudentSchedule(mapToStudentSchedule(student, schedule));
+        response.setPetitions(List.of(mapToPetitionSummary(petition)));
         response.setSuccess(true);
-        response.setMessage("Horario obtenido exitosamente");
 
-        logger.info("Schedule retrieved successfully for student with petition {} by manager {}", petitionId, managerId);
+        logger.info("Schedule retrieved successfully for student with petition {} by manager", petitionId);
         return ResponseEntity.ok(response);
     }
-
 
 
     /**
