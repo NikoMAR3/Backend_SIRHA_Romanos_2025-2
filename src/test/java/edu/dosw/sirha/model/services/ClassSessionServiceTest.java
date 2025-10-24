@@ -489,7 +489,7 @@ class ClassSessionServiceTest {
                 () -> classSessionService.searchSessionsByProfessor(null)
             );
 
-            assertEquals("Professor ID cannot be null or empty", exception.getMessage());
+            assertEquals("Professor code cannot be null or empty", exception.getMessage());
         }
     }
 
