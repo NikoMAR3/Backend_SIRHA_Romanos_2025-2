@@ -226,7 +226,7 @@ public class ManagerController {
             @Parameter(description = "ID de la solicitud") @PathVariable String petitionId,
             HttpSession session) {
 
-        //logger.info("Getting schedule for student from petition {} requested by manager {}", petitionId);
+        logger.info("Getting schedule for student from petition {} requested by manager", petitionId);
 
 
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
@@ -242,13 +242,12 @@ public class ManagerController {
 
         ManagerResponseDTO response = new ManagerResponseDTO();
         response.setStudentSchedule(mapToStudentSchedule(student, schedule));
+        response.setPetitions(List.of(mapToPetitionSummary(petition)));
         response.setSuccess(true);
-        response.setMessage("Horario obtenido exitosamente");
 
-        //logger.info("Schedule retrieved successfully for student with petition {} by manager {}", petitionId);
+        logger.info("Schedule retrieved successfully for student with petition {} by manager", petitionId);
         return ResponseEntity.ok(response);
     }
-
 
 
     /**
@@ -1237,4 +1236,11 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
 
         return ResponseEntity.ok(response);
     }
+
+    //@PostMapping("/students/{studentId]/schedules")
+    //@Operation(summary = "Añadir horario a estudiante", description = "Añade horario a estudiante")
+
+
+
+
 }

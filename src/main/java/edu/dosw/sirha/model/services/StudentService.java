@@ -8,6 +8,7 @@ import edu.dosw.sirha.model.entities.AcademicStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,6 +63,7 @@ public class StudentService {
                 dto.getMail(),
                 dto.getDocument()
         );
+        student.setSchedules(new ArrayList<Schedule>());
         return studentRepository.save(student);
     }
 

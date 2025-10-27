@@ -76,7 +76,7 @@ public class PetitionsController {
         User currentUser = AuthValidationUtils.getCurrentUser(session);
 
        
-        if (!currentUser.getId().equals(petitionRequest.getUserID())) {
+        if (!currentUser.getId().equals(petitionRequest.getUserID()) && currentUser.getType() == UserType.STUDENT) {
             logger.warn("Student {} attempted to create petition for student {}", 
                        currentUser.getId(), petitionRequest.getUserID());
             throw new IllegalArgumentException("Solo puedes crear solicitudes para ti mismo");
