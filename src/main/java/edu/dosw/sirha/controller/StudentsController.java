@@ -331,7 +331,6 @@ public class StudentsController {
         List<StudentsResponseDTO> response = students.stream()
                 .map(this::buildStudentResponse)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(response);
     }
 
@@ -352,7 +351,7 @@ public class StudentsController {
         }
 
         User currentUser = AuthValidationUtils.getCurrentUser(session);
-
+        logger.info("Current id: {}", id);
         if (!authenticationService.canAccessUserData(currentUser, id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new AuthDto.ApiResponse(false, "You don't have permission to access this data"));
