@@ -250,9 +250,15 @@ public class AuthenticationService {
     }
 
     public User registerUser(User user, String plainPassword) {
-    user.setPasswordHash(passwordEncoder.encode(plainPassword));
-    user.setActive(true);
-    user.setLastLogin(null);
-    return userRepository.save(user);
+        if (userRepository.existsById(user.getId())) {
+            throw new org.springframework.dao.DuplicateKeyException("User with this ID already exists");
+        }
+        if (userRepository.existsByMail(user.getMail())) {
+            throw new org.springframework.dao.DuplicateKeyException("User with this mail already exists");
+        }
+        user.setPasswordHash(passwordEncoder.encode(plainPassword));
+        //user.setActive(true);
+        user.setLastLogin(null);
+        return userRepository.save(user);
     }
 }
