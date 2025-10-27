@@ -224,11 +224,9 @@ public class ManagerController {
     })
     public ResponseEntity<ManagerResponseDTO> getStudentScheduleWithPetition(
             @Parameter(description = "ID de la solicitud") @PathVariable String petitionId,
-            @Parameter(description = "ID del manager") @RequestParam String managerId,
-            @Parameter(description = "Tipo de manager") @RequestParam String managerType,
             HttpSession session) {
 
-        logger.info("Getting schedule for student from petition {} requested by manager {}", petitionId, managerId);
+        //logger.info("Getting schedule for student from petition {} requested by manager {}", petitionId);
 
 
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
@@ -237,20 +235,6 @@ public class ManagerController {
         if (authCheck != null) {
             throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
         }
-
-        User currentUser = AuthValidationUtils.getCurrentUser(session);
-
-
-        if (!currentUser.getId().equals(managerId)) {
-            throw new IllegalArgumentException("No puedes acceder a información como otro manager");
-        }
-
-
-        if (!isManagerTypeValid(currentUser.getType(), managerType)) {
-            throw new IllegalArgumentException("Tipo de manager no coincide con tu rol de usuario");
-        }
-
-        validateManagerAccess(managerId, managerType);
 
         Petition petition = petitionService.searchPetitionsById(petitionId);
         Student student = studentService.searchStudentById(petition.getStudentId());
@@ -261,7 +245,7 @@ public class ManagerController {
         response.setSuccess(true);
         response.setMessage("Horario obtenido exitosamente");
 
-        logger.info("Schedule retrieved successfully for student with petition {} by manager {}", petitionId, managerId);
+        //logger.info("Schedule retrieved successfully for student with petition {} by manager {}", petitionId);
         return ResponseEntity.ok(response);
     }
 
@@ -981,13 +965,38 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
 }
 
 
-private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
-        ManagerResponseDTO.DeanResponseDTO response = new ManagerResponseDTO.DeanResponseDTO();
-        response.setDeanCode(dean.getDeanCode());
-        response.setName(dean.getName());
-        response.setMail(dean.getMail());
-        response.setDocument(dean.getDocument());
-        return response;
+    private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
+            ManagerResponseDTO.DeanResponseDTO response = new ManagerResponseDTO.DeanResponseDTO();
+            response.setDeanCode(dean.getDeanCode());
+            response.setName(dean.getName());
+            response.setMail(dean.getMail());
+            response.setDocument(dean.getDocument());
+            return response;
+        }
+
+    @GetMapping("/deaneries")
+    @Operation(
+        summary = "Obtener decanaturas",
+        description = "Retorna la lista de todas las decanaturas registradas en el sistema."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de decanaturas obtenida exitosamente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<List<ManagerResponseDTO.DeaneryInfo>> getAllDeaneries(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver decanaturas");
+        }
+
+        List<Deanery> deaneries = deaneryService.searchAllDeaneries();
+        List<ManagerResponseDTO.DeaneryInfo> response = deaneries.stream()
+            .map(this::buildDeaneryResponse)
+            .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/deans")
@@ -1124,6 +1133,8 @@ private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
 
 
 
+
+
     //------------------------------------------Programas Academicos--------------------------------------------
     
     @PostMapping("/academic-programs")
@@ -1158,7 +1169,7 @@ private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
         ManagerResponseDTO.AcademicProgramInfo response = buildAcademicProgramResponse(saved);
 
         return ResponseEntity.status(201).body(response);
-        
+
     }
 
     private ManagerResponseDTO.AcademicProgramInfo buildAcademicProgramResponse(AcademicProgram program) {
@@ -1198,6 +1209,32 @@ private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
         }
 
         ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/academic-programs")
+    @Operation(
+        summary = "Obtener programas académicos",
+        description = "Retorna la lista de todos los programas académicos registrados en el sistema."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de programas académicos obtenida exitosamente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
+    })
+    public ResponseEntity<List<ManagerResponseDTO.AcademicProgramInfo>> getAllAcademicPrograms(HttpSession session) {
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+            session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
+        if (authCheck != null) {
+            throw new IllegalArgumentException("No tienes permisos para ver programas académicos");
+        }
+
+        List<AcademicProgram> programs = academicProgramService.searchAllPrograms();
+        List<ManagerResponseDTO.AcademicProgramInfo> response = programs.stream()
+            .map(this::buildAcademicProgramResponse)
+            .toList();
+
         return ResponseEntity.ok(response);
     }
 }
