@@ -1186,4 +1186,11 @@ private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
         ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/students/{studentId]/schedules")
+    @Operation(summary = "Añadir horario a estudiante", description = "Añade horario a estudiante")
+
+
+
+
 }
