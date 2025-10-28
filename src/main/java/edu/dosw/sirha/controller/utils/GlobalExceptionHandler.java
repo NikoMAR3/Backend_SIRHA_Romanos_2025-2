@@ -37,15 +37,33 @@ public class GlobalExceptionHandler {
 
         logger.warn("Validation error: {} - Request: {}", ex.getMessage(), request.getDescription(false));
 
+        int status;
+        String error;
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+
+        if ("usuario no autenticado".equalsIgnoreCase(ex.getMessage())) {
+            status = HttpStatus.UNAUTHORIZED.value();
+            error = "Unauthorized";
+        } else if (msg.contains("no tienes permisos")) {
+            status = HttpStatus.FORBIDDEN.value();
+            error = "Forbidden";
+        } else if (msg.contains("not found") || msg.contains("no encontrado") || msg.contains("session not found")) {
+            status = HttpStatus.NOT_FOUND.value();
+            error = "Not Found";
+        } else {
+            status = HttpStatus.BAD_REQUEST.value();
+            error = "Validation Error";
+        }
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Validation Error")
+                .status(status)
+                .error(error)
                 .message(ex.getMessage())
                 .path(extractPath(request))
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(status));
     }
 
     /**

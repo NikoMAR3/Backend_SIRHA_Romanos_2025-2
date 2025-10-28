@@ -393,7 +393,7 @@ class AuthControllerTest{
         // Usa la MISMA sesión en el PUT
         mockMvc.perform(put("/api/auth/users/noexiste/toggle-status")
                         .session(session))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     // REGISTER USER - Datos inválidos (por ejemplo, mail vacío)
@@ -569,9 +569,9 @@ class AuthControllerTest{
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Validation Error"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("Invalid credentials: User not found or inactive"));
     }
     @Test
@@ -591,8 +591,8 @@ class AuthControllerTest{
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Validation Error"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("Invalid credentials: User not found or inactive"));
     }
     @Test
