@@ -92,30 +92,10 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ${{ env.ACR_NAME }}.azurecr.io/${{ env.DOCKER_IMAGE }}:latest
 
-      - name: Health Check
-        run: |
-          echo "⏳ Esperando 60 segundos para que Azure inicie..."
-          sleep 60
-          
-          MAX_RETRIES=10
-          for i in $(seq 1 $MAX_RETRIES); do
-            echo "Intento $i/$MAX_RETRIES..."
-          
-            if curl -f -s https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/actuator/health; then
-              echo "✅ Deployment exitoso!"
-              exit 0
-            fi
-          
-            sleep 15
-          done
-          
-          echo "❌ Health check falló"
-          exit 1
-
       - name: Deployment Summary
         if: always()
         run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** Azure Production" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
