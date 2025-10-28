@@ -13,7 +13,7 @@ on:
 env:
   DOCKER_IMAGE: sirha-api
   ACR_NAME: sirhacontainer
-  AZURE_WEBAPP_NAME: sirha-backend-api
+  AZURE_WEBAPP_NAME: sirha-backend-web
 
 jobs:
   build-and-test:
