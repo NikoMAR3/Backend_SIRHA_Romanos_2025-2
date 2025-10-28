@@ -195,6 +195,83 @@ git commit -m "24-fix: arreglar bug"
 ---
 
 
+## ⚙️ a. Tecnologías utilizadas
+
+El backend del sistema **SIRHA (Sistema de Reasignación de Horarios Académicos)** fue desarrollado con una arquitectura basada en **Spring Boot** y componentes del ecosistema **Java**, garantizando modularidad, mantenibilidad y facilidad de despliegue.  
+A continuación se detallan las principales tecnologías empleadas en el proyecto:
+
+| **Tecnología / Herramienta** | **Versión / Framework** | **Uso principal en el proyecto** |
+|------------------------------|--------------------------|----------------------------------|
+| **Java JDK** | 17 | Lenguaje de programación base del backend. |
+| **Spring Boot** | 3.x | Framework para la creación del API REST, manejo de dependencias e inyección de componentes. |
+| **Spring Web** | — | Implementación del modelo MVC y exposición de endpoints REST. |
+| **Spring Data MongoDB** | — | Integración con la base de datos NoSQL MongoDB mediante el patrón Repository. |
+| **MongoDB** | 6.x | Almacenamiento principal de datos; modelo documental flexible para entidades como Estudiante, Materia y Solicitud. |
+| **Apache Maven** | 3.9.x | Gestión de dependencias, empaquetado y automatización de builds. |
+| **JUnit 5** | — | Framework para pruebas unitarias y de integración. |
+| **Mockito** | — | Simulación de dependencias para pruebas unitarias. |
+| **JaCoCo** | — | Generación de reportes de cobertura de código. |
+| **SonarQube** | — | Análisis estático del código fuente y control de calidad. |
+| **Swagger (OpenAPI 3)** | — | Documentación y prueba interactiva de los endpoints. |
+| **Docker** | — | Contenerización del servicio para despliegues consistentes. |
+| **Azure App Service** | — | Entorno de despliegue CI/CD en la nube. |
+| **GitHub Actions** | — | Implementación de pipelines de integración y despliegue continuo. |
+
+> 🧠 Estas tecnologías fueron seleccionadas para asegurar **escalabilidad**, **modularidad**, **trazabilidad** y **mantenibilidad** del sistema, aplicando buenas prácticas de ingeniería de software y estándares de desarrollo moderno.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 🏗️ Arquitectura Backend (MVC)
 
 El backend sigue la **arquitectura Modelo–Vista–Controlador (MVC)**. La estructura de carpetas se organizó para mantener separación de responsabilidades y buenas prácticas de ingeniería:
