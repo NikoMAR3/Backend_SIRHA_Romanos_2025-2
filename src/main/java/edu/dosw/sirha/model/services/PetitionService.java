@@ -6,6 +6,7 @@ import edu.dosw.sirha.model.entities.PetitionPriority;
 import edu.dosw.sirha.model.entities.PetitionState;
 import edu.dosw.sirha.model.entities.PetitionType;
 import edu.dosw.sirha.model.persistence.repository.PetitionRepository;
+import edu.dosw.sirha.model.persistence.repository.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,12 @@ public class PetitionService {
 
     private static final Logger logger = LoggerFactory.getLogger(PetitionService.class);
 
+    private final StudentService studentService;
     private final PetitionRepository petitionRepository;
     private final PetitionHandler petitionHandlerChain;
 
-    public PetitionService(PetitionRepository petitionRepository, PetitionHandler petitionHandlerChain) {
+    public PetitionService(StudentService studentService, PetitionRepository petitionRepository, PetitionHandler petitionHandlerChain) {
+        this.studentService = studentService;
         this.petitionRepository = petitionRepository;
         this.petitionHandlerChain = petitionHandlerChain;
     }
@@ -446,5 +449,17 @@ public class PetitionService {
         }
     }
 
-
+    public List<Petition> getStudentPetitions(String s) {
+        return searchAllPetitions()
+                .stream()
+                .filter(p -> {
+                    try {
+                        studentService.searchStudentById(p.getStudentId());
+                        return true;
+                    } catch (RuntimeException e) {
+                        return false;
+                    }
+                })
+                .toList();
+    }
 }

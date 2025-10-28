@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
@@ -84,20 +85,18 @@ public class AuthController {
             throw new IllegalArgumentException("Invalid credentials: " + result.getMessage());
         }
     }
-    
-    /**
-     * User logout endpoint.
-     */
+
     @PostMapping("/logout")
     @Operation(summary = "User logout", description = "Invalidates the current user session")
     @ApiResponse(responseCode = "200", description = "Logout successful")
     public ResponseEntity<AuthDto.ApiResponse> logout(HttpSession session) {
-        
         User currentUser = AuthValidationUtils.getCurrentUser(session);
-        if (currentUser != null) {
-            logger.info("Logout for user: {} ({})", currentUser.getName(), currentUser.getType().getDescription());
+        if (currentUser == null) {
+            // No hay usuario logueado
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthDto.ApiResponse(false, "User not authenticated"));
         }
-        
+        logger.info("Logout for user: {} ({})", currentUser.getName(), currentUser.getType().getDescription());
         session.invalidate();
         return ResponseEntity.ok(new AuthDto.ApiResponse(true, "Logout successful"));
     }

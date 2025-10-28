@@ -287,25 +287,28 @@ public class GroupsController {
         @ApiResponse(responseCode = "403", description = "Permisos insuficientes"),
         @ApiResponse(responseCode = "404", description = "Grupo no encontrado")
     })
-    public ResponseEntity<GroupsResponseDTO> removeProfessorFromGroup(
+    public ResponseEntity<?> removeProfessorFromGroup(
             @PathVariable String groupId,
             @RequestParam String professorCode,
             HttpSession session) {
 
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
-            session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+                session, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) {
-            throw new IllegalArgumentException("No tienes permisos para retirar profesores");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "No tienes permisos para retirar profesores"));
         }
 
         ClassSession sessionEntity = classSessionService.searchSessionById(groupId);
         if (sessionEntity == null) {
-            return ResponseEntity.notFound().build();
+            // ¡RETONA DE INMEDIATO!
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "El grupo con ID " + groupId + " no existe"));
         }
 
-        
         if (!professorCode.equals(sessionEntity.getProfessorCode())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "El código de profesor no corresponde al asignado al grupo"));
         }
 
         sessionEntity.setProfessorCode(null);
@@ -1178,9 +1181,6 @@ public class GroupsController {
         return ResponseEntity.ok(enrolledStudents != null ? enrolledStudents : List.of());
     }
 
-    /**
-     * Gets students on waiting list - DEAN and ACADEMIC_VICEPRESIDENT can see waiting lists.
-     */
     @GetMapping("/{id}/waiting-list")
     @Operation(
             summary = "Lista de espera",
@@ -1199,17 +1199,19 @@ public class GroupsController {
 
         logger.debug("Retrieving waiting list for group: {}", id);
 
-
-        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, 
-                                                                                 UserType.DEAN, 
-                                                                                 UserType.ACADEMIC_VICEPRESIDENT);
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session,
+                UserType.DEAN,
+                UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) {
             throw new IllegalArgumentException("No tienes permisos para ver listas de espera");
         }
 
         ClassSession sessionEntity = classSessionService.searchSessionById(id);
+        if (sessionEntity == null) {
+            throw new IllegalArgumentException("Session not found"); // Tu handler debe mapear esto a 404
+        }
         List<String> waitingList = sessionEntity.getWaitingListStudentIds();
-        
+
         return ResponseEntity.ok(waitingList != null ? waitingList : List.of());
     }
 
@@ -1504,7 +1506,6 @@ public class GroupsController {
 
         return sessionEntity;
     }
-
     private void updateSessionFromRequest(ClassSession sessionEntity, GroupsRequestDTO request) {
         if (request.getGroupName() != null) {
             sessionEntity.setGroupName(request.getGroupName());
@@ -1513,28 +1514,29 @@ public class GroupsController {
             sessionEntity.setDescription(request.getDescription());
         }
         if (request.getProfessorCode() != null) {
-            sessionEntity.setProfessorCode(request.getProfessorCode());
             Professor professor = professorService.searchProfessorByCode(request.getProfessorCode());
-            if (professor != null) {
-                sessionEntity.setProfessorName(professor.getName());
-                sessionEntity.setProfessorEmail(professor.getMail());
-                sessionEntity.setProfessorDocument(professor.getDocument());
+            if (professor == null) {
+                throw new IllegalArgumentException("El profesor con código " + request.getProfessorCode() + " no existe");
             }
+            sessionEntity.setProfessorCode(professor.getProfessorCode());
+            sessionEntity.setProfessorName(professor.getName());
+            sessionEntity.setProfessorEmail(professor.getMail());
+            sessionEntity.setProfessorDocument(professor.getDocument());
         }
         if (request.getSubjectId() != null) {
-            sessionEntity.setSubjectId(request.getSubjectId());
             Subject subject = subjectService.searchSubjectById(request.getSubjectId());
-            if (subject != null) {
-                sessionEntity.setSubjectShortName(subject.getShortName());
-                sessionEntity.setSubjectName(subject.getName());
-                sessionEntity.setSubjectCredits(subject.getCredits());
-                sessionEntity.setSubjectLevel(subject.getLevel());
+            if (subject == null) {
+                throw new IllegalArgumentException("La materia con ID " + request.getSubjectId() + " no existe");
             }
+            sessionEntity.setSubjectId(subject.getId());
+            sessionEntity.setSubjectShortName(subject.getShortName());
+            sessionEntity.setSubjectName(subject.getName());
+            sessionEntity.setSubjectCredits(subject.getCredits());
+            sessionEntity.setSubjectLevel(subject.getLevel());
         }
         if (request.getMaxStudents() != null) {
             sessionEntity.setCapacity(request.getMaxStudents());
         }
-        
     }
 
     private GroupsResponseDTO convertToResponseDTO(ClassSession sessionEntity) {
@@ -1688,28 +1690,28 @@ public class GroupsController {
      */
     private Map<String, Object> generateBasicDetailedStatistics(List<Petition> changePetitions) {
         Map<String, Object> detailedStats = new LinkedHashMap<>();
-        
+        if (changePetitions == null) {
+            changePetitions = List.of();
+        }
         detailedStats.put("totalRequests", changePetitions.size());
-        
-   
+
         Map<String, Map<String, Long>> subjectStateAnalysis = changePetitions.stream()
                 .filter(p -> p.getSubjectShortName() != null)
                 .collect(Collectors.groupingBy(
                         Petition::getSubjectShortName,
                         Collectors.groupingBy(
-                                p -> p.getState().name(),
+                                p -> p.getState() == null ? "SIN_ESTADO" : p.getState().name(),
                                 Collectors.counting()
                         )
                 ));
         detailedStats.put("subjectStateAnalysis", subjectStateAnalysis);
-        
-        
+
         Map<String, Long> studentActivity = changePetitions.stream()
                 .collect(Collectors.groupingBy(
                         Petition::getStudentId,
                         Collectors.counting()
                 ));
-        
+
         List<Map<String, Object>> mostActiveStudents = studentActivity.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(5)
@@ -1719,16 +1721,15 @@ public class GroupsController {
                 ))
                 .collect(Collectors.toList());
         detailedStats.put("mostActiveStudents", mostActiveStudents);
-        
-        
+
         long approvedRequests = changePetitions.stream()
                 .filter(p -> p.getState() == PetitionState.APPROVED)
                 .count();
-        
-        double successRate = changePetitions.isEmpty() ? 0.0 : 
+
+        double successRate = changePetitions.isEmpty() ? 0.0 :
                 Math.round((double) approvedRequests / changePetitions.size() * 100 * 100.0) / 100.0;
         detailedStats.put("overallSuccessRate", successRate);
-        
+
         detailedStats.put("generatedAt", LocalDateTime.now());
         return detailedStats;
     }

@@ -196,6 +196,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>/configurators/</exclude>
+                                <exclude>edu/dosw/sirha/controller/dtos/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>

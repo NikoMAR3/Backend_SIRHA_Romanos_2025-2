@@ -8,6 +8,7 @@ import edu.dosw.sirha.model.entities.AcademicStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,6 @@ public class StudentService {
                 dto.getMail(),
                 dto.getDocument()
         );
-        student.setSchedules(new ArrayList<Schedule>());
         return studentRepository.save(student);
     }
 
@@ -228,5 +228,9 @@ public class StudentService {
      */
     public Schedule getStudentSchedule(String studentId) {
         return scheduleService.searchScheduleByStudentId(studentId);
+    }
+
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 }
