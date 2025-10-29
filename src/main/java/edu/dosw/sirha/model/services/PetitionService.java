@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -432,9 +429,7 @@ public class PetitionService {
      */
     public List<Petition> searchExceptionalCases() {
         try {
-            List<Petition> cases = petitionRepository.findByIsExceptionalCase(true);
-            logger.debug("Found {} exceptional cases", cases.size());
-
+            List<Petition> cases = new ArrayList<>(petitionRepository.findByIsExceptionalCase(true));
             cases.sort((p1, p2) -> {
                 if (p1.getCreationDate() == null && p2.getCreationDate() == null) return 0;
                 if (p1.getCreationDate() == null) return 1;
