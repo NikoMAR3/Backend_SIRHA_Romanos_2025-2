@@ -1,3 +1,42 @@
+![ci-cd](https://github.com/ROMANOS-SIHRA/Backend_SIRHA_Romanos_2025-2/actions/workflows/ci-cd.yml/badge.svg)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+![Azure](https://img.shields.io/badge/Azure-App%20Service-0078D4)
+[![API Status](https://img.shields.io/website?url=https%3A%2F%2Fsirha-backend-api.azurewebsites.net%2Factuator%2Fhealth)](https://sirha-backend-api.azurewebsites.net/actuator/health)
+
+
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)
+![Maven](https://img.shields.io/badge/Maven-3.9+-red?logo=apache-maven)
+![JUnit](https://img.shields.io/badge/JUnit-5-yellow?logo=junit5)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203-85EA2D?logo=swagger)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-blue?logo=github-actions)
+
+
+![Code Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)
+![Quality Gate](https://img.shields.io/badge/Quality%20Gate-Passed-success?logo=sonarqube)
+![Security Rating](https://img.shields.io/badge/Security-A-brightgreen?logo=sonarqube)
+![Maintainability](https://img.shields.io/badge/Maintainability-A-brightgreen?logo=sonarqube)
+![Technical Debt](https://img.shields.io/badge/Tech%20Debt-Low-green)
+
+
+
+
+![Deployment](https://img.shields.io/badge/Deployment-Automated-success)
+![Environment](https://img.shields.io/badge/Environment-Production-red)
+![Response Time](https://img.shields.io/badge/Response%20Time-<200ms-brightgreen)
+
+![HTTPS](https://img.shields.io/badge/HTTPS-Enabled-green?logo=letsencrypt)
+![CORS](https://img.shields.io/badge/CORS-Configured-blue)
+![API](https://img.shields.io/badge/API-RESTful-orange)
+![Authentication](https://img.shields.io/badge/Auth-JWT-purple)
+
+![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)
+![VS Code](https://img.shields.io/badge/IDE-VS%20Code-blue?logo=visual-studio-code)
+![Postman](https://img.shields.io/badge/Testing-Postman-orange?logo=postman)
+![Figma](https://img.shields.io/badge/Design-Figma-purple?logo=figma)
+
+
 # 📚 SIRHA — Sistema de Reasignación de Horarios Académicos
 
 > <b>Optimización y trazabilidad de solicitudes académicas en la Escuela Colombiana de Ingeniería Julio Garavito</b>
@@ -6,31 +45,31 @@
 
 ## 📑 Tabla de Contenidos
 
-1. 👤 [Integrantes](#1-👤-integrantes)
-2. 🎯 [Objetivo del Proyecto](#2-🎯-objetivo-del-proyecto)
-3. ⚡ [Funcionalidades principales](#3-⚡-funcionalidades-principales)
-4. 📋 [Manejo de Estrategia de versionamiento y branches](#4-📋-manejo-de-estrategia-de-versionamiento-y-branches)
+1. 👤 [Integrantes](#1--integrantes)
+2. 🎯 [Objetivo del Proyecto](#2--objetivo-del-proyecto)
+3. ⚡ [Funcionalidades principales](#3--funcionalidades-principales)
+4. 📋 [Manejo de Estrategia de versionamiento y branches](#4--manejo-de-estrategia-de-versionamiento-y-branches)
    - 4.1 [Convenciones para crear ramas](#41-convenciones-para-crear-ramas)
    - 4.2 [Convenciones para crear commits](#42-convenciones-para-crear-commits)
-5. ⚙️ [Tecnologías utilizadas](#5-⚙️-tecnologías-utilizadas)
-6. 🧩 [Funcionalidad](#6-🧩-funcionalidad)
-7. 📊 [Diagramas](#7-�-diagramas)
-   - 7.1 🟩 [Diagrama de Contexto](#71-🟩-diagrama-de-contexto)
-   - 7.2 🟦 [Diagrama de Casos de Uso](#72-🟦-diagrama-de-casos-de-uso)
-   - 7.3 🟨 [Diagrama de Clases](#73-🟨-diagrama-de-clases)
-   - 7.4 🟥 [Diagrama de Componentes — General](#74-🟥-diagrama-de-componentes--general)
-   - 7.5 🟨 [Diagrama de Componentes — Específico (Backend)](#75-🟨-diagrama-de-componentes--específico-backend)
-   - 7.6 🟩 [Diagrama de Base de Datos (MongoDB)](#76-🟩-diagrama-de-base-de-datos-mongodb)
-   - 7.7 🛰️ [Diagrama de Despliegue](#77-🛰️-diagrama-de-despliegue)
-8. 🌐 [Endpoints expuestos y su información de entrada y salida](#8-🌐-endpoints-expuestos-y-su-información-de-entrada-y-salida)
-9. ⚠️ [Manejo de Errores](#9-⚠️-manejo-de-errores)
-10. 🧪 [Evidencia de las pruebas y cómo ejecutarlas](#10-🧪-evidencia-de-las-pruebas-y-cómo-ejecutarlas)
-11. 🗂️ [Código de la implementación organizado en las respectivas carpetas](#11-🗂️-código-de-la-implementación-organizado-en-las-respectivas-carpetas)
-12. 📝 [Código documentado](#12-📝-código-documentado)
-13. 🧾 [Pruebas coherentes con el porcentaje de cobertura expuesto](#13-🧾-pruebas-coherentes-con-el-porcentaje-de-cobertura-expuesto)
-14. 🚀 [Ejecución del Proyecto](#14-🚀-ejecución-del-proyecto)
-15. ☁️ [Evidencia de CI/CD y Despliegue en Azure](#15-☁️-evidencia-de-cicd-y-despliegue-en-azure)
-16. 🤝 [Contribuciones y agradecimientos](#16-🤝-contribuciones-y-agradecimientos)
+5. ⚙️ [Tecnologías utilizadas](#5--tecnologias-utilizadas)
+6. 🧩 [Funcionalidad](#6--funcionalidad)
+7. 📊 [Diagramas](#7--diagramas)
+   - 7.1 🟩 [Diagrama de Contexto](#71--diagrama-de-contexto)
+   - 7.2 🟦 [Diagrama de Casos de Uso](#72--diagrama-de-casos-de-uso)
+   - 7.3 🟨 [Diagrama de Clases](#73--diagrama-de-clases)
+   - 7.4 🟥 [Diagrama de Componentes — General](#74--diagrama-de-componentes--general)
+   - 7.5 🟨 [Diagrama de Componentes — Específico (Backend)](#75--diagrama-de-componentes--especifico-backend)
+   - 7.6 🟩 [Diagrama de Base de Datos (MongoDB)](#76--diagrama-de-base-de-datos-mongodb)
+   - 7.7 🛰️ [Diagrama de Despliegue](#77--diagrama-de-despliegue)
+8. 🌐 [Endpoints expuestos y su información de entrada y salida](#8--endpoints-expuestos-y-su-informacion-de-entrada-y-salida)
+9. ⚠️ [Manejo de Errores](#9--manejo-de-errores)
+10. 🧪 [Evidencia de las pruebas y cómo ejecutarlas](#10--evidencia-de-las-pruebas-y-como-ejecutarlas)
+11. 🗂️ [Código de la implementación organizado en las respectivas carpetas](#11--codigo-de-la-implementacion-organizado-en-las-respectivas-carpetas)
+12. 📝 [Código documentado](#12--codigo-documentado)
+13. 🧾 [Pruebas coherentes con el porcentaje de cobertura expuesto](#13--pruebas-coherentes-con-el-porcentaje-de-cobertura-expuesto)
+14. 🚀 [Ejecución del Proyecto](#14--ejecucion-del-proyecto)
+15. ☁️ [Evidencia de CI/CD y Despliegue en Azure](#15--evidencia-de-cicd-y-despliegue-en-azure)
+16. 🤝 [Contribuciones y agradecimientos](#16--contribuciones-y-agradecimientos)
 
 
 ---
@@ -795,7 +834,7 @@ Todos los endpoints retornan y consumen información en formato **JSON**, y est�
 
 ---
 
-### �️ ManagerController — Gestión de Decanatura
+### 🧭 ManagerController — Gestión de Decanatura
 
 | **Método** | **Ruta** | **Descripción** | **Entrada** | **Salida** |
 |-------------|-----------|-----------------|--------------|-------------|
@@ -1013,7 +1052,7 @@ mvn test -Dcontinuous
 
 ---
 
-### � Métricas de calidad alcanzadas
+### 🧮 Métricas de calidad alcanzadas
 
 #### **🎯 Cobertura de código (JaCoCo)**
 - ✅ **Cobertura de líneas:** Superior al **85%**
@@ -1021,7 +1060,7 @@ mvn test -Dcontinuous
 - ✅ **Cobertura de métodos:** Superior al **90%**
 - ✅ **Clases críticas:** **100%** cubiertas (Services y Controllers)
 
-#### **� Análisis de calidad (SonarQube)**
+#### **📈 Análisis de calidad (SonarQube)**
 - ✅ **Vulnerabilidades:** **0 críticas**, **0 altas**
 - ✅ **Bugs:** **0 críticos**, **0 mayores**
 - ✅ **Code smells:** Clasificación **A**
@@ -1279,7 +1318,7 @@ public class PetitionCreateDTO {
 
 ---
 
-> 💡 **Resumen:** La documentación exhaustiva y el uso de anotaciones garantizan que el código sea comprensible, mantenible y fácil de consumir tanto para desarrolladores como para herramientas automáticas (Swagger UI, validadores, etc.).
+> 💡 La documentación exhaustiva y el uso de anotaciones garantizan que el código sea comprensible, mantenible y fácil de consumir tanto para desarrolladores como para herramientas automáticas (Swagger UI, validadores, etc.).
 
 
 ---
