@@ -67,18 +67,18 @@ public class PetitionsController {
 
         logger.info("Creating new petition for student: {}", petitionRequest.getUserID());
 
-        
-        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.STUDENT, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT);
+        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
+                session, UserType.STUDENT, UserType.DEAN, UserType.ACADEMIC_VICEPRESIDENT
+        );
         if (authCheck != null) {
             throw new IllegalArgumentException("Este usuario no puede crear solicitudes");
         }
 
         User currentUser = AuthValidationUtils.getCurrentUser(session);
 
-       
         if (!currentUser.getId().equals(petitionRequest.getUserID()) && currentUser.getType() == UserType.STUDENT) {
-            logger.warn("Student {} attempted to create petition for student {}", 
-                       currentUser.getId(), petitionRequest.getUserID());
+            logger.warn("Student {} attempted to create petition for student {}",
+                    currentUser.getId(), petitionRequest.getUserID());
             throw new IllegalArgumentException("Solo puedes crear solicitudes para ti mismo");
         }
 

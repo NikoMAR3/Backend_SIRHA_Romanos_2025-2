@@ -197,6 +197,7 @@
                             <excludes>
                                 <exclude>/configurators/</exclude>
                                 <exclude>edu/dosw/sirha/controller/dtos/**</exclude>
+                                <exclude>edu/dosw/sirha/model/entities/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>

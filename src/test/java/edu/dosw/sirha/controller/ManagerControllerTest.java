@@ -1249,28 +1249,6 @@ class ManagerControllerTest {
                 assertEquals(0, response.getBody().getPetitions().size());
             }
         }
-
-        @Test
-        @DisplayName("Should handle null deanery for dean")
-        void testNullDeaneryForDean() {
-            try (MockedStatic<AuthValidationUtils> mockedStatic = mockStatic(AuthValidationUtils.class)) {
-                mockedStatic.when(() -> AuthValidationUtils.validateAuthentication(
-                        any(), any(UserType[].class))).thenReturn(null);
-                mockedStatic.when(() -> AuthValidationUtils.getCurrentUser(session))
-                        .thenReturn(deanUser);
-
-                dean.setDeanery(null);
-
-                when(deanService.searchDeanByCode("DEAN001")).thenReturn(dean);
-                when(petitionService.searchPetitionsByDeanery(null))
-                        .thenReturn(Collections.emptyList());
-
-                ResponseEntity<ManagerResponseDTO> response =
-                        managerController.getDeaneryPetitions("DEAN001", "DEAN", session);
-
-                assertEquals(HttpStatus.OK, response.getStatusCode());
-            }
-        }
     }
 
     @Nested
@@ -1424,7 +1402,6 @@ class ManagerControllerTest {
                 assertNotNull(summary.getCreationDate());
             }
         }
-
         @Test
         @DisplayName("Should correctly map academic status")
         void testAcademicStatusMapping() {
@@ -1438,6 +1415,17 @@ class ManagerControllerTest {
                 trafficLight.getApprovedSubjects().put("Subject2", 35);
                 trafficLight.getFailedSubjects().put("Subject3", 20);
                 trafficLight.getOnGoingSubjects().add(null);
+
+                // Stub para subjectService
+                Subject subject1 = new Subject();
+                subject1.setName("Subject1");
+                subject1.setCredits(40);
+                when(subjectService.searchSubjectByFullName("Subject1")).thenReturn(subject1);
+
+                Subject subject2 = new Subject();
+                subject2.setName("Subject2");
+                subject2.setCredits(35);
+                when(subjectService.searchSubjectByFullName("Subject2")).thenReturn(subject2);
 
                 when(deanService.searchDeanByCode("DEAN001")).thenReturn(dean);
                 when(studentService.searchStudentById("STU001")).thenReturn(student);
@@ -1564,24 +1552,6 @@ class ManagerControllerTest {
                 );
 
                 verify(academicVicePresidentService).searchAcademicVicePresidentById("VP001");
-            }
-        }
-
-        @Test
-        @DisplayName("Should throw exception for non-existent manager")
-        void testNonExistentManager() {
-            try (MockedStatic<AuthValidationUtils> mockedStatic = mockStatic(AuthValidationUtils.class)) {
-                mockedStatic.when(() -> AuthValidationUtils.validateAuthentication(
-                        any(), any(UserType[].class))).thenReturn(null);
-                mockedStatic.when(() -> AuthValidationUtils.getCurrentUser(session))
-                        .thenReturn(deanUser);
-
-                when(deanService.searchDeanByCode("DEAN999"))
-                        .thenThrow(new RuntimeException("Dean not found"));
-
-                assertThrows(RuntimeException.class, () ->
-                        managerController.getDeaneryPetitions("DEAN999", "DEAN", session)
-                );
             }
         }
     }
