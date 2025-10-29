@@ -39,7 +39,7 @@ public class ChangeGroupCreator extends PetitionCreator {
         petition.setStudentId(dto.getUserID());
         petition.setType(PetitionType.CHANGE_GROUP);
         petition.setSubjectId((String) dto.getDetails().get("subjectId"));
-        petition.setAssociateDeanery((String) dto.getDetails().get("associateDeanery"));
+        petition.setJustification(dto.getDescription());
         petition.setPriority(calculatePriorityByUser(dto));
         petition.setState(PetitionState.PENDING);
         petition.setCreationDate(LocalDateTime.now());

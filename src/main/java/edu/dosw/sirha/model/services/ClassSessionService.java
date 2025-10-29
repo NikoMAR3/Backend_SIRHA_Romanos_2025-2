@@ -3,6 +3,8 @@ package edu.dosw.sirha.model.services;
 import edu.dosw.sirha.model.entities.ClassSession;
 import edu.dosw.sirha.model.entities.ClassSchedule;
 import edu.dosw.sirha.model.persistence.repository.ClassSessionRepository;
+import edu.dosw.sirha.model.persistence.repository.ClassScheduleRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -20,9 +22,11 @@ import java.util.Optional;
 public class ClassSessionService {
 
     private final ClassSessionRepository classSessionRepository;
+    private final ClassScheduleRepository classScheduleRepository;
 
-    public ClassSessionService(ClassSessionRepository classSessionRepository) {
+    public ClassSessionService(ClassSessionRepository classSessionRepository, ClassScheduleRepository classScheduleRepository) {
         this.classSessionRepository = classSessionRepository;
+        this.classScheduleRepository = classScheduleRepository;
     }
 
     /**
@@ -138,12 +142,12 @@ public class ClassSessionService {
      * @param professorId the ID of the professor
      * @return list of ClassSessions assigned to the professor
      */
-    public List<ClassSession> searchSessionsByProfessor(String professorId) {
-        if (professorId == null || professorId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Professor ID cannot be null or empty");
+    public List<ClassSession> searchSessionsByProfessor(String professorCode) {
+        if (professorCode == null || professorCode.trim().isEmpty()) {
+            throw new IllegalArgumentException("Professor code cannot be null or empty");
         }
 
-        return classSessionRepository.findByProfessorId(professorId);
+        return classSessionRepository.findByProfessorCode(professorCode);
     }
 
     /**
@@ -189,9 +193,11 @@ public class ClassSessionService {
             throw new IllegalArgumentException("Subject name cannot be null or empty");
         }
 
-        if (session.getProfessorId() == null || session.getProfessorId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Professor ID cannot be null or empty");
+        /*
+        if (session.getProfessorCode() == null || session.getProfessorCode().trim().isEmpty()) {
+            throw new IllegalArgumentException("Professor code cannot be null or empty");
         }
+        */
 
         if (session.getCapacity() <= 0) {
             throw new IllegalArgumentException("Capacity must be greater than 0");
@@ -257,14 +263,14 @@ public class ClassSessionService {
      * Validates conflicts for a specific schedule and session.
      */
     private void validateScheduleConflictForSession(ClassSession session, ClassSchedule schedule) {
-        List<ClassSession> professorSessions = classSessionRepository.findByProfessorId(session.getProfessorId());
+        List<ClassSession> professorSessions = classSessionRepository.findByProfessorCode(session.getProfessorCode());
         for (ClassSession existingSession : professorSessions) {
             if (existingSession.getSchedules() != null) {
                 for (ClassSchedule existingSchedule : existingSession.getSchedules()) {
                     if (hasTimeConflict(schedule, existingSchedule)) {
                         throw new IllegalArgumentException(
                             String.format("Professor %s has a time conflict on %s from %s to %s",
-                                session.getProfessorId(), schedule.getDayOfWeek(),
+                                session.getProfessorCode(), schedule.getDayOfWeek(),
                                 schedule.getStartTime(), schedule.getEndTime())
                         );
                     }
@@ -292,15 +298,15 @@ public class ClassSessionService {
      * Validates conflicts for session update (excludes current session).
      */
     private void validateScheduleConflictForSessionUpdate(ClassSession session, ClassSchedule schedule) {
-        
-        List<ClassSession> professorSessions = classSessionRepository.findByProfessorId(session.getProfessorId());
+
+        List<ClassSession> professorSessions = classSessionRepository.findByProfessorCode(session.getProfessorCode());
         for (ClassSession existingSession : professorSessions) {
             if (!existingSession.getId().equals(session.getId()) && existingSession.getSchedules() != null) {
                 for (ClassSchedule existingSchedule : existingSession.getSchedules()) {
                     if (hasTimeConflict(schedule, existingSchedule)) {
                         throw new IllegalArgumentException(
                             String.format("Professor %s has a time conflict on %s from %s to %s",
-                                session.getProfessorId(), schedule.getDayOfWeek(),
+                                session.getProfessorCode(), schedule.getDayOfWeek(),
                                 schedule.getStartTime(), schedule.getEndTime())
                         );
                     }
@@ -618,7 +624,11 @@ public class ClassSessionService {
 
     public List<ClassSession> searchAllSessions() {
         return classSessionRepository.findAll();
-}
+    }
+
+    public ClassSchedule searchScheduleById(String id) {
+        return classScheduleRepository.findById(id).orElse(null);
+    }
 
 
 

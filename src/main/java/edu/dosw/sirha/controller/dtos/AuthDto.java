@@ -1,11 +1,13 @@
 package edu.dosw.sirha.controller.dtos;
 
 import edu.dosw.sirha.model.entities.User;
+import edu.dosw.sirha.model.entities.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
 
 /**
@@ -22,13 +24,13 @@ public class AuthDto {
     @Schema(description = "Request DTO for user authentication")
     public static class LoginRequest {
         
-        @NotBlank(message = "Credential is required")
+        @NotBlank(message = "ID is required")
         @Schema(
-            description = "User credential (document number or institutional email)",
-            example = "12345678",
+            description = "User ID",
+            example = "1000057643",
             requiredMode = Schema.RequiredMode.REQUIRED
         )
-        private String credential;
+        private String id;
         
         @NotBlank(message = "Password is required")
         @Schema(
@@ -193,5 +195,26 @@ public class AuthDto {
             this.userType = user.getType().getDescription();
             this.isActive = user.isActive();
         }
+    }
+
+    /**
+     * DTO representing a request for user registration.
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Request DTO for user registration")
+    public static class RegisterRequest {
+        @NotBlank
+        private String id;
+        @NotBlank
+        private String name;
+        @NotBlank
+        @Email
+        private String mail;
+        @NotBlank
+        private String password;
+        @NotNull
+        private UserType type;
     }
 }

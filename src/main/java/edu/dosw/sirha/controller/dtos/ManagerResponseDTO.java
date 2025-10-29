@@ -67,6 +67,30 @@ public class ManagerResponseDTO {
     @Schema(description = "Indicates if the operation was successful", example = "true")
     private Boolean success;
 
+    /**
+     * Dashboard statistics
+     */
+    @Schema(description = "Total number of petitions in the deanery", example = "150")
+    private Integer totalPetitions;
+
+    /**
+     * Number of pending petitions
+     */
+    @Schema(description = "Number of pending petitions", example = "75")
+    private Integer pendingPetitions;
+
+    /**
+     * Number of approved petitions
+     */
+    @Schema(description = "Number of approved petitions", example = "50")
+    private Integer approvedPetitions;
+
+    /**
+     * Number of rejected petitions
+     */
+    @Schema(description = "Number of rejected petitions", example = "25")
+    private Integer rejectedPetitions;
+
 
     /**
      * Nested static classes for detailed components of the response
@@ -283,4 +307,50 @@ public class ManagerResponseDTO {
         @Schema(description = "Date when alert was generated")
         private LocalDateTime alertDate;
     }
+
+    @Data
+    @Schema(description = "Respuesta con información de decanatura")
+    public static class DeaneryInfo {
+
+        @Schema(description = "ID de la decanatura", example = "sistemas-15")
+        private String deaneryId;
+        @Schema(description = "Nombre de la decanatura", example = "Decanatura de Ingeniería de Sistemas")
+        private String deaneryName;
+
+        @Schema(description = "Nombre del decano", example = "Carlos Andrés Pérez")
+        private String deanName;
+
+        @Schema(description = "Lista de nombres de profesores asociados a la decanatura")
+        private List<String> professorNames;
+        
+        @Schema(description = "Lista de nombres de programas académicos asociados a la decanatura")
+        private List<String> academicProgramNames;
+    }
+
+    @Data
+    public static class AcademicProgramInfo {
+        @Schema(description = "ID del programa académico", example = "sistemas-15")
+        private String id;
+        @Schema(description = "Nombre del programa académico", example = "Ingeniería de Sistemas")
+        private String name;
+        @Schema(description = "Nombre de la decanatura a la que pertenece", example = "Decanatura de Ingeniería de Sistemas")   
+        private String deaneryName;
+        
+    }
+
+    @Data
+    public static class DeanResponseDTO {
+        @Schema(description = "Unique identifier of the dean", example = "1000098653")
+        private String deanCode;
+
+        @Schema(description = "Full name of the dean", example = "Juan Perez")
+        private String name;
+
+        @Schema(description = "Email address of the dean", example = "juan.perez@mail.escuelaing.edu.co")
+        private String mail;
+
+        @Schema(description = "Document number of the dean", example = "123456789")
+        private String document;
+    }
+    
 }

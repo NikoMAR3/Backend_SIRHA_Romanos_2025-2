@@ -50,24 +50,28 @@ public class ProfessorService {
         return professorRepository.save(professor);
     }
 
+    public Professor save(Professor professor) {
+        return professorRepository.save(professor);
+    }
+
     /**
      * Modifies an existing Professor record.
      * Updates the professor's personal information while preserving the original ID
      * and maintaining existing relationships with deaneries and subjects.
      *
-     * @param id the unique identifier of the Professor to modify
+     * @param professorCode the unique identifier of the Professor to modify
      * @param dto the UserDTO containing the updated personal information
      * @return an Optional containing the updated Professor if found, or empty Optional if not found
      */
-    public Optional<Professor> modifyProfessor(String id, UserDTO dto) {
-        return professorRepository.findById(id)
-                .map(existing -> {
-                    existing.setName(dto.getName());
-                    existing.setMail(dto.getMail());
-                    existing.setDocument(dto.getDocument());
-                    return professorRepository.save(existing);
-                });
-    }
+    public Optional<Professor> modifyProfessorByCode(String professorCode, UserDTO dto) {
+    return professorRepository.findByProfessorCode(professorCode)
+            .map(existing -> {
+                existing.setName(dto.getName());
+                existing.setMail(dto.getMail());
+                existing.setDocument(dto.getDocument());
+                return professorRepository.save(existing);
+            });
+}
 
     /**
      * Deletes a Professor record by its ID.
@@ -76,14 +80,26 @@ public class ProfessorService {
      * @param id the unique identifier of the Professor to delete
      * @return true if the record was successfully deleted, false if no record was found
      */
-    public boolean deleteProfessor(String id) {
-        if (professorRepository.existsById(id)) {
-            professorRepository.deleteById(id); //Hacer revision de que No tiene tareas docentes activas ni dependencias críticas en el sistema
+    public boolean deleteProfessorByCode(String professorCode) {
+        Optional<Professor> professorOpt = professorRepository.findByProfessorCode(professorCode);
+        if (professorOpt.isPresent()) {
+            professorRepository.delete(professorOpt.get());
             return true;
         } else {
             return false;
-
         }
+    }
+
+    /**
+     * Searches for a Professor by their unique professor code.
+     * Useful for scenarios where professors are identified by a specific code
+     * rather than their database ID, such as in course assignments or administrative tasks.
+     *
+     * @param professorCode the unique code of the Professor to find
+     * @return the Professor entity if found, or null if no record was found
+     */
+    public Professor searchProfessorByCode(String professorCode) {
+        return professorRepository.findByProfessorCode(professorCode).orElse(null);
     }
 
     /**

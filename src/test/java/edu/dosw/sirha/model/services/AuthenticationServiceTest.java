@@ -85,7 +85,8 @@ class AuthenticationServiceTest {
         @Test
         @DisplayName("Should authenticate successfully with valid document and password")
         void authenticate_ValidDocumentAndPassword_ShouldReturnSuccessResult() {
-            when(userRepository.findByDocumentAndIsActiveTrue("12345678")).thenReturn(Optional.of(testUser));
+            when(userRepository.findByIdAndIsActiveTrue("12345678"))
+                    .thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches("password123", "$2a$10$hashedPassword")).thenReturn(true);
             when(userRepository.save(any(User.class))).thenReturn(testUser);
 
@@ -104,7 +105,7 @@ class AuthenticationServiceTest {
         @Test
         @DisplayName("Should authenticate successfully with valid email and password")
         void authenticate_ValidEmailAndPassword_ShouldReturnSuccessResult() {
-            when(userRepository.findByDocumentAndIsActiveTrue("juan.perez@escuelaing.edu.co")).thenReturn(Optional.empty());
+            when(userRepository.findByIdAndIsActiveTrue("juan.perez@escuelaing.edu.co")).thenReturn(Optional.empty());
             when(userRepository.findByMailAndIsActiveTrue("juan.perez@escuelaing.edu.co")).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches("password123", "$2a$10$hashedPassword")).thenReturn(true);
             when(userRepository.save(any(User.class))).thenReturn(testUser);
@@ -124,7 +125,7 @@ class AuthenticationServiceTest {
         @Test
         @DisplayName("Should fail authentication when user is not found")
         void authenticate_UserNotFound_ShouldReturnFailureResult() {
-            when(userRepository.findByDocumentAndIsActiveTrue("nonexistent")).thenReturn(Optional.empty());
+            when(userRepository.findByIdAndIsActiveTrue("nonexistent")).thenReturn(Optional.empty());
             when(userRepository.findByMailAndIsActiveTrue("nonexistent")).thenReturn(Optional.empty());
 
             AuthenticationResult result = authenticationService.authenticate("nonexistent", "password123");
@@ -144,8 +145,7 @@ class AuthenticationServiceTest {
             Student userWithoutPassword = new Student("user456", "Usuario Sin Password", "sin.password@escuelaing.edu.co", "99999999");
             userWithoutPassword.setPasswordHash(null);
 
-            when(userRepository.findByDocumentAndIsActiveTrue("99999999")).thenReturn(Optional.of(userWithoutPassword));
-
+            when(userRepository.findByIdAndIsActiveTrue("99999999")).thenReturn(Optional.of(userWithoutPassword));
             AuthenticationResult result = authenticationService.authenticate("99999999", "password123");
 
             assertFalse(result.isSuccess());
@@ -160,7 +160,8 @@ class AuthenticationServiceTest {
         @Test
         @DisplayName("Should fail authentication with incorrect password")
         void authenticate_IncorrectPassword_ShouldReturnFailureResult() {
-            when(userRepository.findByDocumentAndIsActiveTrue("12345678")).thenReturn(Optional.of(testUser));
+            when(userRepository.findByIdAndIsActiveTrue("12345678"))
+                    .thenReturn(Optional.of(testUser)).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches("wrongpassword", "$2a$10$hashedPassword")).thenReturn(false);
 
             AuthenticationResult result = authenticationService.authenticate("12345678", "wrongpassword");
@@ -211,7 +212,7 @@ class AuthenticationServiceTest {
         void authenticate_SuccessfulLogin_ShouldUpdateLastLoginTime() {
             LocalDateTime beforeAuth = LocalDateTime.now();
             
-            when(userRepository.findByDocumentAndIsActiveTrue("12345678")).thenReturn(Optional.of(testUser));
+            when(userRepository.findByIdAndIsActiveTrue("12345678")).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches("password123", "$2a$10$hashedPassword")).thenReturn(true);
             when(userRepository.save(any(User.class))).thenReturn(testUser);
 

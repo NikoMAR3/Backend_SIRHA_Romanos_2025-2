@@ -4,6 +4,7 @@ import edu.dosw.sirha.model.entities.Professor;
 import edu.dosw.sirha.model.entities.Deanery;
 import edu.dosw.sirha.model.entities.Subject;
 
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,6 +28,10 @@ public interface ProfessorRepository extends MongoRepository<Professor, String> 
      */
     Optional<Professor> findById(String id);
 
+    Optional<Professor> findByProfessorCode(String professorCode);
+
+    void deleteByProfessorCode(String professorCode);
+
     /**
      * Finds all professors associated with a specific deanery.
      * Useful for retrieving faculty members by academic department or faculty.
@@ -43,7 +48,11 @@ public interface ProfessorRepository extends MongoRepository<Professor, String> 
      * @param deaneryName the name of the deanery
      * @return a list of professors belonging to the specified deanery
      */
-    @Query("{'deanery.name': ?0}")
+    @Aggregation(pipeline = {
+            "{ $lookup: { from: 'deanery', localField: 'deanery.$id', foreignField: '_id', as: 'deaneryDoc' } }",
+            "{ $unwind: '$deaneryDoc' }",
+            "{ $match: { 'deaneryDoc.deaneryName': ?0 } }"
+    })
     List<Professor> findByDeaneryName(String deaneryName);
 
     /**
@@ -106,12 +115,12 @@ public interface ProfessorRepository extends MongoRepository<Professor, String> 
      * Finds all professors by deanery and subject.
      * Useful for finding faculty teaching specific courses in a department.
      *
-     * @param deanery the deanery entity to filter by
-     * @param subject the subject entity to filter by
+     * @param deaneryId the deanery entity to filter by
+     * @param subjectId the subject entity to filter by
      * @return a list of professors matching both criteria
      */
-    @Query("{'deanery': ?0, 'subjects': ?1}")
-    List<Professor> findByDeaneryAndSubject(Deanery deanery, Subject subject);
+    @Query("{'deanery._id': ?0, 'subjects._id': ?1}")
+    List<Professor> findByDeaneryAndSubject(String deaneryId, String subjectId);
 
     /**
      * Counts the number of professors in a specific deanery.

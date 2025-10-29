@@ -16,14 +16,6 @@ import java.util.Optional;
 public interface SubjectRepository extends MongoRepository<Subject, String> {
 
     /**
-     * Finds a subject by its unique identifier.
-     *
-     * @param id the unique identifier of the subject
-     * @return an {@link Optional} containing the subject if found, otherwise empty
-     */
-    Optional<Subject> findById(String id);
-
-    /**
      * Finds a subject by its short name (abbreviation).
      *
      * @param shortName the short name of the subject

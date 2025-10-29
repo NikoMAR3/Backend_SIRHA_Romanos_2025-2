@@ -122,7 +122,7 @@ public class ScheduleService {
                 existingSchedule.setDayOfWeek(schedule.getDayOfWeek().trim());
             }
 
-            if (schedule.getSemester() > 0) {
+            if ((schedule.getSemester() != null && schedule.getSemester().matches("\\d{4}-[12]"))) {
                 existingSchedule.setSemester(schedule.getSemester());
             }
 
@@ -201,11 +201,7 @@ public class ScheduleService {
      * @throws IllegalArgumentException if subject ID is invalid
      * @throws RuntimeException if search fails
      */
-    public List<Schedule> searchScheduleBySubject(int subjectId) {
-        if (subjectId <= 0) {
-            throw new IllegalArgumentException("Subject ID must be greater than zero");
-        }
-
+    public List<Schedule> searchScheduleBySubject(String subjectId) {
         try {
             return scheduleRepository.findBySubjectId(subjectId);
         } catch (Exception e) {
@@ -343,7 +339,7 @@ public class ScheduleService {
         }
 
         try {
-            long enrollmentCount = scheduleRepository.countBySubjectId(Integer.parseInt(classSession.getId()));
+            long enrollmentCount = scheduleRepository.countBySubjectId(classSession.getId());
             int maxCapacity = getClassSessionMaxCapacity(classSession);
 
             return enrollmentCount < maxCapacity;
@@ -397,6 +393,150 @@ public class ScheduleService {
     }
 
     /**
+     * Adds a class session to an existing schedule.
+     * Validates the class session and checks for conflicts before adding.
+     *
+     * @param scheduleId the unique identifier of the schedule
+     * @param classSession the class session to add
+     * @return the updated schedule with the new class session
+     * @throws IllegalArgumentException if parameters are invalid
+     * @throws RuntimeException if schedule not found or addition fails
+     */
+    @Transactional
+    public Schedule addClassSessionToSchedule(String scheduleId, ClassSession classSession) {
+        if (scheduleId == null || scheduleId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Schedule ID cannot be null or empty");
+        }
+        if (classSession == null) {
+            throw new IllegalArgumentException("Class session cannot be null");
+        }
+
+        try {
+            Schedule schedule = scheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new RuntimeException("Schedule not found with ID: " + scheduleId));
+
+            if (schedule.getClassSessions() != null) {
+                boolean hasConflict = schedule.getClassSessions().stream()
+                        .anyMatch(existingSession -> hasTimeConflict(existingSession, classSession));
+
+                if (hasConflict) {
+                    throw new RuntimeException("Class session conflicts with existing schedule");
+                }
+            }
+
+            if (!validateScheduleCapacity(classSession)) {
+                throw new RuntimeException("Class session has reached maximum capacity");
+            }
+
+            schedule.getClassSessions().add(classSession);
+
+            return scheduleRepository.save(schedule);
+
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add class session to schedule", e);
+        }
+    }
+
+    /**
+     * Removes a class session from a schedule.
+     *
+     * @param scheduleId the unique identifier of the schedule
+     * @param classSessionId the unique identifier of the class session to remove
+     * @return the updated schedule without the removed class session
+     * @throws IllegalArgumentException if parameters are invalid
+     * @throws RuntimeException if schedule or class session not found, or removal fails
+     */
+    @Transactional
+    public Schedule removeClassSessionFromSchedule(String scheduleId, String classSessionId) {
+        if (scheduleId == null || scheduleId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Schedule ID cannot be null or empty");
+        }
+        if (classSessionId == null || classSessionId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Class session ID cannot be null or empty");
+        }
+
+        try {
+            Schedule schedule = scheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new RuntimeException("Schedule not found with ID: " + scheduleId));
+
+            if (schedule.getClassSessions() == null || schedule.getClassSessions().isEmpty()) {
+                throw new RuntimeException("Schedule has no class sessions");
+            }
+
+            boolean removed = schedule.getClassSessions()
+                    .removeIf(session -> classSessionId.equals(session.getId()));
+
+            if (!removed) {
+                throw new RuntimeException("Class session not found with ID: " + classSessionId);
+            }
+
+            return scheduleRepository.save(schedule);
+
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to remove class session from schedule", e);
+        }
+    }
+
+    /**
+     * Retrieves all class sessions for a specific schedule.
+     *
+     * @param scheduleId the unique identifier of the schedule
+     * @return a list of class sessions in the schedule
+     * @throws IllegalArgumentException if schedule ID is invalid
+     * @throws RuntimeException if schedule not found or retrieval fails
+     */
+    public List<ClassSession> getClassSessionsBySchedule(String scheduleId) {
+        if (scheduleId == null || scheduleId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Schedule ID cannot be null or empty");
+        }
+
+        try {
+            Schedule schedule = scheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new RuntimeException("Schedule not found with ID: " + scheduleId));
+
+            return schedule.getClassSessions();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to retrieve class sessions for schedule", e);
+        }
+    }
+
+    /**
+     * Retrieves a specific class session from a schedule.
+     *
+     * @param scheduleId the unique identifier of the schedule
+     * @param classSessionId the unique identifier of the class session
+     * @return the class session if found
+     * @throws IllegalArgumentException if parameters are invalid
+     * @throws RuntimeException if schedule or class session not found
+     */
+    public ClassSession getClassSessionById(String scheduleId, String classSessionId) {
+        if (scheduleId == null || scheduleId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Schedule ID cannot be null or empty");
+        }
+        if (classSessionId == null || classSessionId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Class session ID cannot be null or empty");
+        }
+
+        try {
+            Schedule schedule = scheduleRepository.findById(scheduleId)
+                    .orElseThrow(() -> new RuntimeException("Schedule not found with ID: " + scheduleId));
+
+            return schedule.getClassSessions().stream()
+                    .filter(session -> classSessionId.equals(session.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Class session not found with ID: " + classSessionId));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to retrieve class session", e);
+        }
+    }
+
+    /**
      * Helper method to check if two subjects have time conflicts.
      *
      * @param subject1 the first subject
@@ -415,6 +555,10 @@ public class ScheduleService {
 
         return start1.isBefore(end2) && start2.isBefore(end1);
     }
+
+
+
+
 
     /**
      * Helper method to get the maximum capacity of a class session.

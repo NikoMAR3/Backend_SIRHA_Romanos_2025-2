@@ -1,6 +1,10 @@
 package edu.dosw.sirha.controller;
 
 import edu.dosw.sirha.controller.dtos.AuthDto;
+import edu.dosw.sirha.model.entities.AcademicVicePresident;
+import edu.dosw.sirha.model.entities.Dean;
+import edu.dosw.sirha.model.entities.Student;
+import edu.dosw.sirha.model.entities.Professor;
 import edu.dosw.sirha.model.entities.User;
 import edu.dosw.sirha.model.entities.UserType;
 import edu.dosw.sirha.model.services.AuthenticationService;
@@ -15,7 +19,9 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
@@ -52,40 +58,45 @@ public class AuthController {
             @Valid @RequestBody AuthDto.LoginRequest request, 
             HttpSession session) {
         
-        logger.info("Login attempt for credential: {}", request.getCredential());
-        
-        AuthenticationService.AuthenticationResult result = 
-            authenticationService.authenticate(request.getCredential(), request.getPassword());
-        
+        logger.info("Login attempt for credential: {}", request.getId());
+
+        AuthenticationService.AuthenticationResult result =
+            authenticationService.authenticate(request.getId(), request.getPassword());
+
         if (result.isSuccess()) {
+            if (!result.getUser().isActive()) {
+                logger.warn("Login attempt by inactive user: {}", result.getUser().getId());
+                throw new IllegalArgumentException("User account is deactivated");
+            }
+
             session.setAttribute("user", result.getUser());
             session.setAttribute("userId", result.getUser().getId());
             session.setAttribute("userType", result.getUser().getType());
             
-            logger.info("Login successful for user: {} ({})", 
-                       result.getUser().getName(), result.getUser().getType().getDescription());
+            logger.info("Login successful for user: {} ({}) - Role: {}", 
+                       result.getUser().getName(), 
+                       result.getUser().getId(),
+                       result.getUser().getType().getDescription());
             
             return ResponseEntity.ok(new AuthDto.LoginResponse(true, "Login successful", result.getUser()));
         } else {
-            logger.warn("Login failed for credential: {} - {}", request.getCredential(), result.getMessage());
+            logger.warn("Login failed for credential: {} - {}", request.getId(), result.getMessage());
         
             throw new IllegalArgumentException("Invalid credentials: " + result.getMessage());
         }
     }
-    
-    /**
-     * User logout endpoint.
-     */
+
     @PostMapping("/logout")
     @Operation(summary = "User logout", description = "Invalidates the current user session")
     @ApiResponse(responseCode = "200", description = "Logout successful")
     public ResponseEntity<AuthDto.ApiResponse> logout(HttpSession session) {
-        
         User currentUser = AuthValidationUtils.getCurrentUser(session);
-        if (currentUser != null) {
-            logger.info("Logout for user: {} ({})", currentUser.getName(), currentUser.getType().getDescription());
+        if (currentUser == null) {
+            // No hay usuario logueado
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthDto.ApiResponse(false, "User not authenticated"));
         }
-        
+        logger.info("Logout for user: {} ({})", currentUser.getName(), currentUser.getType().getDescription());
         session.invalidate();
         return ResponseEntity.ok(new AuthDto.ApiResponse(true, "Logout successful"));
     }
@@ -107,6 +118,8 @@ public class AuthController {
         if (authCheck != null) return authCheck;
         
         User user = AuthValidationUtils.getCurrentUser(session);
+        logger.debug("Current user: {} with role: {}", user.getId(), user.getType().getDescription());
+
         return ResponseEntity.ok(new AuthDto.CurrentUserResponse(user));
     }
     
@@ -131,6 +144,9 @@ public class AuthController {
         
         User user = AuthValidationUtils.getCurrentUser(session);
         boolean hasPermission = authenticationService.canAccessResource(user.getType(), resource);
+
+        logger.debug("Permission check for user {} on resource {}: {}", 
+                    user.getId(), resource, hasPermission);
         
         return ResponseEntity.ok(new AuthDto.PermissionResponse(hasPermission, resource, user.getType().getDescription()));
     }
@@ -156,6 +172,12 @@ public class AuthController {
         if (authCheck != null) return (ResponseEntity<AuthDto.ApiResponse>) authCheck;
         
         User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+        if (currentUser.getId().equals(request.getUserId())) {
+            logger.warn("User {} attempted to set password for themselves", currentUser.getId());
+            return ResponseEntity.badRequest()
+                .body(new AuthDto.ApiResponse(false, "Cannot set password for your own account"));
+        }
         
         authenticationService.setUserPassword(request.getUserId(), request.getNewPassword(), currentUser.getType());
         
@@ -182,22 +204,26 @@ public class AuthController {
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) return authCheck;
         
-  
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        logger.info("User {} requesting all users list", currentUser.getId());
+        
+
         List<User> users = authenticationService.getAllUsers();
         logger.info("Retrieved {} users", users.size());
+
         return ResponseEntity.ok(users);
     }
     
     /**
-     * Toggle user status (activate/deactivate) (admin only).
+     * Toggle user status (activate/deactivate) - ACADEMIC_VICEPRESIDENT only.
      */
     @PutMapping("/users/{userId}/toggle-status")
     @Operation(summary = "Toggle user status", description = "Activates or deactivates a user account (admin only)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User status changed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid user ID"),
+        @ApiResponse(responseCode = "400", description = "Invalid user ID or cannot deactivate own account"),
         @ApiResponse(responseCode = "401", description = "User not authenticated"),
-        @ApiResponse(responseCode = "403", description = "Insufficient privileges"),
+        @ApiResponse(responseCode = "403", description = "Insufficient privileges - Only Academic Vice President can change user status"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<AuthDto.ApiResponse> toggleUserStatus(
@@ -210,13 +236,60 @@ public class AuthController {
         ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(session, UserType.ACADEMIC_VICEPRESIDENT);
         if (authCheck != null) return (ResponseEntity<AuthDto.ApiResponse>) authCheck;
         
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+        
+        if (currentUser.getId().equals(userId)) {
+            logger.warn("User {} attempted to toggle their own status", currentUser.getId());
+            return ResponseEntity.badRequest()
+                .body(new AuthDto.ApiResponse(false, "Cannot change status of your own account"));
+        }
+        
         User updatedUser = authenticationService.toggleUserStatus(userId);
         String status = updatedUser.isActive() ? "activated" : "deactivated";
         
-        User currentUser = AuthValidationUtils.getCurrentUser(session);
-        logger.info("User {} successfully {} by admin: {}", 
-                   updatedUser.getName(), status, currentUser.getName());
+        logger.info("User {} ({}) successfully {} by admin: {}", 
+                   updatedUser.getName(), updatedUser.getId(), status, currentUser.getName());
         
-        return ResponseEntity.ok(new AuthDto.ApiResponse(true, "User " + status + " successfully"));
+        return ResponseEntity.ok(new AuthDto.ApiResponse(true, 
+            String.format("User %s successfully %s", updatedUser.getName(), status)));
     }
-}
+
+    @PostMapping("/register")
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public ResponseEntity<AuthDto.ApiResponse> registerUser(
+            @Valid @RequestBody AuthDto.RegisterRequest request) {
+
+        User newUser;
+        switch (request.getType()) {
+            case STUDENT:
+                newUser = new Student();
+                break;
+            case DEAN:
+                newUser = new Dean();
+                break;
+            case ACADEMIC_VICEPRESIDENT:
+                newUser = new AcademicVicePresident();
+                break;
+            case PROFESSOR:
+                newUser = new Professor();
+                break;  
+            default:
+                return ResponseEntity.badRequest()
+                    .body(new AuthDto.ApiResponse(false, "Tipo de usuario no soportado"));
+        }
+
+        newUser.setId(request.getId());
+        newUser.setName(request.getName());
+        newUser.setMail(request.getMail());
+        newUser.setType(request.getType());
+        newUser.setActive(true);
+
+        authenticationService.registerUser(newUser, request.getPassword());
+
+        return ResponseEntity.status(201).body(new AuthDto.ApiResponse(true, "Usuario creado exitosamente"));
+    }
+    }

@@ -3,6 +3,7 @@ package edu.dosw.sirha.model.services;
 import edu.dosw.sirha.model.entities.Subject;
 import edu.dosw.sirha.model.entities.TrafficLight;
 import edu.dosw.sirha.model.entities.TrafficLightStatus;
+import edu.dosw.sirha.model.persistence.repository.SubjectRepository;
 import edu.dosw.sirha.model.persistence.repository.TrafficLightRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class TrafficLightService {
 
     private final TrafficLightRepository trafficLightRepository;
+    private final SubjectRepository subjectRepository;
 
     /**
      * Creates a new traffic light record.
@@ -220,15 +222,18 @@ public class TrafficLightService {
     if (trafficLightOpt.isPresent()) {
         TrafficLight trafficLight = trafficLightOpt.get();
         HashMap<Subject, Double> result = new HashMap<>();
+
+
         
-        
-        trafficLight.getApprovedSubjects().forEach((subject, grade) -> 
-            result.put(subject, grade.doubleValue())
-        );
-        
-        trafficLight.getFailedSubjects().forEach((subject, grade) -> 
-            result.put(subject, grade.doubleValue())
-        );
+        trafficLight.getApprovedSubjects().forEach((subject, grade) ->
+                subjectRepository.findByName(subject).ifPresent(foundSubject ->
+                        result.put(foundSubject, grade.doubleValue())
+                ));
+
+        trafficLight.getFailedSubjects().forEach((subject, grade) ->
+                subjectRepository.findByName(subject).ifPresent(foundSubject ->
+                        result.put(foundSubject, grade.doubleValue())
+                ));
         
         return result; 
     }

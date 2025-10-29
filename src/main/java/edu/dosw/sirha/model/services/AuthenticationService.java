@@ -40,14 +40,14 @@ public class AuthenticationService {
      * @return {@link AuthenticationResult} indicating success or failure and the authenticated user if successful
      * @throws IllegalArgumentException if credential or password is null
      */
-    public AuthenticationResult authenticate(String credential, String password) {
-        if (credential == null || password == null) {
+    public AuthenticationResult authenticate(String id, String password) {
+        if (id == null || password == null) {
             throw new IllegalArgumentException("Credentials cannot be null");
         }
-        
-        Optional<User> userOpt = userRepository.findByDocumentAndIsActiveTrue(credential);
+
+        Optional<User> userOpt = userRepository.findByIdAndIsActiveTrue(id);
         if (userOpt.isEmpty()) {
-            userOpt = userRepository.findByMailAndIsActiveTrue(credential);
+            userOpt = userRepository.findByMailAndIsActiveTrue(id);
         }
         
         if (userOpt.isEmpty()) {
@@ -247,5 +247,18 @@ public class AuthenticationService {
          * @return the authenticated user, or null if authentication failed
          */
         public User getUser() { return user; }
+    }
+
+    public User registerUser(User user, String plainPassword) {
+        if (userRepository.existsById(user.getId())) {
+            throw new org.springframework.dao.DuplicateKeyException("User with this ID already exists");
+        }
+        if (userRepository.existsByMail(user.getMail())) {
+            throw new org.springframework.dao.DuplicateKeyException("User with this mail already exists");
+        }
+        user.setPasswordHash(passwordEncoder.encode(plainPassword));
+        //user.setActive(true);
+        user.setLastLogin(null);
+        return userRepository.save(user);
     }
 }

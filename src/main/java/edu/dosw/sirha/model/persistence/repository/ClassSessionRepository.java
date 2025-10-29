@@ -1,11 +1,12 @@
 package edu.dosw.sirha.model.persistence.repository;
 
 import edu.dosw.sirha.model.entities.ClassSession;
-import edu.dosw.sirha.model.entities.ClassSchedule;
+import edu.dosw.sirha.model.entities.Professor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,11 +25,11 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
     Optional<ClassSession> findById(String id);
 
     /**
-     * Finds class sessions by professor ID.
-     * @param professorId the ID of the professor
+     * Finds class sessions by professor code.
+     * @param professorCode the code of the professor
      * @return a list of ClassSessions assigned to the given professor
      */
-    List<ClassSession> findByProfessorId(String professorId);
+    List<ClassSession> findByProfessorCode(String professorCode);
 
     /**
      * Finds class sessions by subject short name.
@@ -43,14 +44,33 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
      * @param id the ID of the session to check for conflicts
      * @return true if there are conflicts, false otherwise
      */
-    @Query("{ $and: [ { '_id': { $ne: ?0 } }, { $or: [ { 'dayOfWeek': ?1, 'startTime': { $lt: ?3 }, 'endTime': { $gt: ?2 }, 'classroom': ?4 }, { 'professorId': ?5, 'dayOfWeek': ?1, 'startTime': { $lt: ?3 }, 'endTime': { $gt: ?2 } } ] } ] }")
-    boolean existsScheduleConflicts(String id, String dayOfWeek, String startTime, String endTime, String classroom, String professorId);
+    @Query(value = """
+{
+  "_id": { "$ne": ?0 },
+  "schedules": {
+    "$elemMatch": {
+      "dayOfWeek": ?1,
+      "startTime": { "$lt": ?3 },
+      "endTime": { "$gt": ?2 }
+    }
+  },
+  "$or": [
+    { "schedules.classroom": ?4 },
+    { "professorId": ?5 }
+  ]
+}
+""", exists = true)
+    boolean existsScheduleConflicts(String id, String dayOfWeek, LocalTime startTime, LocalTime endTime, String classroom, String professorId);
 
     /**
      * Finds all class sessions with available capacity (enrolled < capacity).
      * @return a list of ClassSessions that have available spots
      */
-    @Query("{ 'enrolledStudents': { $lt: '$capacity' } }")
+    @Query("""
+{
+  '$expr': { '$lt': ['$enrolledStudents', '$capacity'] }
+}
+""")
     List<ClassSession> findSessionsWithAvailableCapacity();
 
     /**
@@ -89,15 +109,20 @@ public interface ClassSessionRepository extends MongoRepository<ClassSession, St
      * @param studentId the student ID
      * @return true if student is enrolled, false otherwise
      */
-    @Query("{ '_id': ?0, 'enrolledStudentIds': ?1 }")
-    boolean existsByIdAndEnrolledStudentId(String id, String studentId);
+    boolean existsByIdAndEnrolledStudentIdsContains(String id, String studentId);
 
     /**
      * Finds sessions by subject short name and available capacity.
      * @param subjectShortName the short name of the subject
      * @return list of sessions with available spots
      */
-    @Query("{ 'subjectShortName': ?0, 'enrolledStudents': { $lt: '$capacity' } }")
+    @Query("""
+{
+  'subjectShortName': ?0,
+  '$expr': { '$lt': ['$enrolledStudents', '$capacity'] }
+}
+""")
     List<ClassSession> findBySubjectShortNameWithAvailableCapacity(String subjectShortName);
 
+    List<ClassSession> findByProfessor(Professor professor);
 }
