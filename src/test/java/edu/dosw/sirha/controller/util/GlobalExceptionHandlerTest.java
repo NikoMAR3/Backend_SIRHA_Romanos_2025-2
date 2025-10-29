@@ -1,5 +1,6 @@
-package edu.dosw.sirha.controller.utils;
+package edu.dosw.sirha.controller.util;
 
+import edu.dosw.sirha.controller.utils.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
