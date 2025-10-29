@@ -1,4 +1,9 @@
-![CI Pipeline](https://github.com/NikoMAR3/Backend_SIRHA_Romanos_2025-2/workflows/CI%20Pipeline/badge.svg)
+![ci-cd](https://github.com/ROMANOS-SIHRA/Backend_SIRHA_Romanos_2025-2/actions/workflows/ci-cd.yml/badge.svg)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+![Azure](https://img.shields.io/badge/Azure-App%20Service-0078D4)
+[![API Status](https://img.shields.io/website?url=https%3A%2F%2Fsirha-backend-api.azurewebsites.net%2Factuator%2Fhealth)](https://sirha-backend-api.azurewebsites.net/actuator/health)
 
 # Backend_SIRHA_Romanos_2025-2
 
