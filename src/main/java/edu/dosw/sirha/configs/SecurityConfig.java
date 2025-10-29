@@ -26,7 +26,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                
+
+                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html", 
@@ -34,8 +36,8 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-                
-                
+
+
                 .requestMatchers("/api/**").permitAll()
                 
                 

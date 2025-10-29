@@ -21,11 +21,8 @@
 		<maven.compiler.target>17</maven.compiler.target>
 		<maven.compiler.release>17</maven.compiler.release>
 
-		<sonar.projectKey>library</sonar.projectKey>
-		<sonar.projectName>library</sonar.projectName>
-		<sonar.host.url>http://localhost:9000</sonar.host.url>
-		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-		<sonar.coverage.exclusions>src//configurators/*</sonar.coverage.exclusions>
+        <!-- SonarCloud -->
+        <sonar.organization>romanos-sihra</sonar.organization>
 	</properties>
 
 	<dependencyManagement>
@@ -131,6 +128,11 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
 
 	</dependencies>
 

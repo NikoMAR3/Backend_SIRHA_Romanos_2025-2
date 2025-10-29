@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/sirha-test}
+
+logging:
+  level:
+    root: WARN
+    edu.dosw.sirha: INFO
+    org.springframework.test: INFO
+
+springdoc:
+  swagger-ui:
+    enabled: false
