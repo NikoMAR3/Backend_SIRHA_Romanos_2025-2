@@ -236,6 +236,9 @@ public class ManagerController {
             throw new IllegalArgumentException("No tienes permisos para acceder a esta funcionalidad");
         }
 
+        User currentUser = AuthValidationUtils.getCurrentUser(session);
+
+
         Petition petition = petitionService.searchPetitionsById(petitionId);
         Student student = studentService.searchStudentById(petition.getStudentId());
         Schedule schedule = studentService.getStudentSchedule(petition.getStudentId());
@@ -964,38 +967,13 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
 }
 
 
-    private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
-            ManagerResponseDTO.DeanResponseDTO response = new ManagerResponseDTO.DeanResponseDTO();
-            response.setDeanCode(dean.getDeanCode());
-            response.setName(dean.getName());
-            response.setMail(dean.getMail());
-            response.setDocument(dean.getDocument());
-            return response;
-        }
-
-    @GetMapping("/deaneries")
-    @Operation(
-        summary = "Obtener decanaturas",
-        description = "Retorna la lista de todas las decanaturas registradas en el sistema."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de decanaturas obtenida exitosamente"),
-        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
-        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
-    })
-    public ResponseEntity<List<ManagerResponseDTO.DeaneryInfo>> getAllDeaneries(HttpSession session) {
-        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
-            session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
-        if (authCheck != null) {
-            throw new IllegalArgumentException("No tienes permisos para ver decanaturas");
-        }
-
-        List<Deanery> deaneries = deaneryService.searchAllDeaneries();
-        List<ManagerResponseDTO.DeaneryInfo> response = deaneries.stream()
-            .map(this::buildDeaneryResponse)
-            .toList();
-
-        return ResponseEntity.ok(response);
+private ManagerResponseDTO.DeanResponseDTO buildDeanResponse(Dean dean) {
+        ManagerResponseDTO.DeanResponseDTO response = new ManagerResponseDTO.DeanResponseDTO();
+        response.setDeanCode(dean.getDeanCode());
+        response.setName(dean.getName());
+        response.setMail(dean.getMail());
+        response.setDocument(dean.getDocument());
+        return response;
     }
 
     @PostMapping("/deans")
@@ -1132,8 +1110,6 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
 
 
 
-
-
     //------------------------------------------Programas Academicos--------------------------------------------
     
     @PostMapping("/academic-programs")
@@ -1168,7 +1144,7 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
         ManagerResponseDTO.AcademicProgramInfo response = buildAcademicProgramResponse(saved);
 
         return ResponseEntity.status(201).body(response);
-
+        
     }
 
     private ManagerResponseDTO.AcademicProgramInfo buildAcademicProgramResponse(AcademicProgram program) {
@@ -1210,37 +1186,5 @@ public ResponseEntity<ManagerResponseDTO.DeaneryInfo> createDeanery(
         ManagerResponseDTO.DeaneryInfo response = buildDeaneryResponse(deanery);
         return ResponseEntity.ok(response);
     }
-
-
-    @GetMapping("/academic-programs")
-    @Operation(
-        summary = "Obtener programas académicos",
-        description = "Retorna la lista de todos los programas académicos registrados en el sistema."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de programas académicos obtenida exitosamente"),
-        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
-        @ApiResponse(responseCode = "403", description = "Permisos insuficientes")
-    })
-    public ResponseEntity<List<ManagerResponseDTO.AcademicProgramInfo>> getAllAcademicPrograms(HttpSession session) {
-        ResponseEntity<?> authCheck = AuthValidationUtils.validateAuthentication(
-            session, UserType.ACADEMIC_VICEPRESIDENT, UserType.DEAN);
-        if (authCheck != null) {
-            throw new IllegalArgumentException("No tienes permisos para ver programas académicos");
-        }
-
-        List<AcademicProgram> programs = academicProgramService.searchAllPrograms();
-        List<ManagerResponseDTO.AcademicProgramInfo> response = programs.stream()
-            .map(this::buildAcademicProgramResponse)
-            .toList();
-
-        return ResponseEntity.ok(response);
-    }
-
-    //@PostMapping("/students/{studentId]/schedules")
-    //@Operation(summary = "Añadir horario a estudiante", description = "Añade horario a estudiante")
-
-
-
 
 }
