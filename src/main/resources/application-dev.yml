@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/sirha
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    edu.dosw.sirha: DEBUG
+    org.springframework.data.mongodb: DEBUG
+
+springdoc:
+  swagger-ui:
+    enabled: true

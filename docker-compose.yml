@@ -1,0 +1,29 @@
+
+services:
+  sirha-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/sirha
+      - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      - mongodb
+    networks:
+      - sirha-network
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - sirha-network
+
+networks:
+  sirha-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
