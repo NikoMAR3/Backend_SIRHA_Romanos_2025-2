@@ -34,7 +34,6 @@
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)
 ![VS Code](https://img.shields.io/badge/IDE-VS%20Code-blue?logo=visual-studio-code)
 ![Postman](https://img.shields.io/badge/Testing-Postman-orange?logo=postman)
-![Figma](https://img.shields.io/badge/Design-Figma-purple?logo=figma)
 
 
 # 📚 SIRHA — Sistema de Reasignación de Horarios Académicos
@@ -252,7 +251,7 @@ git commit -m "24-fix: arreglar bug"
 ---
 
 
-## 5. ⚙️ Tecnologías utilizadas
+## 5. ⚙️Tecnologías utilizadas
 
 El backend del sistema **SIRHA (Sistema de Reasignación de Horarios Académicos)** fue desarrollado con una arquitectura basada en **Spring Boot** y componentes del ecosistema **Java**, garantizando modularidad, mantenibilidad, seguridad y facilidad de despliegue.  
 A continuación se detallan las principales tecnologías empleadas en el proyecto:
@@ -1130,10 +1129,10 @@ void shouldThrowExceptionWhenStudentNotFound() {
 ### 📊 Evidencias visuales de calidad
 
 #### **📁 Reporte de Cobertura (JaCoCo)**
-![JaCoCo Coverage Report](docs/imagenes/jacoco1.png)
+![JaCoCo Coverage Report](docs/imagenes/jacoco1.jpg)
 
 #### **📁 Análisis de Calidad (SonarQube)**
-![SonarQube Quality Analysis](docs/imagenes/sonarqube.png)
+![SonarQube Quality Analysis](docs/imagenes/sonarqube.jpg)
 
 ---
 
@@ -1553,7 +1552,7 @@ Cada miembro del equipo asumió un rol dentro del marco de Scrum:
 ### 🙌 ¡Gracias por visitar SIRHA!
 
 - Si tienes sugerencias, encuentras errores o deseas aportar nuevas funcionalidades, ¡las contribuciones son bienvenidas!
-- Puedes abrir un **issue** o enviar un **pull request** siguiendo las [buenas prácticas de colaboración](CONTRIBUTING.md) del repositorio.
+- Puedes abrir un **issue** o enviar un **pull request** siguiendo las buenas prácticas de colaboración del repositorio.
 
 > 💡 **SIRHA** es un proyecto académico, pero su arquitectura y calidad están pensadas para ser escalables y adaptables a escenarios reales en instituciones educativas.
 
